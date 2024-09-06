@@ -1,8 +1,8 @@
-import type {
+import {
   Info,
   PlatformData,
   SdkData,
-} from "@launchdarkly/node-server-sdk";
+} from "@launchdarkly/akamai-edgeworker-sdk-common";
 
 class ConvexPlatformInfo implements Info {
   platformData(): PlatformData {

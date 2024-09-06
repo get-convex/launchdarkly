@@ -1,28 +1,32 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  type Platform,
-  type EdgeProvider,
-} from "@launchdarkly/js-server-sdk-common-edge";
-
 import BasicLogger from "@launchdarkly/js-sdk-common/dist/logging/BasicLogger";
-
 import type { LDOptions } from "@launchdarkly/js-server-sdk-common";
 
 import LDClient from "@launchdarkly/akamai-edgeworker-sdk-common/dist/api/LDClient";
-import { EdgeFeatureStore } from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore";
+import {
+  EdgeFeatureStore,
+  EdgeProvider,
+} from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore";
 import { buildRootKey } from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore/index";
 import CacheableStoreProvider from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore/cacheableStoreProvider";
 
-import { AnyDataModel, GenericQueryCtx } from "convex/server";
+import {
+  AnyDataModel,
+  FunctionReference,
+  GenericQueryCtx,
+} from "convex/server";
 import { createPlatformInfo } from "./createPlatformInfo";
 import EdgeCrypto from "./crypto";
-import { api } from "../launchdarkly/_generated/api";
+import { Platform } from "@launchdarkly/akamai-edgeworker-sdk-common";
 
 const convex = "Convex";
 
+export type LaunchDarklyStore = {
+  get: FunctionReference<"query", "internal">;
+};
+
 type BaseSDKParams = {
   ctx: GenericQueryCtx<AnyDataModel>;
-  component: typeof api;
+  store: LaunchDarklyStore;
   application?: LDOptions["application"];
   // Only necessary if using secureModeHash.
   // The Convex LDClient otherwise disregards the sdkKey.
@@ -31,13 +35,13 @@ type BaseSDKParams = {
 
 export const init = ({
   ctx,
-  component,
+  store,
   application,
   sdkKey = convex,
 }: BaseSDKParams): LDClient => {
   // @ts-expect-error CacheableStoreProvider is exported as an ES Module.
   const cachableStoreProvider = new CacheableStoreProvider.default(
-    convexEdgeProvider(ctx, component),
+    convexEdgeProvider(ctx, store),
     buildRootKey(convex)
   );
   const featureStore = new EdgeFeatureStore(
@@ -76,11 +80,11 @@ export const init = ({
 
 export function convexEdgeProvider(
   ctx: GenericQueryCtx<AnyDataModel>,
-  component: BaseSDKParams["component"]
+  store: BaseSDKParams["store"]
 ): EdgeProvider {
   return {
     get: async () => {
-      const payload = await ctx.runQuery(component.store.get);
+      const payload = await ctx.runQuery(store.get);
       return payload;
     },
   };
@@ -106,7 +110,6 @@ const createOptions = (): LDOptions => ({
     };
   },
 
-  // @ts-expect-error BasicLogger is exported as an ES Module.
   logger: BasicLogger.default.get(),
 
   wrapperName: convex,

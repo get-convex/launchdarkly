@@ -1,18 +1,18 @@
 {
   "name": "launchdarkly-component",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generateToken": "node -e \"console.log(crypto.randomBytes(32).toString('hex'))\""
   },
   "dependencies": {
     "@launchdarkly/akamai-edgeworker-sdk-common": "^1.1.15",
     "@launchdarkly/js-server-sdk-common-edge": "^2.3.8",
-    "@launchdarkly/node-server-sdk": "^9.5.0",
     "convex": "^1.15.1-alpha.2",
     "crypto-js": "^4.2.0",
     "react": "^18.3.1",
@@ -20,7 +20,6 @@
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
-    "@types/node": "^22.1.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.15.0",

@@ -4,7 +4,7 @@ export const listFlags = query({
   handler: async (ctx) => {
     const client = init({
       ctx,
-      component: components.launchdarkly,
+      store: components.launchdarkly.store,
     });
     const res = await client.allFlagsState({ key: "component-user" });
     return res.allValues();
