@@ -13,43 +13,28 @@ import { EdgeFeatureStore } from "@launchdarkly/akamai-edgeworker-sdk-common/dis
 import { buildRootKey } from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore/index";
 import CacheableStoreProvider from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore/cacheableStoreProvider";
 
-import {
-  AnyDataModel,
-  FunctionReference,
-  GenericQueryCtx,
-} from "convex/server";
+import { AnyDataModel, GenericQueryCtx } from "convex/server";
 import { createPlatformInfo } from "./createPlatformInfo";
 import EdgeCrypto from "./crypto";
+import { api } from "../launchdarkly/_generated/api";
 
 const convex = "Convex";
 
-export type LaunchDarklyComponent = {
-  tokens: {
-    validate: FunctionReference<"query", "internal", { token?: string }>;
-  };
-  store: {
-    get: FunctionReference<"query", "internal">;
-    write: FunctionReference<
-      "mutation",
-      "internal",
-      {
-        payload: {
-          flags: any;
-          segments: any;
-        };
-      }
-    >;
-  };
-};
-
 type BaseSDKParams = {
   ctx: GenericQueryCtx<AnyDataModel>;
-  component: LaunchDarklyComponent;
+  component: typeof api;
+  application?: LDOptions["application"];
+  // Only necessary if using secureModeHash.
+  // The Convex LDClient otherwise disregards the sdkKey.
+  sdkKey?: string;
 };
 
-export const init = (params: BaseSDKParams): LDClient => {
-  const { ctx, component } = params;
-
+export const init = ({
+  ctx,
+  component,
+  application,
+  sdkKey = convex,
+}: BaseSDKParams): LDClient => {
   // @ts-expect-error CacheableStoreProvider is exported as an ES Module.
   const cachableStoreProvider = new CacheableStoreProvider.default(
     convexEdgeProvider(ctx, component),
@@ -57,7 +42,7 @@ export const init = (params: BaseSDKParams): LDClient => {
   );
   const featureStore = new EdgeFeatureStore(
     cachableStoreProvider,
-    convex,
+    sdkKey,
     convex,
     // @ts-expect-error BasicLogger is exported as an ES Module.
     BasicLogger.default.get()
@@ -68,6 +53,10 @@ export const init = (params: BaseSDKParams): LDClient => {
     ...createOptions(),
   };
 
+  if (application) {
+    ldOptions.application = application;
+  }
+
   const platform: Platform = {
     info: createPlatformInfo(),
     crypto: new EdgeCrypto(),
@@ -77,7 +66,7 @@ export const init = (params: BaseSDKParams): LDClient => {
 
   // @ts-expect-error LDClient is exported as an ES Module.
   const client: LDClient = new LDClient.default(
-    convex,
+    sdkKey,
     platform,
     ldOptions,
     cachableStoreProvider

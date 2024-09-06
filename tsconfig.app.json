@@ -23,5 +23,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "launchdarkly"]
+  "include": ["src", "launchdarkly", "sdk"]
 }

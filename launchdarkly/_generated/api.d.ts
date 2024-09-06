@@ -11,9 +11,6 @@
  */
 
 import type * as initializeHttp from "../initializeHttp.js";
-import type * as sdk_LDClient from "../sdk/LDClient.js";
-import type * as sdk_createPlatformInfo from "../sdk/createPlatformInfo.js";
-import type * as sdk_crypto from "../sdk/crypto.js";
 import type * as store from "../store.js";
 import type * as tokens from "../tokens.js";
 
@@ -32,9 +29,6 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   initializeHttp: typeof initializeHttp;
-  "sdk/LDClient": typeof sdk_LDClient;
-  "sdk/createPlatformInfo": typeof sdk_createPlatformInfo;
-  "sdk/crypto": typeof sdk_crypto;
   store: typeof store;
   tokens: typeof tokens;
 }>;

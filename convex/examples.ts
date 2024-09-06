@@ -1,5 +1,5 @@
 import { components, query } from "./_generated/server";
-import { init } from "../launchdarkly/sdk/LDClient";
+import { init } from "../sdk/LDClient";
 export const listFlags = query({
   handler: async (ctx) => {
     const client = init({
