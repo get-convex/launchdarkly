@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@launchdarkly/akamai-edgeworker-sdk-common": "^1.1.15",
+    "@launchdarkly/js-server-sdk-common-edge": "^2.3.8",
     "@launchdarkly/node-server-sdk": "^9.5.0",
-    "convex": "^1.13.3-alpha.0",
+    "convex": "^1.15.1-alpha.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

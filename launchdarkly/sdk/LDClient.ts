@@ -1,119 +1,118 @@
 import type {
-  LDContext,
-  LDMigrationOpEvent,
   Platform,
-} from "@launchdarkly/node-server-sdk";
-import { FunctionReference } from "convex/server";
+  EdgeProvider,
+} from "@launchdarkly/js-server-sdk-common-edge";
+
+import type { LDOptions } from "@launchdarkly/js-server-sdk-common";
+
+import LDClient from "@launchdarkly/akamai-edgeworker-sdk-common/dist/api/LDClient";
+import { EdgeFeatureStore } from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore";
+import { buildRootKey } from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore/index";
+import CacheableStoreProvider from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore/cacheableStoreProvider";
+
 import {
-  LDClientImpl,
-  LDClient as LDClientType,
-} from "@launchdarkly/js-server-sdk-common";
-import { featureStore } from "./featureStore";
-import { GenericCtx } from "../../convex/_generated/server";
+  AnyDataModel,
+  FunctionReference,
+  GenericQueryCtx,
+} from "convex/server";
+import { createPlatformInfo } from "./createPlatformInfo";
 
-/**
- * The LaunchDarkly Convex SDK client object.
- */
-export class LDClient extends LDClientImpl {
-  constructor(
-    ctx: GenericCtx,
-    launchdarklyComponent: {
-      store: {
-        get: FunctionReference<"query", "internal">;
-        all: FunctionReference<"query", "internal">;
-      };
-    }
-  ) {
-    super(
-      // SDK key is not used in the Convex SDK because we're pulling flags from the database.
-      "_",
-      // Platform is not used in the Convex SDK because we're not sending events.
-      {} as Platform,
-      {
-        // Override the feature store to use the Convex database.
-        featureStore: featureStore(ctx, launchdarklyComponent),
+type BaseSDKParams = {
+  sdkKey: string;
+  ctx: GenericQueryCtx<AnyDataModel>;
+  launchdarklyComponent: {
+    store: {
+      get: FunctionReference<
+        "query",
+        "internal",
+        {
+          rootKey: string;
+        }
+      >;
+    };
+  };
+};
 
-        // Don't send any events to LaunchDarkly (TODO: Implement by processing the events in Convex instead).
-        sendEvents: false,
-        diagnosticOptOut: false,
+export const init = (params: BaseSDKParams): LDClient => {
+  const { sdkKey, ctx, launchdarklyComponent } = params;
 
-        // Override the update processor to do nothing. We never want to process updates.
-        updateProcessor: { start: () => {}, stop: () => {}, close: () => {} },
+  // TODO: Implement a configurable logger.
+  const logger = console;
 
-        logger: console,
+  // @ts-expect-error It's OK to use the default export here.
+  const cachableStoreProvider = new CacheableStoreProvider.default(
+    convexEdgeProvider(ctx, launchdarklyComponent),
+    buildRootKey(sdkKey)
+  );
+  const featureStore = new EdgeFeatureStore(
+    cachableStoreProvider,
+    sdkKey,
+    "Convex",
+    logger
+  );
 
-        wrapperName: "convex",
-        wrapperVersion: "0.0.1",
-      },
-      {
-        onError: function (err): void {
-          console.error(err);
-        },
-        onFailed: function (err): void {
-          console.error(err);
-        },
-        onReady: function (): void {
-          console.debug("LaunchDarkly client ready");
-        },
-        onUpdate: function (): void {
-          throw new Error("Unexpected LaunchDarkly onUpdate call");
-        },
-        hasEventListeners: function (): boolean {
-          return false;
-        },
-      },
-      {}
-    );
+  const ldOptions: LDOptions = {
+    featureStore,
+    ...createOptions(),
+  };
+
+  const platform: Platform = {
+    info: createPlatformInfo(),
+    // @ts-expect-error - we're not using the crypto or requests properties.
+    crypto: undefined,
+    // @ts-expect-error - we're not using the crypto or requests properties.
+    requests: undefined,
+  };
+
+  // @ts-expect-error - It's OK to use the default export here.
+  return new LDClient.default(
+    sdkKey,
+    platform,
+    ldOptions,
+    cachableStoreProvider
+  );
+};
+
+export function convexEdgeProvider(
+  ctx: GenericQueryCtx<AnyDataModel>,
+  launchdarklyComponent: {
+    store: {
+      get: FunctionReference<
+        "query",
+        "internal",
+        {
+          rootKey: string;
+        }
+      >;
+    };
   }
-
-  override waitForInitialization(): Promise<LDClientType> {
-    // we need to resolve the promise immediately because Convex's runtime doesnt
-    // have a setimeout so everything executes synchronously.
-    return Promise.resolve(this);
-  }
-
-  override initialized(): boolean {
-    return true;
-  }
-
-  override isOffline(): boolean {
-    return true;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  override secureModeHash(_context: LDContext): string {
-    // TODO: Implement secure mode.
-    throw new Error("secureModeHash is not yet implemented.");
-  }
-
-  override close(): void {
-    console.debug("LaunchDarkly: You do not need to call close() in Convex.");
-  }
-
-  override track(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _key: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _context: LDContext,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-    _data?: any,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _metricValue?: number
-  ): void {
-    throw new Error("track is not yet implemented.");
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  override trackMigration(_event: LDMigrationOpEvent): void {
-    throw new Error("trackMigration is not yet implemented.");
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  override identify(_context: LDContext): void {
-    throw new Error("identify is not yet implemented.");
-  }
-
-  override flush(): Promise<void> {
-    throw new Error("flush is not yet implemented.");
-  }
+): EdgeProvider {
+  return {
+    get: async (rootKey: string) => {
+      console.log(rootKey);
+      const payload = await ctx.runQuery(launchdarklyComponent.store.get, {
+        rootKey,
+      });
+      return payload;
+    },
+  };
 }
+
+const createOptions = (): LDOptions => ({
+  // Don't send any events to LaunchDarkly (TODO: Implement by processing the events in Convex instead).
+  sendEvents: false,
+  diagnosticOptOut: true,
+  useLdd: false,
+
+  // Override the update processor to do nothing. We never want to process updates.
+  updateProcessor: {
+    start: () => {},
+    stop: () => {},
+    close: () => {},
+  },
+
+  logger: console,
+
+  wrapperName: "convex",
+  wrapperVersion: "0.0.1",
+});

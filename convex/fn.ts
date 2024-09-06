@@ -1,12 +1,13 @@
-import { app, query } from "./_generated/server";
-import { LDClient } from "../launchdarkly/sdk/LDClient";
-
+import { components, query } from "./_generated/server";
+import { init } from "../launchdarkly/sdk/LDClient";
 export const listFlags = query({
   handler: async (ctx) => {
-    const client = new LDClient(ctx, app.launchdarkly);
-    const flags = (
-      await client.allFlagsState({ key: "component-user" })
-    ).allValues();
-    return flags;
+    const client = init({
+      sdkKey: "_",
+      ctx,
+      launchdarklyComponent: components.launchdarkly,
+    });
+    const res = await client.allFlagsState({ key: "component-user" });
+    return res.allValues();
   },
 });

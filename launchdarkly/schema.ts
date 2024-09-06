@@ -2,12 +2,12 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  features: defineTable({
+  tokens: defineTable({
+    sdkKey: v.string(),
+    token: v.string(),
+  }),
+  payloads: defineTable({
     key: v.string(),
-    config: v.any(),
-  }).index("key", ["key"]),
-  segments: defineTable({
-    key: v.string(),
-    config: v.any(),
+    payload: v.any(),
   }).index("key", ["key"]),
 });
