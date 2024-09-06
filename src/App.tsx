@@ -1,20 +1,11 @@
 import convexLogo from "./assets/convex.svg";
 import launchdarklyLogo from "./assets/launchdarkly.svg";
 import "./App.css";
-import { useAction, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
-import { useEffect, useState } from "react";
 
 function App() {
-  const flagValues = useAction(api.fn.listFlags);
-  const [f, setF] = useState();
-  useEffect(() => {
-    const x = async () => {
-      const result = await flagValues();
-      setF(result);
-    };
-    x();
-  }, []);
+  const flagValues = useQuery(api.examples.listFlags);
 
   return (
     <>
@@ -34,7 +25,7 @@ function App() {
       <div className="card">
         Flag values for test user:
         <pre>
-          <code>{JSON.stringify(f, undefined, 2)}</code>
+          <code>{JSON.stringify(flagValues, undefined, 2)}</code>
         </pre>
       </div>
     </>

@@ -1,7 +1,10 @@
-import type {
-  Platform,
-  EdgeProvider,
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  type Platform,
+  type EdgeProvider,
 } from "@launchdarkly/js-server-sdk-common-edge";
+
+import BasicLogger from "@launchdarkly/js-sdk-common/dist/logging/BasicLogger";
 
 import type { LDOptions } from "@launchdarkly/js-server-sdk-common";
 
@@ -16,39 +19,48 @@ import {
   GenericQueryCtx,
 } from "convex/server";
 import { createPlatformInfo } from "./createPlatformInfo";
+import EdgeCrypto from "./crypto";
 
-type BaseSDKParams = {
-  sdkKey: string;
-  ctx: GenericQueryCtx<AnyDataModel>;
-  launchdarklyComponent: {
-    store: {
-      get: FunctionReference<
-        "query",
-        "internal",
-        {
-          rootKey: string;
-        }
-      >;
-    };
+const convex = "Convex";
+
+export type LaunchDarklyComponent = {
+  tokens: {
+    validate: FunctionReference<"query", "internal", { token?: string }>;
+  };
+  store: {
+    get: FunctionReference<"query", "internal">;
+    write: FunctionReference<
+      "mutation",
+      "internal",
+      {
+        payload: {
+          flags: any;
+          segments: any;
+        };
+      }
+    >;
   };
 };
 
+type BaseSDKParams = {
+  ctx: GenericQueryCtx<AnyDataModel>;
+  component: LaunchDarklyComponent;
+};
+
 export const init = (params: BaseSDKParams): LDClient => {
-  const { sdkKey, ctx, launchdarklyComponent } = params;
+  const { ctx, component } = params;
 
-  // TODO: Implement a configurable logger.
-  const logger = console;
-
-  // @ts-expect-error It's OK to use the default export here.
+  // @ts-expect-error CacheableStoreProvider is exported as an ES Module.
   const cachableStoreProvider = new CacheableStoreProvider.default(
-    convexEdgeProvider(ctx, launchdarklyComponent),
-    buildRootKey(sdkKey)
+    convexEdgeProvider(ctx, component),
+    buildRootKey(convex)
   );
   const featureStore = new EdgeFeatureStore(
     cachableStoreProvider,
-    sdkKey,
-    "Convex",
-    logger
+    convex,
+    convex,
+    // @ts-expect-error BasicLogger is exported as an ES Module.
+    BasicLogger.default.get()
   );
 
   const ldOptions: LDOptions = {
@@ -58,61 +70,56 @@ export const init = (params: BaseSDKParams): LDClient => {
 
   const platform: Platform = {
     info: createPlatformInfo(),
-    // @ts-expect-error - we're not using the crypto or requests properties.
-    crypto: undefined,
-    // @ts-expect-error - we're not using the crypto or requests properties.
+    crypto: new EdgeCrypto(),
+    // @ts-expect-error We do not allow LDClient to send requests inside of the Convex runtime.
     requests: undefined,
   };
 
-  // @ts-expect-error - It's OK to use the default export here.
-  return new LDClient.default(
-    sdkKey,
+  // @ts-expect-error LDClient is exported as an ES Module.
+  const client: LDClient = new LDClient.default(
+    convex,
     platform,
     ldOptions,
     cachableStoreProvider
   );
+  return client;
 };
 
 export function convexEdgeProvider(
   ctx: GenericQueryCtx<AnyDataModel>,
-  launchdarklyComponent: {
-    store: {
-      get: FunctionReference<
-        "query",
-        "internal",
-        {
-          rootKey: string;
-        }
-      >;
-    };
-  }
+  component: BaseSDKParams["component"]
 ): EdgeProvider {
   return {
-    get: async (rootKey: string) => {
-      console.log(rootKey);
-      const payload = await ctx.runQuery(launchdarklyComponent.store.get, {
-        rootKey,
-      });
+    get: async () => {
+      const payload = await ctx.runQuery(component.store.get);
       return payload;
     },
   };
 }
 
 const createOptions = (): LDOptions => ({
-  // Don't send any events to LaunchDarkly (TODO: Implement by processing the events in Convex instead).
+  // Don't send any events to LaunchDarkly
+  // TODO: Implement by storing the events in Convex instead and sending them in batch via a scheduled job.
   sendEvents: false,
   diagnosticOptOut: true,
   useLdd: false,
 
-  // Override the update processor to do nothing. We never want to process updates.
-  updateProcessor: {
-    start: () => {},
-    stop: () => {},
-    close: () => {},
+  // Override the update processor to do nothing.
+  // We NEED an updateProcessor set here, otherwise the LD SDK internals
+  // will attempt to call `setTimeout`, which is not supported by the
+  // Convex JavaScript runtime.
+  updateProcessor: (_a, _b, initSuccessHandler) => {
+    initSuccessHandler();
+    return {
+      start: () => {},
+      stop: () => {},
+      close: () => {},
+    };
   },
 
-  logger: console,
+  // @ts-expect-error BasicLogger is exported as an ES Module.
+  logger: BasicLogger.default.get(),
 
-  wrapperName: "convex",
+  wrapperName: convex,
   wrapperVersion: "0.0.1",
 });

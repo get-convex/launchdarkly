@@ -10,12 +10,12 @@
  * @module
  */
 
+import type * as initializeHttp from "../initializeHttp.js";
 import type * as sdk_LDClient from "../sdk/LDClient.js";
 import type * as sdk_createPlatformInfo from "../sdk/createPlatformInfo.js";
-import type * as sdk_featureStore from "../sdk/featureStore.js";
+import type * as sdk_crypto from "../sdk/crypto.js";
 import type * as store from "../store.js";
 import type * as tokens from "../tokens.js";
-import type * as webhook from "../webhook.js";
 
 import type {
   ApiFromModules,
@@ -31,33 +31,28 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  initializeHttp: typeof initializeHttp;
   "sdk/LDClient": typeof sdk_LDClient;
   "sdk/createPlatformInfo": typeof sdk_createPlatformInfo;
-  "sdk/featureStore": typeof sdk_featureStore;
+  "sdk/crypto": typeof sdk_crypto;
   store: typeof store;
   tokens: typeof tokens;
-  webhook: typeof webhook;
 }>;
 declare const fullApiWithMounts: typeof fullApi & {
   store: {
-    get: FunctionReference<
-      "query",
-      "public",
-      { rootKey: string },
-      string | null
-    >;
-    store: FunctionReference<
+    get: FunctionReference<"query", "public", {}, string | null>;
+    write: FunctionReference<
       "mutation",
       "public",
-      { key: string; payload: { flags: any; segments: any } },
+      { payload: { flags: any; segments: any } },
       null
     >;
   };
-  webhook: {
+  tokens: {
     validate: FunctionReference<
       "query",
       "public",
-      { sdkKey?: string; token?: string },
+      { token?: string },
       { error?: string; success: boolean }
     >;
   };

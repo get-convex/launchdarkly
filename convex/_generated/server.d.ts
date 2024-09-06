@@ -153,24 +153,19 @@ export type DatabaseWriter = GenericDatabaseWriter<DataModel>;
 export declare const components: {
   launchdarkly: {
     store: {
-      get: FunctionReference<
-        "query",
-        "internal",
-        { rootKey: string },
-        string | null
-      >;
-      store: FunctionReference<
+      get: FunctionReference<"query", "internal", {}, string | null>;
+      write: FunctionReference<
         "mutation",
         "internal",
-        { key: string; payload: { flags: any; segments: any } },
+        { payload: { flags: any; segments: any } },
         null
       >;
     };
-    webhook: {
+    tokens: {
       validate: FunctionReference<
         "query",
         "internal",
-        { sdkKey?: string; token?: string },
+        { token?: string },
         { error?: string; success: boolean }
       >;
     };

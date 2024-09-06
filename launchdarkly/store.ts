@@ -2,22 +2,16 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
 export const get = query({
-  args: {
-    rootKey: v.string(),
-  },
+  args: {},
   returns: v.union(v.string(), v.null()),
-  handler: async (ctx, args) => {
-    const result = await ctx.db
-      .query("payloads")
-      .withIndex("key", (q) => q.eq("key", args.rootKey))
-      .first();
+  handler: async (ctx) => {
+    const result = await ctx.db.query("payloads").first();
     return result ? JSON.stringify(result.payload) : null;
   },
 });
 
-export const store = mutation({
+export const write = mutation({
   args: {
-    key: v.string(),
     payload: v.object({
       // TODO: v.record()
       flags: v.any(),
@@ -25,14 +19,13 @@ export const store = mutation({
     }),
   },
   returns: v.null(),
-  handler: async (ctx, { key, payload }) => {
-    const existing = await ctx.db
-      .query("payloads")
-      .withIndex("key", (q) => q.eq("key", key))
-      .first();
+  handler: async (ctx, { payload }) => {
+    const existing = await ctx.db.query("payloads").first();
     if (existing) {
       await ctx.db.delete(existing._id);
     }
-    await ctx.db.insert("payloads", { key, payload });
+    // TODO: Split this into multiple documents to avoid
+    // reaching document size limits.
+    await ctx.db.insert("payloads", { payload });
   },
 });
