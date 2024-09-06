@@ -16,5 +16,21 @@
 }
 
 .card {
-  padding: 2em;
+  margin-top: 1rem;
+  padding: 0.25rem;
+  height: 20rem;
+  max-height: 20rem;
+  overflow-y: auto;
+  border: 1px solid black;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 0.25rem;
+}
+
+.input input {
+  width: 20rem;
 }

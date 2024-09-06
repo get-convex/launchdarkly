@@ -8,10 +8,36 @@ It also implements LDClient for the Convex runtime, allowing you to use the Laun
 
 This project includes a demo that shows how to use the LaunchDarkly Convex component in a Convex application.
 
-Run these commands in separate terminals:
+Run this commands to start the demo backend (it will push any changes you make as you develop):
 
 ```bash
+npm install
 npx convex dev
+```
+
+Next you'll need to create a shared secret for the LaunchDarkly Convex component. You can do this by running the following command:
+
+```bash
+npm run generateToken
+```
+
+Copy the output of this command into this command to store the shared secret in your Convex component:
+
+```bash
+npx convex run --component-path=launchdarkly tokens:store '{"token": "NEW_TOKEN_HERE"}'
+```
+
+With all of these running, you can now configure the Convex integration on the integrations page of the LaunchDarkly dashboard.
+
+For "Webhook URL", use your deployment's HTTP Actions URL suffixed with the path provided to the `initializeHttp` call in your `http.ts` file. By default, the path is `/ld/webhook`. You can retrieve your HTTP Actions URL on the [Deployment Settings page](https://dashboard.convex.dev/deployment/settings) of the Convex dashboard. Example: https://cheery-rabbit-392.convex.site/ld/webhook
+
+For "Component API Token", use the shared secret you generated earlier.
+
+Once you save, you can open the integration form again and click the Validate button to test the connection. If you encounter errors, check the logs page in the Convex dashboard for more information.
+
+You're all hooked up! You can run the demo's UI to see your flags evaluated for a user.
+
+```bash
 npm run dev
 ```
 

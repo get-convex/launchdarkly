@@ -1,11 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  type Platform,
+  type EdgeProvider,
+} from "@launchdarkly/js-server-sdk-common-edge";
+
 import BasicLogger from "@launchdarkly/js-sdk-common/dist/logging/BasicLogger";
+
 import type { LDOptions } from "@launchdarkly/js-server-sdk-common";
 
 import LDClient from "@launchdarkly/akamai-edgeworker-sdk-common/dist/api/LDClient";
-import {
-  EdgeFeatureStore,
-  EdgeProvider,
-} from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore";
+import { EdgeFeatureStore } from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore";
 import { buildRootKey } from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore/index";
 import CacheableStoreProvider from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore/cacheableStoreProvider";
 
@@ -16,12 +20,28 @@ import {
 } from "convex/server";
 import { createPlatformInfo } from "./createPlatformInfo";
 import EdgeCrypto from "./crypto";
-import { Platform } from "@launchdarkly/akamai-edgeworker-sdk-common";
 
 const convex = "Convex";
 
-export type LaunchDarklyStore = {
+export type LaunchDarklyComponent = {
+  tokens: {
+    validate: FunctionReference<"query", "internal", { token?: string }>;
+  };
+  store: LaunchDarklyStore;
+};
+
+type LaunchDarklyStore = {
   get: FunctionReference<"query", "internal">;
+  write: FunctionReference<
+    "mutation",
+    "internal",
+    {
+      payload: {
+        flags: any;
+        segments: any;
+      };
+    }
+  >;
 };
 
 type BaseSDKParams = {
@@ -110,6 +130,7 @@ const createOptions = (): LDOptions => ({
     };
   },
 
+  // @ts-expect-error BasicLogger is exported as an ES Module.
   logger: BasicLogger.default.get(),
 
   wrapperName: convex,

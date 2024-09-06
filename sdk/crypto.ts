@@ -11,8 +11,7 @@ type SupportedOutputEncoding = "base64" | "hex";
 // The convex runtime cannot import crypto, but always includes it's own implementation.
 export default class EdgeCrypto implements Crypto {
   createHash(algorithm: SupportedHashAlgorithm): Hasher {
-    // @ts-expect-error CryptoJSHasher is exported as an ES Module.
-    return new CryptoJSHasher.default(algorithm);
+    return new CryptoJSHasher(algorithm);
   }
 
   createHmac(algorithm: SupportedHashAlgorithm, key: string): Hmac {
