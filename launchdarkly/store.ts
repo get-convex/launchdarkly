@@ -29,7 +29,7 @@ export const get = query({
         console.error("Duplicate payload key: ", kind, key);
         continue;
       }
-      payload[kind][key] = value;
+      payload[kind][key] = JSON.parse(value);
     }
 
     return JSON.stringify(payload);
@@ -71,7 +71,7 @@ async function upsertItems(
       key: item.key,
       kind,
       version: item.version,
-      payload: item,
+      payload: JSON.stringify(item),
     };
 
     if (existingItem) {
