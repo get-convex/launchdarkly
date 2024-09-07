@@ -48,7 +48,7 @@ npm run dev
 - [x] Allow deeper configuration of the client (only the `application` option, everything else is hardcoded)
 - [x] Sync with webhooks or streaming instead of polling
 - [x] Secure mode
-- [ ] Handle limits on convex document size
+- [x] Handle limits on convex document size
 - [ ] Replace Authorization header with X-LD-Signature ([PR here](https://github.com/launchdarkly/integration-framework/pull/80))
 
 ## Out of scope for MVP

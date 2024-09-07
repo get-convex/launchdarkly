@@ -12,7 +12,7 @@ export const initializeHttp = (
     if (validateHeaderResult) {
       return validateHeaderResult;
     }
-    const body = await req.json();
+    const body = await req.text();
     await ctx.runMutation(component.store.write, {
       payload: body,
     });

@@ -35,12 +35,7 @@ declare const fullApi: ApiFromModules<{
 declare const fullApiWithMounts: typeof fullApi & {
   store: {
     get: FunctionReference<"query", "public", {}, string | null>;
-    write: FunctionReference<
-      "mutation",
-      "public",
-      { payload: { flags: any; segments: any } },
-      null
-    >;
+    write: FunctionReference<"mutation", "public", { payload: string }, null>;
   };
   tokens: {
     validate: FunctionReference<

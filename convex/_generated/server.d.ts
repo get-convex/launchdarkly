@@ -157,7 +157,7 @@ export declare const components: {
       write: FunctionReference<
         "mutation",
         "internal",
-        { payload: { flags: any; segments: any } },
+        { payload: string },
         null
       >;
     };

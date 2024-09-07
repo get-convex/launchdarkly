@@ -36,10 +36,7 @@ type LaunchDarklyStore = {
     "mutation",
     "internal",
     {
-      payload: {
-        flags: any;
-        segments: any;
-      };
+      payload: string;
     }
   >;
 };

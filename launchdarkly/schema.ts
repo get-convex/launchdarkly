@@ -6,6 +6,9 @@ export default defineSchema({
     token: v.string(),
   }),
   payloads: defineTable({
+    kind: v.optional(v.string()),
+    key: v.optional(v.string()),
+    version: v.optional(v.number()),
     payload: v.any(),
-  }),
+  }).index("kind_key", ["kind", "key"]),
 });
