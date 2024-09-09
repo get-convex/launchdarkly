@@ -1,6 +1,7 @@
 import { components, query } from "./_generated/server";
-import { init } from "../sdk/LDClient";
+import { init } from "../../sdk/LDClient";
 import { v } from "convex/values";
+
 export const listFlags = query({
   args: { context: v.string() },
   handler: async (ctx, args) => {
