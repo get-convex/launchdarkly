@@ -32,7 +32,7 @@ declare const fullApi: ApiFromModules<{
   store: typeof store;
   tokens: typeof tokens;
 }>;
-declare const fullApiWithMounts: typeof fullApi & {
+export type Mounts = {
   store: {
     get: FunctionReference<
       "query",
@@ -57,6 +57,10 @@ declare const fullApiWithMounts: typeof fullApi & {
     >;
   };
 };
+// For now fullApiWithMounts is only fullApi which provides
+// jump-to-definition in component client code.
+// Use Mounts for the same type without the inference.
+declare const fullApiWithMounts: typeof fullApi;
 
 export declare const api: FilterApi<
   typeof fullApiWithMounts,

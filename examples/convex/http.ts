@@ -1,5 +1,5 @@
 import { httpRouter } from "convex/server";
-import { initializeHttp } from "../launchdarkly/initializeHttp";
+import { initializeHttp } from "launchdarkly-component";
 import { components } from "./_generated/server";
 
 const http = httpRouter();
