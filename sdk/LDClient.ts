@@ -2,7 +2,6 @@ import {
   type Platform,
   LDLogger,
 } from "@launchdarkly/js-server-sdk-common-edge";
-import BasicLogger from "@launchdarkly/js-sdk-common/dist/logging/BasicLogger";
 import {
   type LDOptions,
   LDClientImpl,
@@ -17,9 +16,6 @@ import ConvexCrypto from "./crypto";
 import { FeatureStore } from "./FeatureStore";
 
 const convex = "Convex";
-
-// @ts-expect-error The typing is broken
-const RealBasicLogger = BasicLogger.default as typeof BasicLogger;
 
 export type LaunchDarklyComponent = {
   tokens: {
@@ -62,12 +58,13 @@ export const init = ({
   application,
   sdkKey = convex,
 }: BaseSDKParams): LDClientImpl => {
-  const logger = RealBasicLogger.get();
+  const logger = console;
+
   const featureStore = new FeatureStore(ctx, store, convex, logger);
 
   const ldOptions: LDOptions = {
     featureStore,
-    ...createOptions(),
+    ...createOptions(logger),
   };
 
   if (application) {
@@ -90,7 +87,7 @@ export const init = ({
   return client;
 };
 
-const createOptions = (): LDOptions => ({
+const createOptions = (logger: LDLogger): LDOptions => ({
   // Don't send any events to LaunchDarkly
   // TODO: Implement by storing the events in Convex instead and sending them in batch via a scheduled job.
   sendEvents: false,
@@ -110,7 +107,7 @@ const createOptions = (): LDOptions => ({
     };
   },
 
-  logger: RealBasicLogger.get(),
+  logger,
 
   wrapperName: convex,
   wrapperVersion: "0.0.1",

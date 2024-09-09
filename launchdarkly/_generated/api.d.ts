@@ -46,6 +46,7 @@ export type Mounts = {
       { kind: "flags" | "segments" },
       Array<string>
     >;
+    initialized: FunctionReference<"query", "public", {}, boolean>;
     write: FunctionReference<"mutation", "public", { payload: string }, null>;
   };
   tokens: {

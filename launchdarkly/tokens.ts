@@ -1,5 +1,21 @@
 import { v } from "convex/values";
-import { internalMutation, query } from "./_generated/server";
+import { internalAction, internalMutation, query } from "./_generated/server";
+import { internal } from "./_generated/api";
+
+export const generate = internalAction({
+  args: {},
+  returns: v.string(),
+  handler: async (ctx) => {
+    const token = crypto.randomUUID();
+    await ctx.runMutation(internal.tokens.store, {
+      token,
+    });
+    console.log(
+      `Copy the token below (without quotes) into the "Component API Token" field of the LaunchDarkly integration form.`
+    );
+    return token;
+  },
+});
 
 export const store = internalMutation({
   args: { token: v.string() },
@@ -14,9 +30,6 @@ export const store = internalMutation({
     ctx.db.insert("tokens", {
       token,
     });
-    console.log(
-      `Copy your token into the "Component API Token" field of the LaunchDarkly integration form.`
-    );
     return token;
   },
 });

@@ -12,6 +12,8 @@ import { LaunchDarklyStore } from "./LDClient";
 import { GenericCtx } from "../launchdarkly/_generated/server";
 
 export class FeatureStore implements LDFeatureStore {
+  private gotAllFlags = false;
+  private gotAllSegments = false;
   private readonly cache: {
     flags: LDFeatureStoreKindData;
     segments: LDFeatureStoreKindData;
@@ -39,7 +41,14 @@ export class FeatureStore implements LDFeatureStore {
       throw new Error(`Unsupported DataKind: ${namespace}`);
     }
 
-    if (this.cache[kindKey] && this.cache[kindKey][dataKey]) {
+    if (!(await this.ctx.runQuery(this.store.initialized))) {
+      this.logger.error(
+        "The LaunchDarkly data store has not been initialized. Is your integration configuration correct?"
+      );
+    }
+
+    if (this.cache[kindKey][dataKey]) {
+      this.logger.debug(`Retrieving ${dataKey} from ${kindKey} cache`);
       callback(this.cache[kindKey][dataKey]);
       return;
     }
@@ -73,7 +82,14 @@ export class FeatureStore implements LDFeatureStore {
       throw new Error(`Unsupported DataKind: ${namespace}`);
     }
 
-    if (this.cache[kindKey]) {
+    if (!(await this.ctx.runQuery(this.store.initialized))) {
+      this.logger.error(
+        "The LaunchDarkly data store has not been initialized. Is your integration configuration correct?"
+      );
+    }
+
+    if (kindKey === "flags" ? this.gotAllFlags : this.gotAllSegments) {
+      this.logger.debug(`Retrieving all from ${kindKey} cache`);
       callback(this.cache[kindKey]);
       return;
     }
@@ -94,6 +110,11 @@ export class FeatureStore implements LDFeatureStore {
       }, {} as LDFeatureStoreKindData);
 
       this.cache[kindKey] = reduced;
+      if (kindKey === "flags") {
+        this.gotAllFlags = true;
+      } else {
+        this.gotAllSegments = true;
+      }
 
       callback(reduced);
     } catch (err: unknown) {
@@ -105,7 +126,8 @@ export class FeatureStore implements LDFeatureStore {
   async initialized(
     callback: (isInitialized: boolean) => void = noop
   ): Promise<void> {
-    callback(true);
+    const initialized = await this.ctx.runQuery(this.store.initialized);
+    callback(initialized);
   }
 
   init(_: LDFeatureStoreDataStorage, callback: () => void): void {
