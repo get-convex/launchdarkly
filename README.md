@@ -131,11 +131,11 @@ import launchdarkly from "../../launchdarkly/convex.config";
 const app = defineApp();
 
 app.use(launchdarkly, {
-  name: "first-project",
+  name: "first",
 });
 
 app.use(launchdarkly, {
-  name: "second-project",
+  name: "second",
 });
 
 export default app;
@@ -144,8 +144,8 @@ export default app;
 Then you can generate a separate shared secret for each environment:
 
 ```bash
-npx convex run --component-path=launchdarkly/first-project tokens:generate
-npx convex run --component-path=launchdarkly/second-project tokens:generate
+npx convex run --component-path=launchdarkly/first tokens:generate
+npx convex run --component-path=launchdarkly/second tokens:generate
 ```
 
 These secrets can be plugged into seperate integration configurations in LaunchDarkly.
