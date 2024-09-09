@@ -24,7 +24,7 @@ export class FeatureStore implements LDFeatureStore {
 
   constructor(
     private readonly ctx: GenericCtx,
-    private readonly store: LaunchDarklyStore<"public">,
+    private readonly store: LaunchDarklyStore,
     private readonly description: string,
     private logger: LDLogger
   ) {}

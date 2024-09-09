@@ -21,22 +21,29 @@ export type LaunchDarklyComponent = {
   tokens: {
     validate: FunctionReference<"query", "internal", { token?: string }>;
   };
-  store: LaunchDarklyStore<"internal">;
+  store: LaunchDarklyStore;
 };
 
-export type LaunchDarklyStore<T extends "internal" | "public"> = {
+export type LaunchDarklyStore = {
+  initialized: FunctionReference<
+    "query",
+    "internal",
+    Record<string, never>,
+    boolean
+  >;
+
   get: FunctionReference<
     "query",
-    T,
+    "internal",
     { kind: string; key: string },
     string | null
   >;
 
-  getAll: FunctionReference<"query", T, { kind: string }, string[]>;
+  getAll: FunctionReference<"query", "internal", { kind: string }, string[]>;
 
   write: FunctionReference<
     "mutation",
-    T,
+    "internal",
     {
       payload: string;
     }
@@ -45,7 +52,7 @@ export type LaunchDarklyStore<T extends "internal" | "public"> = {
 
 type BaseSDKParams = {
   ctx: GenericCtx;
-  store: LaunchDarklyStore<"public">;
+  store: LaunchDarklyStore;
   application?: LDOptions["application"];
   // Only necessary if using secureModeHash.
   // The Convex LDClient otherwise disregards the sdkKey.
