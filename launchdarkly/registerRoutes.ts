@@ -2,7 +2,7 @@ import { AnyDataModel, GenericActionCtx, HttpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { LaunchDarklyComponent } from "../sdk/LDClient";
 
-export const initializeHttp = (
+export const registerRoutes = (
   component: LaunchDarklyComponent,
   http: HttpRouter,
   path = "/ld/webhook"

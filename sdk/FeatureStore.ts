@@ -22,7 +22,7 @@ export class FeatureStore implements LDFeatureStore {
 
   constructor(
     private readonly ctx: GenericCtx,
-    private readonly store: LaunchDarklyStore,
+    private readonly store: LaunchDarklyStore<"public">,
     private readonly description: string,
     private logger: LDLogger
   ) {}
