@@ -9,7 +9,7 @@ type SupportedOutputEncoding = "base64" | "hex";
 
 // This is very similar to the Akamai SDK's crypto implementation, but does not import crypto.
 // The convex runtime cannot import crypto, but always includes it's own implementation.
-export default class EdgeCrypto implements Crypto {
+export default class ConvexCrypto implements Crypto {
   createHash(algorithm: SupportedHashAlgorithm): Hasher {
     return new CryptoJSHasher(algorithm);
   }

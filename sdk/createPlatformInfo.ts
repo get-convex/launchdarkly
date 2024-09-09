@@ -1,8 +1,8 @@
-import {
+import type {
   Info,
   PlatformData,
   SdkData,
-} from "@launchdarkly/akamai-edgeworker-sdk-common";
+} from "@launchdarkly/js-server-sdk-common-edge";
 
 class ConvexPlatformInfo implements Info {
   platformData(): PlatformData {
@@ -13,9 +13,9 @@ class ConvexPlatformInfo implements Info {
 
   sdkData(): SdkData {
     return {
-      name: "@launchdarkly/convex-server-sdk",
+      name: "@convex/launchdarkly-component",
       version: "__LD_VERSION__",
-      userAgentBase: "ConvexEdgeSdk",
+      userAgentBase: "ConvexSdk",
     };
   }
 }

@@ -2,37 +2,37 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { GenericMutationCtx } from "convex/server";
 import { DataModel } from "./_generated/dataModel";
-import { LDFeatureStoreItem } from "@launchdarkly/js-server-sdk-common-edge";
+import { LDFeatureStoreKindData } from "@launchdarkly/js-server-sdk-common-edge";
 
 export const get = query({
-  args: {},
+  args: {
+    kind: v.union(v.literal("flags"), v.literal("segments")),
+    key: v.string(),
+  },
   returns: v.union(v.string(), v.null()),
-  handler: async (ctx) => {
-    const items = await ctx.db.query("payloads").collect();
-    const payload: {
-      flags: Record<string, LDFeatureStoreItem>;
-      segments: Record<string, LDFeatureStoreItem>;
-    } = { flags: {}, segments: {} };
-
-    for (const item of items) {
-      const { _id, kind, key, payload: value } = item;
-      if (key === undefined) {
-        console.error("Payload missing key for item: ", _id);
-        continue;
-      }
-      if (kind === undefined || (kind !== "flags" && kind !== "segments")) {
-        console.error("Payload missing kind for item: ", _id);
-        continue;
-      }
-
-      if (payload[kind][key] !== undefined) {
-        console.error("Duplicate payload key: ", kind, key);
-        continue;
-      }
-      payload[kind][key] = JSON.parse(value);
+  handler: async (ctx, { kind, key }) => {
+    const item = await ctx.db
+      .query("payloads")
+      .withIndex("kind_key", (q) => q.eq("kind", kind).eq("key", key))
+      .first();
+    if (!item) {
+      return null;
     }
+    return item.payload;
+  },
+});
 
-    return JSON.stringify(payload);
+export const getAll = query({
+  args: {
+    kind: v.union(v.literal("flags"), v.literal("segments")),
+  },
+  returns: v.array(v.string()),
+  handler: async (ctx, { kind }) => {
+    const items = await ctx.db
+      .query("payloads")
+      .withIndex("kind_key", (q) => q.eq("kind", kind))
+      .collect();
+    return items.map((i) => i.payload);
   },
 });
 
@@ -43,8 +43,6 @@ export const write = mutation({
   returns: v.null(),
   handler: async (ctx, { payload }) => {
     const { flags, segments } = JSON.parse(payload);
-    console.log(flags);
-    console.log(segments);
     Promise.all([
       upsertItems(ctx, "flags", flags),
       upsertItems(ctx, "segments", segments),
@@ -55,7 +53,7 @@ export const write = mutation({
 async function upsertItems(
   ctx: GenericMutationCtx<DataModel>,
   kind: "flags" | "segments",
-  items: Record<string, LDFeatureStoreItem>
+  items: LDFeatureStoreKindData
 ) {
   const existingItems = await ctx.db
     .query("payloads")
