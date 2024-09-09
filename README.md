@@ -49,11 +49,11 @@ npm run dev
 - [x] Sync with webhooks or streaming instead of polling
 - [x] Secure mode
 - [x] Handle limits on convex document size
+- [x] Performance optimizations (only loading the necessary flags and segments for an evaluation to preserve bandwidth within the Convex runtime).
 - [ ] Replace Authorization header with X-LD-Signature ([PR here](https://github.com/launchdarkly/integration-framework/pull/80))
 
 ## Out of scope for MVP
 
 - Sending events and diagnostic telemetry to LaunchDarkly
 - Big segments support
-- Performance optimizations (only loading the necessary flags and segments for an evaluation to preserve bandwidth within the Convex runtime).
 - Handling payloads greater than the maximum Convex function argument size (8MB). These will be accepted at the HTTP-webhook level, but fail when sent to the Convex component to be written for storage.
