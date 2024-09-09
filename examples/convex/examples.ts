@@ -11,6 +11,10 @@ export const listFlags = query({
     });
     try {
       const context = JSON.parse(args.context);
+      // This first request queries the data store
+      console.log((await client.allFlagsState(context)).allValues());
+
+      // This second request queries the in-memory cache.
       const res = await client.allFlagsState(context);
       return { success: true, flags: res.allValues() };
     } catch (e: unknown) {

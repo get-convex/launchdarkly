@@ -4,6 +4,14 @@ import { GenericMutationCtx } from "convex/server";
 import { DataModel } from "./_generated/dataModel";
 import { LDFeatureStoreKindData } from "@launchdarkly/js-server-sdk-common-edge";
 
+export const initialized = query({
+  args: {},
+  returns: v.boolean(),
+  handler: async (ctx) => {
+    return (await ctx.db.query("payloads").first()) !== null;
+  },
+});
+
 export const get = query({
   args: {
     kind: v.union(v.literal("flags"), v.literal("segments")),

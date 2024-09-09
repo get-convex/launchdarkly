@@ -165,6 +165,7 @@ export declare const components: {
         { kind: "flags" | "segments" },
         Array<string>
       >;
+      initialized: FunctionReference<"query", "internal", {}, boolean>;
       write: FunctionReference<
         "mutation",
         "internal",
