@@ -8,9 +8,8 @@ import type {
 } from "@launchdarkly/js-server-sdk-common";
 import { noop } from "@launchdarkly/js-server-sdk-common";
 import serialization from "@launchdarkly/js-server-sdk-common/dist/store/serialization";
-import { GenericQueryCtx } from "convex/server";
 import { LaunchDarklyStore } from "./LDClient";
-import { DataModel } from "../launchdarkly/_generated/dataModel";
+import { GenericCtx } from "../launchdarkly/_generated/server";
 
 export class FeatureStore implements LDFeatureStore {
   private readonly cache: {
@@ -22,7 +21,7 @@ export class FeatureStore implements LDFeatureStore {
   };
 
   constructor(
-    private readonly ctx: GenericQueryCtx<DataModel>,
+    private readonly ctx: GenericCtx,
     private readonly store: LaunchDarklyStore,
     private readonly description: string,
     private logger: LDLogger
