@@ -3,12 +3,6 @@ import launchdarkly from "../../launchdarkly/convex.config";
 
 const app = defineApp();
 
-app.use(launchdarkly, {
-  name: "first-project",
-});
-
-app.use(launchdarkly, {
-  name: "second-project",
-});
+app.use(launchdarkly);
 
 export default app;
