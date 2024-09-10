@@ -152,19 +152,6 @@ export type DatabaseWriter = GenericDatabaseWriter<DataModel>;
 
 export declare const components: {
   launchdarkly: {
-    initialize: {
-      poll: FunctionReference<
-        "action",
-        "internal",
-        {
-          baseUri?: string;
-          intervalSeconds?: number;
-          sdkKey: string;
-          timeoutSeconds?: number;
-        },
-        any
-      >;
-    };
     store: {
       get: FunctionReference<
         "query",

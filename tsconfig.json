@@ -18,5 +18,5 @@
     "outDir": "./dist",
     "skipLibCheck": true
   },
-  "include": ["sdk", "component", "index.ts"]
+  "include": ["src"]
 }

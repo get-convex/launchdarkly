@@ -13,6 +13,7 @@
 import type * as registerRoutes from "../registerRoutes.js";
 import type * as store from "../store.js";
 import type * as tokens from "../tokens.js";
+import type * as typeHelpers from "../typeHelpers.js";
 
 import type {
   ApiFromModules,
@@ -31,6 +32,7 @@ declare const fullApi: ApiFromModules<{
   registerRoutes: typeof registerRoutes;
   store: typeof store;
   tokens: typeof tokens;
+  typeHelpers: typeof typeHelpers;
 }>;
 export type Mounts = {
   store: {

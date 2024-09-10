@@ -4,26 +4,23 @@ import {
   customAction,
 } from "convex-helpers/server/customFunctions";
 
-import {
-  query,
-  mutation,
-  action,
-  GenericCtx,
-} from "../component/_generated/server";
+import { query, mutation, action } from "../component/_generated/server";
 
 import { init, LaunchDarklyComponent } from "./LDClient";
+import { RunQueryCtx } from "../component/typeHelpers";
 
-const input = (component: LaunchDarklyComponent) => async (ctx: GenericCtx) => {
-  const launchdarkly = init({
-    ctx,
-    store: component.store,
-  });
-  const contextWithLd = {
-    ...ctx,
-    launchdarkly,
+const input =
+  (component: LaunchDarklyComponent) => async (ctx: RunQueryCtx) => {
+    const launchdarkly = init({
+      ctx,
+      store: component.store,
+    });
+    const contextWithLd = {
+      ...ctx,
+      launchdarkly,
+    };
+    return { ctx: contextWithLd, args: {} };
   };
-  return { ctx: contextWithLd, args: {} };
-};
 
 export function withLaunchDarkly(
   component: LaunchDarklyComponent,

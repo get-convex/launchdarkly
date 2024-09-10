@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["sdk", "component", "index.ts"],
+  "include": ["src"],
   "exclude": ["./package.json"],
   "compilerOptions": {
     "outDir": "./dist/esm"

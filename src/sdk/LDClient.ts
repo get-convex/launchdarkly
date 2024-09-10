@@ -9,11 +9,10 @@ import {
 
 import { FunctionReference } from "convex/server";
 
-import { GenericCtx } from "../component/_generated/server";
-
 import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";
 import { FeatureStore } from "./FeatureStore";
+import { RunQueryCtx } from "../component/typeHelpers";
 
 const convex = "Convex";
 
@@ -51,7 +50,7 @@ export type LaunchDarklyStore = {
 };
 
 type BaseSDKParams = {
-  ctx: GenericCtx;
+  ctx: RunQueryCtx;
   store: LaunchDarklyStore;
   application?: LDOptions["application"];
   // Only necessary if using secureModeHash.

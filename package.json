@@ -14,7 +14,7 @@
   },
   "files": [
     "dist",
-    "component"
+    "src"
   ],
   "dependencies": {
     "@launchdarkly/js-server-sdk-common-edge": "^2.3.8",
@@ -46,16 +46,13 @@
     },
     "./convex.config.js": {
       "import": {
+        "@convex-dev/component-source": "./src/component/convex.config.ts",
         "types": "./dist/esm/component/convex.config.d.ts",
         "default": "./dist/esm/component/convex.config.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/component/convex.config.d.ts",
-        "default": "./dist/commonjs/component/convex.config.js"
       }
     }
   },
-  "main": "./dist/commonjs/client/index.js",
-  "types": "./dist/commonjs/client/index.d.ts",
-  "module": "./dist/esm/client/index.js"
+  "main": "./dist/commonjs/index.js",
+  "types": "./dist/commonjs/index.d.ts",
+  "module": "./dist/esm/index.js"
 }
