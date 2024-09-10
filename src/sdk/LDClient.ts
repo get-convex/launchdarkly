@@ -1,115 +1,61 @@
 import {
-  type Platform,
-  LDLogger,
-} from "@launchdarkly/js-server-sdk-common-edge";
-import {
   type LDOptions,
+  type Platform,
+  type LDLogger,
   LDClientImpl,
 } from "@launchdarkly/js-server-sdk-common";
-
-import { FunctionReference } from "convex/server";
 
 import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";
 import { FeatureStore } from "./FeatureStore";
 import { EventProcessor } from "./EventProcessor";
-import { RunMutationCtx, RunQueryCtx } from "../component/typeHelpers";
+import {
+  LaunchDarklyComponent,
+  RunMutationCtx,
+  RunQueryCtx,
+} from "../component/types";
 
 const convex = "Convex";
 
-export type LaunchDarklyComponent = {
-  tokens: {
-    validate: FunctionReference<"query", "internal", { token?: string }>;
-  };
-  store: LaunchDarklyStore;
-  events: LaunchDarklyEventStore;
-};
-
-export type LaunchDarklyEventStore = {
-  storeEvents: FunctionReference<
-    "mutation",
-    "internal",
-    { payloads: string[]; sdkKey: string }
-  >;
-};
-
-export type LaunchDarklyStore = {
-  initialized: FunctionReference<
-    "query",
-    "internal",
-    Record<string, never>,
-    boolean
-  >;
-
-  get: FunctionReference<
-    "query",
-    "internal",
-    { kind: string; key: string },
-    string | null
-  >;
-
-  getAll: FunctionReference<"query", "internal", { kind: string }, string[]>;
-
-  write: FunctionReference<
-    "mutation",
-    "internal",
-    {
-      payload: string;
-    }
-  >;
-};
-
-type BaseSDKParams = {
-  ctx: RunQueryCtx;
+export type BaseSDKParams = {
   component: LaunchDarklyComponent;
-  application?: LDOptions["application"];
   sdkKey: string;
-  sendEvents?: boolean;
+  options?: {
+    application?: LDOptions["application"];
+    updateProcessor?: LDOptions["updateProcessor"];
+  };
 } & (
   | { ctx: RunQueryCtx; sendEvents: false }
   | { ctx: RunMutationCtx; sendEvents?: boolean }
 );
 
-export const init = ({
-  ctx,
-  component,
-  sendEvents,
-  application,
-  sdkKey,
-}: BaseSDKParams): LDClientImpl => {
-  const { store, events } = component;
-  const logger = console;
+export class LDClient extends LDClientImpl {
+  constructor({ ctx, sdkKey, component, options, sendEvents }: BaseSDKParams) {
+    const { store } = component;
+    const logger = console;
 
-  const featureStore = new FeatureStore(ctx, store, convex, logger);
+    const featureStore = new FeatureStore(ctx, store, convex, logger);
 
-  const ldOptions: LDOptions = {
-    featureStore,
-    ...createOptions(logger),
-  };
+    const ldOptions: LDOptions = {
+      featureStore,
+      ...createOptions(logger),
+      ...(options || {}),
+    };
 
-  if (application) {
-    ldOptions.application = application;
+    const platform: Platform = {
+      info: createPlatformInfo(),
+      crypto: new ConvexCrypto(),
+      // @ts-expect-error We do not allow LDClient to send requests inside of the Convex runtime.
+      requests: undefined,
+    };
+
+    if ("runMutation" in ctx && sendEvents) {
+      // @ts-expect-error Accessing internals
+      client.eventProcessor = new EventProcessor(events, ctx, sdkKey);
+    }
+    super(sdkKey || convex, platform, ldOptions, createCallbacks(logger));
   }
-
-  const platform: Platform = {
-    info: createPlatformInfo(),
-    crypto: new ConvexCrypto(),
-    // @ts-expect-error We do not allow LDClient to send requests inside of the Convex runtime.
-    requests: undefined,
-  };
-
-  const client: LDClientImpl = new LDClientImpl(
-    sdkKey,
-    platform,
-    ldOptions,
-    createCallbacks(logger)
-  );
-  if ("runMutation" in ctx && sendEvents) {
-    // @ts-expect-error Accessing internals
-    client.eventProcessor = new EventProcessor(events, ctx, sdkKey);
-  }
-  return client;
-};
+}
 
 export const createOptions = (logger: LDLogger): LDOptions => ({
   // Don't send any events to LaunchDarkly

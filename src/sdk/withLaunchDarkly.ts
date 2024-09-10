@@ -6,25 +6,35 @@ import {
 
 import { query, mutation, action } from "../component/_generated/server";
 
-import { init, LaunchDarklyComponent } from "./LDClient";
-import { RunMutationCtx, RunQueryCtx } from "../component/typeHelpers";
+import { BaseSDKParams, LDClient } from "./LDClient";
+import {
+  LaunchDarklyComponent,
+  RunMutationCtx,
+  RunQueryCtx,
+} from "../component/types";
 
 const input =
-  (component: LaunchDarklyComponent, sdkKey: string) =>
+  (
+    component: LaunchDarklyComponent,
+    sdkKey: string,
+    options?: BaseSDKParams["options"]
+  ) =>
   async (ctx: RunQueryCtx | RunMutationCtx) => {
     const isMutation = "runMutation" in ctx;
-    const launchdarkly = init(
+    const launchdarkly = new LDClient(
       isMutation
         ? {
             ctx,
             component,
             sdkKey,
+            options,
             sendEvents: true,
           }
         : {
             ctx,
             component,
             sdkKey,
+            options,
             sendEvents: false,
           }
     );
@@ -38,17 +48,17 @@ const input =
 export function withLaunchDarkly(
   component: LaunchDarklyComponent,
   sdkKey: string,
-  customFunctions = { query, mutation, action }
+  options?: BaseSDKParams["options"]
 ) {
-  const i = input(component, sdkKey);
+  const i = input(component, sdkKey, options);
   const mod = {
     args: {},
     input: i,
   };
 
   return {
-    query: customQuery(customFunctions.query, mod),
-    mutation: customMutation(customFunctions.mutation, mod),
-    action: customAction(customFunctions.action, mod),
+    query: customQuery(query, mod),
+    mutation: customMutation(mutation, mod),
+    action: customAction(action, mod),
   };
 }

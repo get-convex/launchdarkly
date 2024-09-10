@@ -14,7 +14,7 @@ import type * as events from "../events.js";
 import type * as registerRoutes from "../registerRoutes.js";
 import type * as store from "../store.js";
 import type * as tokens from "../tokens.js";
-import type * as typeHelpers from "../typeHelpers.js";
+import type * as types from "../types.js";
 
 import type {
   ApiFromModules,
@@ -34,7 +34,7 @@ declare const fullApi: ApiFromModules<{
   registerRoutes: typeof registerRoutes;
   store: typeof store;
   tokens: typeof tokens;
-  typeHelpers: typeof typeHelpers;
+  types: typeof types;
 }>;
 export type Mounts = {
   events: {

@@ -1,6 +1,6 @@
 import { AnyDataModel, GenericActionCtx, HttpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
-import { LaunchDarklyComponent } from "../sdk/LDClient";
+import { LaunchDarklyComponent } from "./types";
 
 export const registerRoutes = (
   component: LaunchDarklyComponent,

@@ -1,13 +1,9 @@
 import type { Platform, LDOptions } from "@launchdarkly/js-server-sdk-common";
 import { LDClientImpl, Context } from "@launchdarkly/js-server-sdk-common";
-import { RunMutationCtx } from "../component/typeHelpers";
+import { LaunchDarklyEventStore, RunMutationCtx } from "../component/types";
 import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";
-import {
-  createCallbacks,
-  createOptions,
-  LaunchDarklyEventStore,
-} from "./LDClient";
+import { createCallbacks, createOptions } from "./LDClient";
 
 // This is a replacement for the built-in event processor that
 // stores events in the convex component instead of sending them to LaunchDarkly.

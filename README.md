@@ -89,7 +89,7 @@ For "Webhook URL", use your deployment's HTTP Actions URL suffixed with the path
 
 You can now use the LaunchDarkly component in your Convex app. The component provides a `withLaunchDarkly` function, which wrappers your Convex function's context to include the LaunchDarkly SDK.
 
-````typescript
+```typescript
 import { v } from "convex/values";
 import { withLaunchDarkly } from "launchdarkly-component";
 import { components } from "./_generated/server";
@@ -125,29 +125,44 @@ export const listFlagsMutation = mutation({
 });
 ```
 
-#### LaunchDarkly Events
-
-As noted in the example above, queries are unable to send events to LaunchDarkly. If you need would like to have the SDK send events to LaunchDarkly (e.g. flag evaluation insights and for experimentation), you should use LaunchDarkly in a mutation or action instead.
+You may also initialize the LaunchDarkly SDK manually:
 
 ```typescript
+import { LDClient } from "launchdarkly-component";
 
-## Example app
+export const myQuery = query({
+  args: {},
+  handler: async ({ ctx }) => {
+    const launchdarkly = new LDClient({
+      ctx,
+      component: components.launchdarkly,
+    });
+    const res = await launchdarkly.allFlagsState({ key: "myUser" });
+    return res.allFlagValues();
+  },
+});
+```
+
+#### LaunchDarkly Events
+
+As noted in the examples above, queries are unable to send events to LaunchDarkly. If you need would like to have the SDK send events to LaunchDarkly (e.g. flag evaluation insights and for experimentation), you should use LaunchDarkly in a mutation or action instead.
+
+## Example App
 
 You can run the example in the `examples` folder to see how the LaunchDarkly component works.
 
 ```bash
 cd example
 npm install
-````
+```
 
 Follow the instructions above for [configuring the LaunchDarkly integration](#configure-the-launchdarkly-integration) and then run the example:
 
-````bash
 In seperate terminals:
 
 ```bash
 npx convex dev
-````
+```
 
 ```bash
 npm run dev
@@ -187,7 +202,7 @@ export default app;
 
 Be sure to also update your `http.ts` file to register the routes for each component:
 
-````typescript
+```typescript
 // http.ts
 import { httpRouter } from "convex/server";
 import { registerRoutes } from "launchdarkly-component";
@@ -201,13 +216,12 @@ registerRoutes(components.second, http, "/ld/second");
 export default http;
 ```
 
-
 Then you can generate a separate shared secret for each environment:
 
 ```bash
 npx convex run --component-path=first tokens:generate
 npx convex run --component-path=second tokens:generate
-````
+```
 
 These secrets can be plugged into seperate integration configurations in LaunchDarkly.
 
@@ -222,17 +236,17 @@ const { query: secondQuery } = withLaunchDarkly(components.second);
 You cannot currently use the `withLaunchDarkly` helper with multiple components in the same Convex function. However, you can manually initialize the LaunchDarkly SDK as follows:
 
 ```typescript
-import { init } from "launchdarkly-component/sdk/LDClient";
+import { LDClient } from "launchdarkly-component";
 
 export const myQuery = query({
   args: {},
   handler: async ({ ctx }) => {
-    const launchdarklyFirst = init({
+    const launchdarklyFirst = new LDClient({
       ctx,
       store: components.first.store,
     });
 
-    const launchdarklySecond = init({
+    const launchdarklySecond = new LDClient({
       ctx,
       store: components.second.store,
     });
