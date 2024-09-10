@@ -108,11 +108,6 @@ export const init = ({
     // @ts-expect-error Accessing internals
     client.eventProcessor = new EventProcessor(events, ctx, sdkKey);
   }
-  client.track(
-    "convex-launchdarkly",
-    { key: "123" },
-    { convex: "launchdarkly" }
-  );
   return client;
 };
 
