@@ -77,13 +77,17 @@ Each of your Convex deployments (e.g. Production and other developer's environme
 
 Select a name and environment for the integration.
 
-For "Webhook URL", use your deployment's HTTP Actions URL suffixed with the path provided to the `registerRoutes` call in your `http.ts` file. By default, the path is `/ld/webhook`. You can retrieve your HTTP Actions URL on the [Deployment Settings page](https://dashboard.convex.dev/deployment/settings) of the Convex dashboard. Example: https://techno-kitten-138.convex.site/ld/webhook
-
-_Note!_ If you are developing using the `--local` flag, you will need to configure the webhook URL to point to your local development server's HTTP Actions port. You can use a service like [ngrok](https://ngrok.com/) to expose your local server to the internet.
-
 For "Component API Token", use the shared secret you generated earlier.
 
 Once you save, you can open the integration form again and click the Validate button to test the connection. If you encounter errors, check the logs page in the Convex dashboard for more information.
+
+For "Webhook URL", use your deployment's HTTP Actions URL suffixed with the path provided to the `registerRoutes` call in your `http.ts` file. By default, the path is `/ld/webhook`. You can retrieve your HTTP Actions URL on the [Deployment Settings page](https://dashboard.convex.dev/deployment/settings) of the Convex dashboard. Example: https://techno-kitten-138.convex.site/ld/webhook
+
+_Note!_ If you are developing using the `--local` flag, you have a couple options for syncing flags.
+
+1. Configure the webhook URL to point to your local development server's HTTP Actions port. You can use a service like [ngrok](https://ngrok.com/) to expose your local server to the internet.
+
+2. Use the component's built-in `initialize:poll` function to sync your flags. This will request your LaunchDarkly flag data directly from LaunchDarkly's API. See [Polling flags during local development](#polling-flags-during-local-development) for more information.
 
 ### Using the LaunchDarkly component
 
@@ -219,6 +223,32 @@ export const myQuery = query({
   },
 });
 ```
+
+## Polling flags during local development
+
+The LaunchDarkly component includes a built-in `initialize:poll` function that can be used to sync your flags during local development. This function will request your LaunchDarkly flag data directly from LaunchDarkly's API, and can optionally be configured to poll at a regular interval.
+
+To use `initialize:poll`, visit the Convex dashboard for your development deployment, and open the function runner by clicking on the "fn" button on the bottom-right of the screen.
+
+Enter your LaunchDarkly environment's SDK key into the `sdkKey` argument, and click "Run Action". This will sync your flags to your Convex deployment.
+
+![Sync flags to your local environment](./images/poll-from-dashboard.png)
+
+To automatically poll on a regular interval, you may add the `intervalSeconds` argument to the function call. For example, to poll every 1 minute:
+
+```typescript
+{
+  sdkKey: "YOUR_SDK_KEY_HERE",
+  intervalSeconds: 60,
+}
+```
+
+The minimum value for `intervalSeconds` is 30 seconds. `initialize:poll` is not meant to be used as a production solution, and should only be used for local development. This large minimum value is to avoid accidental misuse of the LaunchDarkly API.
+
+Other arguments include:
+
+- `timeoutSeconds` - The maximum time to wait for the LaunchDarkly API to respond. The default is 5 seconds.
+- `baseUri` - The base URI for the LaunchDarkly server. Defaults to `https://app.launchdarkly.com`.
 
 ## Unsupported features
 

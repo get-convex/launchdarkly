@@ -12,7 +12,6 @@
 
 import {
   ActionBuilder,
-  AnyComponents,
   HttpActionBuilder,
   MutationBuilder,
   QueryBuilder,
@@ -21,14 +20,8 @@ import {
   GenericQueryCtx,
   GenericDatabaseReader,
   GenericDatabaseWriter,
-  FunctionReference,
 } from "convex/server";
 import type { DataModel } from "./dataModel.js";
-
-type GenericCtx =
-  | GenericActionCtx<DataModel>
-  | GenericMutationCtx<DataModel>
-  | GenericQueryCtx<DataModel>;
 
 /**
  * Define a query in this Convex app's public API.
@@ -149,52 +142,5 @@ export type DatabaseReader = GenericDatabaseReader<DataModel>;
  * for the guarantees Convex provides your functions.
  */
 export type DatabaseWriter = GenericDatabaseWriter<DataModel>;
-
-export declare const components: {
-  launchdarkly: {
-    initialize: {
-      poll: FunctionReference<
-        "action",
-        "internal",
-        {
-          baseUri?: string;
-          intervalSeconds?: number;
-          sdkKey: string;
-          timeoutSeconds?: number;
-        },
-        any
-      >;
-    };
-    store: {
-      get: FunctionReference<
-        "query",
-        "internal",
-        { key: string; kind: "flags" | "segments" },
-        string | null
-      >;
-      getAll: FunctionReference<
-        "query",
-        "internal",
-        { kind: "flags" | "segments" },
-        Array<string>
-      >;
-      initialized: FunctionReference<"query", "internal", {}, boolean>;
-      write: FunctionReference<
-        "mutation",
-        "internal",
-        { payload: string },
-        null
-      >;
-    };
-    tokens: {
-      validate: FunctionReference<
-        "query",
-        "internal",
-        { token?: string },
-        { error?: string; success: boolean }
-      >;
-    };
-  };
-};
 
 /* prettier-ignore-end */
