@@ -9,7 +9,7 @@ import {
   mutation,
   action,
   GenericCtx,
-} from "../launchdarkly/_generated/server";
+} from "../component/_generated/server";
 
 import { init, LaunchDarklyComponent } from "./LDClient";
 

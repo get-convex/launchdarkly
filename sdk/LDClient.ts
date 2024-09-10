@@ -9,7 +9,7 @@ import {
 
 import { FunctionReference } from "convex/server";
 
-import { GenericCtx } from "../launchdarkly/_generated/server";
+import { GenericCtx } from "../component/_generated/server";
 
 import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";

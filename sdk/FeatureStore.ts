@@ -9,7 +9,7 @@ import type {
 import { noop } from "@launchdarkly/js-server-sdk-common";
 import serialization from "@launchdarkly/js-server-sdk-common/dist/store/serialization";
 import { LaunchDarklyStore } from "./LDClient";
-import { GenericCtx } from "../launchdarkly/_generated/server";
+import { GenericCtx } from "../component/_generated/server";
 
 export class FeatureStore implements LDFeatureStore {
   private gotAllFlags = false;

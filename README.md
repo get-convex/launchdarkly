@@ -112,7 +112,7 @@ export const listFlags = query({
 You can run the example in the `examples` folder to see how the LaunchDarkly component works.
 
 ```bash
-cd examples
+cd example
 npm install
 ````
 
@@ -146,7 +146,7 @@ If you have multiple LaunchDarkly environments, you can create a separate compon
 ```typescript
 // convex/convex.config.js
 import { defineApp } from "convex/server";
-import launchdarkly from "../../launchdarkly/convex.config";
+import launchdarkly from "launchdarkly-component";
 
 const app = defineApp();
 
