@@ -1,21 +1,19 @@
-import { components, query } from "./_generated/server";
-import { init } from "../../sdk/LDClient";
 import { v } from "convex/values";
+import { withLaunchDarkly } from "launchdarkly-component";
+import { components } from "./_generated/server";
+
+const { query } = withLaunchDarkly(components.launchdarkly);
 
 export const listFlags = query({
   args: { context: v.string() },
   handler: async (ctx, args) => {
-    const client = init({
-      ctx,
-      store: components.launchdarkly.store,
-    });
     try {
       const context = JSON.parse(args.context);
       // This first request queries the data store
-      console.log((await client.allFlagsState(context)).allValues());
+      console.log((await ctx.launchdarkly.allFlagsState(context)).allValues());
 
       // This second request queries the in-memory cache.
-      const res = await client.allFlagsState(context);
+      const res = await ctx.launchdarkly.allFlagsState(context);
       return { success: true, flags: res.allValues() };
     } catch (e: unknown) {
       console.error(e);

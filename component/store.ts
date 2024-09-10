@@ -51,7 +51,7 @@ export const write = mutation({
   returns: v.null(),
   handler: async (ctx, { payload }) => {
     const { flags, segments } = JSON.parse(payload);
-    Promise.all([
+    await Promise.all([
       upsertItems(ctx, "flags", flags),
       upsertItems(ctx, "segments", segments),
     ]);

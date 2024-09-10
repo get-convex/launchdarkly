@@ -10,7 +10,7 @@
  * @module
  */
 
-import type * as initializeHttp from "../initializeHttp.js";
+import type * as registerRoutes from "../registerRoutes.js";
 import type * as store from "../store.js";
 import type * as tokens from "../tokens.js";
 
@@ -28,7 +28,7 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  initializeHttp: typeof initializeHttp;
+  registerRoutes: typeof registerRoutes;
   store: typeof store;
   tokens: typeof tokens;
 }>;

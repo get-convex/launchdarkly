@@ -2,17 +2,14 @@ import {
   type Platform,
   LDLogger,
 } from "@launchdarkly/js-server-sdk-common-edge";
-
 import {
   type LDOptions,
   LDClientImpl,
 } from "@launchdarkly/js-server-sdk-common";
 
-import {
-  AnyDataModel,
-  FunctionReference,
-  GenericQueryCtx,
-} from "convex/server";
+import { FunctionReference } from "convex/server";
+
+import { GenericCtx } from "../component/_generated/server";
 
 import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";
@@ -28,7 +25,13 @@ export type LaunchDarklyComponent = {
 };
 
 export type LaunchDarklyStore = {
-  initialized: FunctionReference<"query", "internal">;
+  initialized: FunctionReference<
+    "query",
+    "internal",
+    Record<string, never>,
+    boolean
+  >;
+
   get: FunctionReference<
     "query",
     "internal",
@@ -48,7 +51,7 @@ export type LaunchDarklyStore = {
 };
 
 type BaseSDKParams = {
-  ctx: GenericQueryCtx<AnyDataModel>;
+  ctx: GenericCtx;
   store: LaunchDarklyStore;
   application?: LDOptions["application"];
   // Only necessary if using secureModeHash.
