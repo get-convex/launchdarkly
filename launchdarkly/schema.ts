@@ -6,7 +6,7 @@ export default defineSchema({
     token: v.string(),
   }),
   payloads: defineTable({
-    kind: v.string(),
+    kind: v.union(v.literal("flags"), v.literal("segments")),
     key: v.string(),
     version: v.number(),
     payload: v.string(),

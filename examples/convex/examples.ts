@@ -10,9 +10,15 @@ export const listFlags = query({
       store: components.launchdarkly.store,
     });
     try {
-      const res = await client.allFlagsState(JSON.parse(args.context));
+      const context = JSON.parse(args.context);
+      // This first request queries the data store
+      console.log((await client.allFlagsState(context)).allValues());
+
+      // This second request queries the in-memory cache.
+      const res = await client.allFlagsState(context);
       return { success: true, flags: res.allValues() };
-    } catch (e) {
+    } catch (e: unknown) {
+      console.error(e);
       return { success: false, error: "Invalid LaunchDarkly context." };
     }
   },

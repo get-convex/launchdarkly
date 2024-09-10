@@ -1,24 +1,22 @@
 import {
   type Platform,
-  type EdgeProvider,
+  LDLogger,
 } from "@launchdarkly/js-server-sdk-common-edge";
 
-import BasicLogger from "@launchdarkly/js-sdk-common/dist/logging/BasicLogger";
-
-import type { LDOptions } from "@launchdarkly/js-server-sdk-common";
-
-import LDClient from "@launchdarkly/akamai-edgeworker-sdk-common/dist/api/LDClient";
-import { EdgeFeatureStore } from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore";
-import { buildRootKey } from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore/index";
-import CacheableStoreProvider from "@launchdarkly/akamai-edgeworker-sdk-common/dist/featureStore/cacheableStoreProvider";
+import {
+  type LDOptions,
+  LDClientImpl,
+} from "@launchdarkly/js-server-sdk-common";
 
 import {
   AnyDataModel,
   FunctionReference,
   GenericQueryCtx,
 } from "convex/server";
+
 import { createPlatformInfo } from "./createPlatformInfo";
-import EdgeCrypto from "./crypto";
+import ConvexCrypto from "./crypto";
+import { FeatureStore } from "./FeatureStore";
 
 const convex = "Convex";
 
@@ -29,8 +27,17 @@ export type LaunchDarklyComponent = {
   store: LaunchDarklyStore;
 };
 
-type LaunchDarklyStore = {
-  get: FunctionReference<"query", "internal">;
+export type LaunchDarklyStore = {
+  initialized: FunctionReference<"query", "internal">;
+  get: FunctionReference<
+    "query",
+    "internal",
+    { kind: string; key: string },
+    string | null
+  >;
+
+  getAll: FunctionReference<"query", "internal", { kind: string }, string[]>;
+
   write: FunctionReference<
     "mutation",
     "internal",
@@ -54,23 +61,14 @@ export const init = ({
   store,
   application,
   sdkKey = convex,
-}: BaseSDKParams): LDClient => {
-  // @ts-expect-error CacheableStoreProvider is exported as an ES Module.
-  const cachableStoreProvider = new CacheableStoreProvider.default(
-    convexEdgeProvider(ctx, store),
-    buildRootKey(convex)
-  );
-  const featureStore = new EdgeFeatureStore(
-    cachableStoreProvider,
-    sdkKey,
-    convex,
-    // @ts-expect-error BasicLogger is exported as an ES Module.
-    BasicLogger.default.get()
-  );
+}: BaseSDKParams): LDClientImpl => {
+  const logger = console;
+
+  const featureStore = new FeatureStore(ctx, store, convex, logger);
 
   const ldOptions: LDOptions = {
     featureStore,
-    ...createOptions(),
+    ...createOptions(logger),
   };
 
   if (application) {
@@ -79,34 +77,21 @@ export const init = ({
 
   const platform: Platform = {
     info: createPlatformInfo(),
-    crypto: new EdgeCrypto(),
+    crypto: new ConvexCrypto(),
     // @ts-expect-error We do not allow LDClient to send requests inside of the Convex runtime.
     requests: undefined,
   };
 
-  // @ts-expect-error LDClient is exported as an ES Module.
-  const client: LDClient = new LDClient.default(
+  const client: LDClientImpl = new LDClientImpl(
     sdkKey,
     platform,
     ldOptions,
-    cachableStoreProvider
+    createCallbacks(logger)
   );
   return client;
 };
 
-export function convexEdgeProvider(
-  ctx: GenericQueryCtx<AnyDataModel>,
-  store: BaseSDKParams["store"]
-): EdgeProvider {
-  return {
-    get: async () => {
-      const payload = await ctx.runQuery(store.get);
-      return payload;
-    },
-  };
-}
-
-const createOptions = (): LDOptions => ({
+const createOptions = (logger: LDLogger): LDOptions => ({
   // Don't send any events to LaunchDarkly
   // TODO: Implement by storing the events in Convex instead and sending them in batch via a scheduled job.
   sendEvents: false,
@@ -126,9 +111,18 @@ const createOptions = (): LDOptions => ({
     };
   },
 
-  // @ts-expect-error BasicLogger is exported as an ES Module.
-  logger: BasicLogger.default.get(),
+  logger,
 
   wrapperName: convex,
   wrapperVersion: "0.0.1",
+});
+
+const createCallbacks = (logger: LDLogger) => ({
+  onError: (err: Error) => {
+    logger.error(err.message);
+  },
+  onFailed: () => {},
+  onReady: () => {},
+  onUpdate: () => {},
+  hasEventListeners: () => false,
 });

@@ -34,7 +34,19 @@ declare const fullApi: ApiFromModules<{
 }>;
 export type Mounts = {
   store: {
-    get: FunctionReference<"query", "public", {}, string | null>;
+    get: FunctionReference<
+      "query",
+      "public",
+      { key: string; kind: "flags" | "segments" },
+      string | null
+    >;
+    getAll: FunctionReference<
+      "query",
+      "public",
+      { kind: "flags" | "segments" },
+      Array<string>
+    >;
+    initialized: FunctionReference<"query", "public", {}, boolean>;
     write: FunctionReference<"mutation", "public", { payload: string }, null>;
   };
   tokens: {
