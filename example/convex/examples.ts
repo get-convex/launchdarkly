@@ -35,6 +35,10 @@ export const listFlagsMutation = mutation({
 
       // This second request queries the in-memory cache.
       const res = await ctx.launchdarkly.allFlagsState(context);
+
+      // Track an event to test events being sent to LD.
+      ctx.launchdarkly.track("listed flags", context);
+
       return { success: true, flags: res.allValues() };
     } catch (e: unknown) {
       console.error(e);
