@@ -152,6 +152,14 @@ export type DatabaseWriter = GenericDatabaseWriter<DataModel>;
 
 export declare const components: {
   launchdarkly: {
+    events: {
+      storeEvents: FunctionReference<
+        "mutation",
+        "internal",
+        { eventsUri?: string; payloads: Array<string>; sdkKey: string },
+        any
+      >;
+    };
     store: {
       get: FunctionReference<
         "query",

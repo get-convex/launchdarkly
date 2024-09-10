@@ -7,14 +7,27 @@ import {
 import { query, mutation, action } from "../component/_generated/server";
 
 import { init, LaunchDarklyComponent } from "./LDClient";
-import { RunQueryCtx } from "../component/typeHelpers";
+import { RunMutationCtx, RunQueryCtx } from "../component/typeHelpers";
 
 const input =
-  (component: LaunchDarklyComponent) => async (ctx: RunQueryCtx) => {
-    const launchdarkly = init({
-      ctx,
-      store: component.store,
-    });
+  (component: LaunchDarklyComponent, sdkKey: string) =>
+  async (ctx: RunQueryCtx | RunMutationCtx) => {
+    const isMutation = "runMutation" in ctx;
+    const launchdarkly = init(
+      isMutation
+        ? {
+            ctx,
+            component,
+            sdkKey,
+            sendEvents: true,
+          }
+        : {
+            ctx,
+            component,
+            sdkKey,
+            sendEvents: false,
+          }
+    );
     const contextWithLd = {
       ...ctx,
       launchdarkly,
@@ -24,9 +37,10 @@ const input =
 
 export function withLaunchDarkly(
   component: LaunchDarklyComponent,
+  sdkKey: string,
   customFunctions = { query, mutation, action }
 ) {
-  const i = input(component);
+  const i = input(component, sdkKey);
   const mod = {
     args: {},
     input: i,

@@ -12,7 +12,8 @@ import { FunctionReference } from "convex/server";
 import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";
 import { FeatureStore } from "./FeatureStore";
-import { RunQueryCtx } from "../component/typeHelpers";
+import { EventProcessor } from "./EventProcessor";
+import { RunMutationCtx, RunQueryCtx } from "../component/typeHelpers";
 
 const convex = "Convex";
 
@@ -21,6 +22,15 @@ export type LaunchDarklyComponent = {
     validate: FunctionReference<"query", "internal", { token?: string }>;
   };
   store: LaunchDarklyStore;
+  events: LaunchDarklyEventStore;
+};
+
+export type LaunchDarklyEventStore = {
+  storeEvents: FunctionReference<
+    "mutation",
+    "internal",
+    { payloads: string[]; sdkKey: string }
+  >;
 };
 
 export type LaunchDarklyStore = {
@@ -51,19 +61,23 @@ export type LaunchDarklyStore = {
 
 type BaseSDKParams = {
   ctx: RunQueryCtx;
-  store: LaunchDarklyStore;
+  component: LaunchDarklyComponent;
   application?: LDOptions["application"];
-  // Only necessary if using secureModeHash.
-  // The Convex LDClient otherwise disregards the sdkKey.
-  sdkKey?: string;
-};
+  sdkKey: string;
+  sendEvents?: boolean;
+} & (
+  | { ctx: RunQueryCtx; sendEvents: false }
+  | { ctx: RunMutationCtx; sendEvents?: boolean }
+);
 
 export const init = ({
   ctx,
-  store,
+  component,
+  sendEvents,
   application,
-  sdkKey = convex,
+  sdkKey,
 }: BaseSDKParams): LDClientImpl => {
+  const { store, events } = component;
   const logger = console;
 
   const featureStore = new FeatureStore(ctx, store, convex, logger);
@@ -90,10 +104,19 @@ export const init = ({
     ldOptions,
     createCallbacks(logger)
   );
+  if ("runMutation" in ctx && sendEvents) {
+    // @ts-expect-error Accessing internals
+    client.eventProcessor = new EventProcessor(events, ctx, sdkKey);
+  }
+  client.track(
+    "convex-launchdarkly",
+    { key: "123" },
+    { convex: "launchdarkly" }
+  );
   return client;
 };
 
-const createOptions = (logger: LDLogger): LDOptions => ({
+export const createOptions = (logger: LDLogger): LDOptions => ({
   // Don't send any events to LaunchDarkly
   // TODO: Implement by storing the events in Convex instead and sending them in batch via a scheduled job.
   sendEvents: false,
@@ -119,7 +142,7 @@ const createOptions = (logger: LDLogger): LDOptions => ({
   wrapperVersion: "0.0.1",
 });
 
-const createCallbacks = (logger: LDLogger) => ({
+export const createCallbacks = (logger: LDLogger) => ({
   onError: (err: Error) => {
     logger.error(err.message);
   },

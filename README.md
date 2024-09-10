@@ -55,6 +55,8 @@ This will register two webhook HTTP handlers in your your Convex app's deploymen
 - `GET YOUR_CONVEX_SITE_URL/ld/webhook` - LaunchDarkly will use this endpoint to verify the installation of your component.
 - `PUT YOUR_CONVEX_SITE_URL/ld/webhook` - LaunchDarkly will send your flag and segment data to this endpoint.
 
+Copy your LaunchDarkly environment's SDK Key and store it as an environment variable (e.g. `LAUNCHDARKLY_SDK_KEY` in your Convex deployment. You can do so on the [environment variables](https://dashboard.convex.dev/deployment/settings/environment-variables) page.
+
 ### Configure the LaunchDarkly integration
 
 Once you've installed the component, make sure you push your changes to your Convex app:
@@ -94,20 +96,42 @@ import { components } from "./_generated/server";
 
 // Instead of importing query, mutation, and action from Convex, generate
 // them using `withLaunchDarkly`.
-const { query, mutation, action } = withLaunchDarkly(components.launchdarkly);
+const { query, mutation, action } = withLaunchDarkly(
+  components.launchdarkly,
+  process.env.LAUNCHDARKLY_SDK_KEY!
+);
 
 // A contrived convex query that returns all of your feature flags.
+// NOTE: Queries are unable to send events (e.g. analytics) to LaunchDarkly.
 export const listFlags = query({
   args: {},
   handler: async (ctx) => {
     try {
       const res = await ctx.launchdarkly.allFlagsState({ key: "myUser" });
       return res.allFlagValues();
+    }
+  },
+});
+
+// An equivelant mutation to the query above, but this one will send events to LaunchDarkly.
+export const listFlagsMutation = mutation({
+  args: { context: v.string() },
+  handler: async (ctx, args) => {
+    try {
+      const res = await ctx.launchdarkly.allFlagsState({ key: "myUser" });
+      return res.allFlagValues();
+    }
   },
 });
 ```
 
-## Example
+#### LaunchDarkly Events
+
+As noted in the example above, queries are unable to send events to LaunchDarkly. If you need would like to have the SDK send events to LaunchDarkly (e.g. flag evaluation insights and for experimentation), you should use LaunchDarkly in a mutation or action instead.
+
+```typescript
+
+## Example app
 
 You can run the example in the `examples` folder to see how the LaunchDarkly component works.
 
@@ -220,6 +244,4 @@ export const myQuery = query({
 
 ## Unsupported features
 
-- Events and diagnostic telemetry
-- Experimentation
 - Big segments
