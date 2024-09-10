@@ -27,7 +27,7 @@ export const store = internalMutation({
         "A token already exists. Delete the existing token from the tokens table to generate a new one."
       );
     }
-    ctx.db.insert("tokens", {
+    await ctx.db.insert("tokens", {
       token,
     });
     return token;
