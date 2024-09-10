@@ -79,7 +79,7 @@ Select a name and environment for the integration.
 
 For "Webhook URL", use your deployment's HTTP Actions URL suffixed with the path provided to the `registerRoutes` call in your `http.ts` file. By default, the path is `/ld/webhook`. You can retrieve your HTTP Actions URL on the [Deployment Settings page](https://dashboard.convex.dev/deployment/settings) of the Convex dashboard. Example: https://techno-kitten-138.convex.site/ld/webhook
 
-_Note!_ If you are developing using `--local` flag, you will need to configure the webhook URL to point to your local development server's HTTP Actions port. You can use a service like [ngrok](https://ngrok.com/) to expose your local server to the internet.
+_Note!_ If you are developing using the `--local` flag, you will need to configure the webhook URL to point to your local development server's HTTP Actions port. You can use a service like [ngrok](https://ngrok.com/) to expose your local server to the internet.
 
 For "Component API Token", use the shared secret you generated earlier.
 
