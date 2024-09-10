@@ -1,97 +1,53 @@
 import {
-  type Platform,
-  LDLogger,
-} from "@launchdarkly/js-server-sdk-common-edge";
-import {
   type LDOptions,
+  type Platform,
+  type LDLogger,
   LDClientImpl,
 } from "@launchdarkly/js-server-sdk-common";
-
-import { FunctionReference } from "convex/server";
 
 import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";
 import { FeatureStore } from "./FeatureStore";
-import { RunQueryCtx } from "../component/typeHelpers";
+import {
+  LaunchDarklyComponent,
+  RunMutationCtx,
+  RunQueryCtx,
+} from "../component/types";
 
 const convex = "Convex";
 
-export type LaunchDarklyComponent = {
-  tokens: {
-    validate: FunctionReference<"query", "internal", { token?: string }>;
-  };
-  store: LaunchDarklyStore;
-};
-
-export type LaunchDarklyStore = {
-  initialized: FunctionReference<
-    "query",
-    "internal",
-    Record<string, never>,
-    boolean
-  >;
-
-  get: FunctionReference<
-    "query",
-    "internal",
-    { kind: string; key: string },
-    string | null
-  >;
-
-  getAll: FunctionReference<"query", "internal", { kind: string }, string[]>;
-
-  write: FunctionReference<
-    "mutation",
-    "internal",
-    {
-      payload: string;
-    }
-  >;
-};
-
-type BaseSDKParams = {
-  ctx: RunQueryCtx;
-  store: LaunchDarklyStore;
-  application?: LDOptions["application"];
-  // Only necessary if using secureModeHash.
-  // The Convex LDClient otherwise disregards the sdkKey.
+export type BaseSDKParams = {
+  component: LaunchDarklyComponent;
   sdkKey?: string;
-};
-
-export const init = ({
-  ctx,
-  store,
-  application,
-  sdkKey = convex,
-}: BaseSDKParams): LDClientImpl => {
-  const logger = console;
-
-  const featureStore = new FeatureStore(ctx, store, convex, logger);
-
-  const ldOptions: LDOptions = {
-    featureStore,
-    ...createOptions(logger),
+  options?: {
+    updateProcessor?: LDOptions["updateProcessor"];
+    application?: LDOptions["application"];
   };
+} & ({ ctx: RunQueryCtx } | { ctx: RunMutationCtx });
 
-  if (application) {
-    ldOptions.application = application;
+export class LDClient extends LDClientImpl {
+  constructor({ ctx, component, options, sdkKey }: BaseSDKParams) {
+    const { store } = component;
+    const logger = console;
+
+    const featureStore = new FeatureStore(ctx, store, convex, logger);
+
+    const ldOptions: LDOptions = {
+      featureStore,
+      ...createOptions(logger),
+      ...(options || {}),
+    };
+
+    const platform: Platform = {
+      info: createPlatformInfo(),
+      crypto: new ConvexCrypto(),
+      // @ts-expect-error We do not allow LDClient to send requests inside of the Convex runtime.
+      requests: undefined,
+    };
+
+    super(sdkKey || convex, platform, ldOptions, createCallbacks(logger));
   }
-
-  const platform: Platform = {
-    info: createPlatformInfo(),
-    crypto: new ConvexCrypto(),
-    // @ts-expect-error We do not allow LDClient to send requests inside of the Convex runtime.
-    requests: undefined,
-  };
-
-  const client: LDClientImpl = new LDClientImpl(
-    sdkKey,
-    platform,
-    ldOptions,
-    createCallbacks(logger)
-  );
-  return client;
-};
+}
 
 const createOptions = (logger: LDLogger): LDOptions => ({
   // Don't send any events to LaunchDarkly

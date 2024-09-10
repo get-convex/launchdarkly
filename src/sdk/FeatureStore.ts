@@ -8,8 +8,7 @@ import type {
 } from "@launchdarkly/js-server-sdk-common";
 import { noop } from "@launchdarkly/js-server-sdk-common";
 import serialization from "@launchdarkly/js-server-sdk-common/dist/store/serialization";
-import { LaunchDarklyStore } from "./LDClient";
-import { RunQueryCtx } from "../component/typeHelpers";
+import { LaunchDarklyStore, RunQueryCtx } from "../component/types";
 
 export class FeatureStore implements LDFeatureStore {
   private gotAllFlags = false;

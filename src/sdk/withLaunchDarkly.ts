@@ -6,14 +6,20 @@ import {
 
 import { query, mutation, action } from "../component/_generated/server";
 
-import { init, LaunchDarklyComponent } from "./LDClient";
-import { RunQueryCtx } from "../component/typeHelpers";
+import { BaseSDKParams, LDClient } from "./LDClient";
+import {
+  LaunchDarklyComponent,
+  RunMutationCtx,
+  RunQueryCtx,
+} from "../component/types";
 
 const input =
-  (component: LaunchDarklyComponent) => async (ctx: RunQueryCtx) => {
-    const launchdarkly = init({
+  (component: LaunchDarklyComponent, options?: BaseSDKParams["options"]) =>
+  async (ctx: RunQueryCtx | RunMutationCtx) => {
+    const launchdarkly = new LDClient({
       ctx,
-      store: component.store,
+      component,
+      options,
     });
     const contextWithLd = {
       ...ctx,
@@ -24,17 +30,17 @@ const input =
 
 export function withLaunchDarkly(
   component: LaunchDarklyComponent,
-  customFunctions = { query, mutation, action }
+  options?: BaseSDKParams["options"]
 ) {
-  const i = input(component);
+  const i = input(component, options);
   const mod = {
     args: {},
     input: i,
   };
 
   return {
-    query: customQuery(customFunctions.query, mod),
-    mutation: customMutation(customFunctions.mutation, mod),
-    action: customAction(customFunctions.action, mod),
+    query: customQuery(query, mod),
+    mutation: customMutation(mutation, mod),
+    action: customAction(action, mod),
   };
 }

@@ -1,8 +1,8 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
 import { GenericMutationCtx } from "convex/server";
+import { mutation, query } from "./_generated/server";
 import { DataModel } from "./_generated/dataModel";
-import { LDFeatureStoreKindData } from "@launchdarkly/js-server-sdk-common-edge";
+import type { LDFeatureStoreKindData } from "@launchdarkly/js-server-sdk-common";
 
 export const initialized = query({
   args: {},
