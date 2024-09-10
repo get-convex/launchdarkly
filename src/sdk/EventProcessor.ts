@@ -9,6 +9,10 @@ import {
   LaunchDarklyEventStore,
 } from "./LDClient";
 
+// This is a replacement for the built-in event processor that
+// stores events in the convex component instead of sending them to LaunchDarkly.
+// The events in the store will later be picked up by a scheduled function in Convex
+// and sent to LaunchDarkly.
 export class EventProcessor {
   constructor(
     private readonly eventStore: LaunchDarklyEventStore,
@@ -32,6 +36,9 @@ export class EventProcessor {
   close() {}
 }
 
+// This function is used to actually send events to LaunchDarkly.
+// It picks out the internal `EventProcessor` class and re-uses it to
+// send events manually.
 export const sendEvents = async (
   events: { payload: string }[],
   sdkKey: string,
