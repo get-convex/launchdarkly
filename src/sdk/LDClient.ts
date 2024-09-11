@@ -17,29 +17,28 @@ import {
 
 const convex = "Convex";
 
-export type BaseSDKParams = {
-  component: LaunchDarklyComponent;
-  sdkKey: string;
-  options?: {
-    application?: LDOptions["application"];
-    updateProcessor?: LDOptions["updateProcessor"];
-  };
-} & (
-  | { ctx: RunQueryCtx; sendEvents: false }
-  | { ctx: RunMutationCtx; sendEvents?: boolean }
-);
-
 export class LDClient extends LDClientImpl {
-  constructor({ ctx, sdkKey, component, options, sendEvents }: BaseSDKParams) {
+  constructor(
+    component: LaunchDarklyComponent,
+    ctx: RunQueryCtx | RunMutationCtx,
+    sdkKey: string,
+    options?: {
+      application?: LDOptions["application"];
+      updateProcessor?: LDOptions["updateProcessor"];
+      sendEvents?: boolean;
+    }
+  ) {
     const { store } = component;
     const logger = console;
 
     const featureStore = new FeatureStore(ctx, store, convex, logger);
 
+    const sendEvents = options?.sendEvents !== false;
     const ldOptions: LDOptions = {
       featureStore,
       ...createOptions(logger),
       ...(options || {}),
+      sendEvents,
     };
 
     const platform: Platform = {

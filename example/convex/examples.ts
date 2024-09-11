@@ -1,22 +1,19 @@
 import { v } from "convex/values";
-import { withLaunchDarkly } from "launchdarkly-component";
-import { components } from "./_generated/server";
-
-const { query, mutation } = withLaunchDarkly(
-  components.launchdarkly,
-  process.env.LAUNCHDARKLY_SDK_KEY!
-);
+import { LDClient } from "launchdarkly-component";
+import { components, mutation, query } from "./_generated/server";
 
 export const listFlags = query({
   args: { context: v.string() },
   handler: async (ctx, args) => {
+    const launchdarkly = new LDClient(components.launchdarkly, ctx);
+
     try {
       const context = JSON.parse(args.context);
       // This first request queries the data store
-      console.log((await ctx.launchdarkly.allFlagsState(context)).allValues());
+      console.log((await launchdarkly.allFlagsState(context)).allValues());
 
       // This second request queries the in-memory cache.
-      const res = await ctx.launchdarkly.allFlagsState(context);
+      const res = await launchdarkly.allFlagsState(context);
       return { success: true, flags: res.allValues() };
     } catch (e: unknown) {
       console.error(e);
@@ -28,16 +25,18 @@ export const listFlags = query({
 export const listFlagsMutation = mutation({
   args: { context: v.string() },
   handler: async (ctx, args) => {
+    const launchdarkly = new LDClient(components.launchdarkly, ctx);
+
     try {
       const context = JSON.parse(args.context);
       // This first request queries the data store
-      console.log((await ctx.launchdarkly.allFlagsState(context)).allValues());
+      console.log((await launchdarkly.allFlagsState(context)).allValues());
 
       // This second request queries the in-memory cache.
-      const res = await ctx.launchdarkly.allFlagsState(context);
+      const res = await launchdarkly.allFlagsState(context);
 
       // Track an event to test events being sent to LD.
-      ctx.launchdarkly.track("listed flags", context);
+      launchdarkly.track("listed flags", context);
 
       return { success: true, flags: res.allValues() };
     } catch (e: unknown) {
