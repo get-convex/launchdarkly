@@ -18,15 +18,24 @@ const convex = "Convex";
 
 export type BaseSDKParams = {
   component: LaunchDarklyComponent;
+  ctx: RunQueryCtx | RunMutationCtx;
   sdkKey?: string;
   options?: {
     updateProcessor?: LDOptions["updateProcessor"];
     application?: LDOptions["application"];
   };
-} & ({ ctx: RunQueryCtx } | { ctx: RunMutationCtx });
+};
 
 export class LDClient extends LDClientImpl {
-  constructor({ ctx, component, options, sdkKey }: BaseSDKParams) {
+  constructor(
+    component: LaunchDarklyComponent,
+    ctx: RunQueryCtx | RunMutationCtx,
+    sdkKey?: string,
+    options?: {
+      updateProcessor?: LDOptions["updateProcessor"];
+      application?: LDOptions["application"];
+    }
+  ) {
     const { store } = component;
     const logger = console;
 

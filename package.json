@@ -19,7 +19,6 @@
   "dependencies": {
     "@launchdarkly/js-server-sdk-common": "^2.3.9",
     "convex": "^1.15.1-alpha.3",
-    "convex-helpers": "^0.1.57-alpha.0",
     "crypto-js": "^4.2.0"
   },
   "devDependencies": {
