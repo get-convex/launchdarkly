@@ -16,16 +16,6 @@ import {
 
 const convex = "Convex";
 
-export type BaseSDKParams = {
-  component: LaunchDarklyComponent;
-  ctx: RunQueryCtx | RunMutationCtx;
-  sdkKey?: string;
-  options?: {
-    updateProcessor?: LDOptions["updateProcessor"];
-    application?: LDOptions["application"];
-  };
-};
-
 export class LDClient extends LDClientImpl {
   constructor(
     component: LaunchDarklyComponent,
