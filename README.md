@@ -55,6 +55,8 @@ This will register two webhook HTTP handlers in your your Convex app's deploymen
 - `GET YOUR_CONVEX_SITE_URL/ld/webhook` - LaunchDarkly will use this endpoint to verify the installation of your component.
 - `PUT YOUR_CONVEX_SITE_URL/ld/webhook` - LaunchDarkly will send your flag and segment data to this endpoint.
 
+Copy your LaunchDarkly environment's SDK Key and store it as an environment variable (e.g. `LAUNCHDARKLY_SDK_KEY` in your Convex deployment. You can do so on the [environment variables](https://dashboard.convex.dev/deployment/settings/environment-variables) page.
+
 ### Configure the LaunchDarkly integration
 
 Once you've installed the component, make sure you push your changes to your Convex app:
@@ -101,6 +103,10 @@ export const myQuery = query({
 });
 ```
 
+#### LaunchDarkly Events
+
+As noted in the examples above, queries are unable to send events to LaunchDarkly. If you need would like to have the SDK send events to LaunchDarkly (e.g. flag evaluation insights and for experimentation), you should use LaunchDarkly in a mutation or action instead.
+
 ## Example App
 
 You can run the example in the `examples` folder to see how the LaunchDarkly component works.
@@ -112,12 +118,11 @@ npm install
 
 Follow the instructions above for [configuring the LaunchDarkly integration](#configure-the-launchdarkly-integration) and then run the example:
 
-````bash
 In seperate terminals:
 
 ```bash
 npx convex dev
-````
+```
 
 ```bash
 npm run dev
@@ -157,7 +162,7 @@ export default app;
 
 Be sure to also update your `http.ts` file to register the routes for each component:
 
-````typescript
+```typescript
 // http.ts
 import { httpRouter } from "convex/server";
 import { registerRoutes } from "launchdarkly-component";
@@ -171,13 +176,12 @@ registerRoutes(components.second, http, "/ld/second");
 export default http;
 ```
 
-
 Then you can generate a separate shared secret for each environment:
 
 ```bash
 npx convex run --component-path=first tokens:generate
 npx convex run --component-path=second tokens:generate
-````
+```
 
 These secrets can be plugged into seperate integration configurations in LaunchDarkly.
 
@@ -200,6 +204,4 @@ export const myQuery = query({
 
 ## Unsupported features
 
-- Events and diagnostic telemetry
-- Experimentation
 - Big segments

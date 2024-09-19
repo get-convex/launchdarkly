@@ -10,6 +10,7 @@
  * @module
  */
 
+import type * as events from "../events.js";
 import type * as registerRoutes from "../registerRoutes.js";
 import type * as store from "../store.js";
 import type * as tokens from "../tokens.js";
@@ -29,12 +30,21 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  events: typeof events;
   registerRoutes: typeof registerRoutes;
   store: typeof store;
   tokens: typeof tokens;
   types: typeof types;
 }>;
 export type Mounts = {
+  events: {
+    storeEvents: FunctionReference<
+      "mutation",
+      "public",
+      { eventsUri?: string; payloads: Array<string>; sdkKey: string },
+      any
+    >;
+  };
   store: {
     get: FunctionReference<
       "query",

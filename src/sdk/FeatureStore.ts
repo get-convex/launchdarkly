@@ -11,8 +11,11 @@ import serialization from "@launchdarkly/js-server-sdk-common/dist/store/seriali
 import { LaunchDarklyStore, RunQueryCtx } from "../component/types";
 
 export class FeatureStore implements LDFeatureStore {
+  // If you've ever call getAll on flags or segments, the cache should have all the data.
   private gotAllFlags = false;
   private gotAllSegments = false;
+
+  // Keep track of data we already loaded.
   private readonly cache: {
     flags: LDFeatureStoreKindData;
     segments: LDFeatureStoreKindData;
