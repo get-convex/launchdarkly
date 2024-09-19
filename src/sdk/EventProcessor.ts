@@ -29,6 +29,8 @@ export class EventProcessor {
     return Promise.resolve();
   }
 
+  start() {}
+
   close() {}
 }
 
@@ -51,7 +53,7 @@ export const sendEvents = async (
     ...createOptions(console),
     sendEvents: true,
     // We will flush manually at the end, so make this value really high.
-    flushInterval: 600,
+    flushInterval: 5,
     // Not sure what to make this number, but it should be greater
     // Then the number of events to account for any extra events,
     // like debug events.

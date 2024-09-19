@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "cvx": "convex dev --live-component-sources",
     "build": "tsc -b && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
-    "convex": "^1.15.1-alpha.3",
+    "convex": "1.16.0-alpha.2",
     "launchdarkly-component": "file:../",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

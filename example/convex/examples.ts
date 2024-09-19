@@ -1,47 +1,47 @@
-import { v } from "convex/values";
 import { LDClient } from "launchdarkly-component";
 import { components, mutation, query } from "./_generated/server";
 
-export const listFlags = query({
-  args: { context: v.string() },
-  handler: async (ctx, args) => {
-    const launchdarkly = new LDClient(components.launchdarkly, ctx);
+export const listFruits = query({
+  handler: async (ctx) => {
+    const launchdarkly = new LDClient(
+      components.launchdarkly,
+      ctx,
+      process.env.LAUNCHDARKLY_SDK_KEY!
+    );
 
-    try {
-      const context = JSON.parse(args.context);
-      // This first request queries the data store
-      console.log((await launchdarkly.allFlagsState(context)).allValues());
+    const showFruits = await launchdarkly.boolVariation(
+      "show-fruits",
+      { key: "user" },
+      false
+    );
 
-      // This second request queries the in-memory cache.
-      const res = await launchdarkly.allFlagsState(context);
-      return { success: true, flags: res.allValues() };
-    } catch (e: unknown) {
-      console.error(e);
-      return { success: false, error: "Invalid LaunchDarkly context." };
+    if (!showFruits) {
+      return [];
     }
+
+    return (await ctx.db.query("fruits").collect()).map((f) => f.name);
   },
 });
 
-export const listFlagsMutation = mutation({
-  args: { context: v.string() },
-  handler: async (ctx, args) => {
-    const launchdarkly = new LDClient(components.launchdarkly, ctx);
+export const buyFruit = mutation({
+  handler: async (ctx) => {
+    const launchdarkly = new LDClient(
+      components.launchdarkly,
+      ctx,
+      process.env.LAUNCHDARKLY_SDK_KEY!
+    );
 
-    try {
-      const context = JSON.parse(args.context);
-      // This first request queries the data store
-      console.log((await launchdarkly.allFlagsState(context)).allValues());
+    const user = { key: "user" };
 
-      // This second request queries the in-memory cache.
-      const res = await launchdarkly.allFlagsState(context);
-
-      // Track an event to test events being sent to LD.
-      launchdarkly.track("listed flags", context);
-
-      return { success: true, flags: res.allValues() };
-    } catch (e: unknown) {
-      console.error(e);
-      return { success: false, error: "Invalid LaunchDarkly context." };
+    const showFruits = await launchdarkly.boolVariation(
+      "show-fruits",
+      user,
+      false
+    );
+    if (!showFruits) {
+      throw new Error("You can't buy fruits!");
     }
+
+    launchdarkly.track("buy-fruit", user);
   },
 });

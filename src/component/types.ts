@@ -24,6 +24,7 @@ export type LaunchDarklyComponent = {
     validate: FunctionReference<"query", "internal", { token?: string }>;
   };
   store: LaunchDarklyStore;
+  events: LaunchDarklyEventStore;
 };
 
 export type LaunchDarklyStore = {

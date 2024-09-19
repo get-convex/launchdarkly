@@ -10,5 +10,6 @@
   ],
   "compilerOptions": {
     "esModuleInterop": true
-  }
+  },
+  "include": ["src"]
 }

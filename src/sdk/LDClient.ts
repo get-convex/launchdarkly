@@ -15,7 +15,7 @@ import {
   RunQueryCtx,
 } from "../component/types";
 
-const convex = "Convex";
+const convex = "CONVEX";
 
 export class LDClient extends LDClientImpl {
   constructor(
@@ -24,11 +24,10 @@ export class LDClient extends LDClientImpl {
     sdkKey: string,
     options?: {
       application?: LDOptions["application"];
-      updateProcessor?: LDOptions["updateProcessor"];
       sendEvents?: boolean;
     }
   ) {
-    const { store } = component;
+    const { store, events } = component;
     const logger = console;
 
     const featureStore = new FeatureStore(ctx, store, convex, logger);
@@ -38,7 +37,7 @@ export class LDClient extends LDClientImpl {
       featureStore,
       ...createOptions(logger),
       ...(options || {}),
-      sendEvents,
+      sendEvents: false,
     };
 
     const platform: Platform = {
@@ -48,17 +47,21 @@ export class LDClient extends LDClientImpl {
       requests: undefined,
     };
 
+    super(sdkKey, platform, ldOptions, createCallbacks(logger));
+
+    // We can only send events if the context has a runMutation function.
+    // This exists in Convex mutations and actions, but not in queries.
     if ("runMutation" in ctx && sendEvents) {
-      // @ts-expect-error Accessing internals
-      client.eventProcessor = new EventProcessor(events, ctx, sdkKey);
+      const eventProcessor = new EventProcessor(events, ctx, sdkKey);
+      // @ts-expect-error We are setting the eventProcessor directly here.
+      this.eventProcessor = eventProcessor;
     }
-    super(sdkKey || convex, platform, ldOptions, createCallbacks(logger));
   }
 }
 
 export const createOptions = (logger: LDLogger): LDOptions => ({
-  // Don't send any events to LaunchDarkly
-  // TODO: Implement by storing the events in Convex instead and sending them in batch via a scheduled job.
+  // Even though the SDK can send events with our own implementation, we need
+  // to set this value to false so the super() constructor does not call EventProcessor.start() which calls setInterval.
   sendEvents: false,
   diagnosticOptOut: true,
   useLdd: false,
