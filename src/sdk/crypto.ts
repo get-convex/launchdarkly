@@ -19,7 +19,7 @@ export default class ConvexCrypto implements Crypto {
   }
 
   randomUUID(): string {
-    throw new Error("randomUUID() is not supported");
+    return crypto.randomUUID();
   }
 }
 

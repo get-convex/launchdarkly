@@ -24,6 +24,7 @@ export type LaunchDarklyComponent = {
     validate: FunctionReference<"query", "internal", { token?: string }>;
   };
   store: LaunchDarklyStore;
+  events: LaunchDarklyEventStore;
 };
 
 export type LaunchDarklyStore = {
@@ -48,6 +49,17 @@ export type LaunchDarklyStore = {
     "internal",
     {
       payload: string;
+    }
+  >;
+};
+
+export type LaunchDarklyEventStore = {
+  storeEvents: FunctionReference<
+    "mutation",
+    "internal",
+    {
+      payloads: string[];
+      sdkKey: string;
     }
   >;
 };

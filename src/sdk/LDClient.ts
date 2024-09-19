@@ -8,33 +8,36 @@ import {
 import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";
 import { FeatureStore } from "./FeatureStore";
+import { EventProcessor } from "./EventProcessor";
 import {
   LaunchDarklyComponent,
   RunMutationCtx,
   RunQueryCtx,
 } from "../component/types";
 
-const convex = "Convex";
+const convex = "CONVEX";
 
 export class LDClient extends LDClientImpl {
   constructor(
     component: LaunchDarklyComponent,
     ctx: RunQueryCtx | RunMutationCtx,
-    sdkKey?: string,
+    sdkKey: string,
     options?: {
-      updateProcessor?: LDOptions["updateProcessor"];
       application?: LDOptions["application"];
+      sendEvents?: boolean;
     }
   ) {
-    const { store } = component;
+    const { store, events } = component;
     const logger = console;
 
     const featureStore = new FeatureStore(ctx, store, convex, logger);
 
+    const sendEvents = options?.sendEvents !== false;
     const ldOptions: LDOptions = {
       featureStore,
       ...createOptions(logger),
       ...(options || {}),
+      sendEvents: false,
     };
 
     const platform: Platform = {
@@ -44,13 +47,21 @@ export class LDClient extends LDClientImpl {
       requests: undefined,
     };
 
-    super(sdkKey || convex, platform, ldOptions, createCallbacks(logger));
+    super(sdkKey, platform, ldOptions, createCallbacks(logger));
+
+    // We can only send events if the context has a runMutation function.
+    // This exists in Convex mutations and actions, but not in queries.
+    if ("runMutation" in ctx && sendEvents) {
+      const eventProcessor = new EventProcessor(events, ctx, sdkKey);
+      // @ts-expect-error We are setting the eventProcessor directly here.
+      this.eventProcessor = eventProcessor;
+    }
   }
 }
 
-const createOptions = (logger: LDLogger): LDOptions => ({
-  // Don't send any events to LaunchDarkly
-  // TODO: Implement by storing the events in Convex instead and sending them in batch via a scheduled job.
+export const createOptions = (logger: LDLogger): LDOptions => ({
+  // Even though the SDK can send events with our own implementation, we need
+  // to set this value to false so the super() constructor does not call EventProcessor.start() which calls setInterval.
   sendEvents: false,
   diagnosticOptOut: true,
   useLdd: false,
@@ -74,7 +85,7 @@ const createOptions = (logger: LDLogger): LDOptions => ({
   wrapperVersion: "0.0.1",
 });
 
-const createCallbacks = (logger: LDLogger) => ({
+export const createCallbacks = (logger: LDLogger) => ({
   onError: (err: Error) => {
     logger.error(err.message);
   },
