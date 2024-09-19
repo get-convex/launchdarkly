@@ -94,7 +94,11 @@ import { components, query } from "./_generated/server";
 export const myQuery = query({
   args: {},
   handler: async ({ ctx }) => {
-    const launchdarkly = new LDClient(components.launchdarkly, ctx);
+    const launchdarkly = new LDClient(
+      components.launchdarkly,
+      ctx,
+      process.env.LAUNCHDARKLY_SDK_KEY!
+    );
     const res = await launchdarkly.allFlagsState({ key: "myUser" });
     return res.allFlagValues();
   },
@@ -112,12 +116,12 @@ npm install
 
 Follow the instructions above for [configuring the LaunchDarkly integration](#configure-the-launchdarkly-integration) and then run the example:
 
-````bash
+`````bash
 In seperate terminals:
 
 ```bash
-npx convex dev
-````
+npm run cvx
+```
 
 ```bash
 npm run dev
@@ -125,7 +129,7 @@ npm run dev
 
 ## Production
 
-When you're ready to deploy your app to production with LaunchDarkly, be sure to configure an additional shared secret and integration for Production. You'll want this to be configured before any of your code relies on the LaunchDarkly flags.
+When you're ready to deploy your app to production with LaunchDarkly, be sure to follow all the setup steps for produciton, including adding the `LAUNCHDARKLY_SDK_KEY` evnironment variable and configuring an additional shared secret and integration for Production. You'll want this to be configured before any of your code relies on the LaunchDarkly flags.
 
 You may use this command to generate your production secret:
 
@@ -177,7 +181,7 @@ Then you can generate a separate shared secret for each environment:
 ```bash
 npx convex run --component-path=first tokens:generate
 npx convex run --component-path=second tokens:generate
-````
+`````
 
 These secrets can be plugged into seperate integration configurations in LaunchDarkly.
 
@@ -189,9 +193,9 @@ import { LDClient } from "launchdarkly-component";
 export const myQuery = query({
   args: {},
   handler: async ({ ctx }) => {
-    const launchdarklyFirst = new LDClient(components.first, ctx);
+    const launchdarklyFirst = new LDClient(components.first, ctx, process.env.LAUNCHDARKLY_SDK_KEY!);
 
-    const launchdarklySecond = new LDClient(components.second, ctx);
+    const launchdarklySecond = new LDClient(components.second, ctx, process.env.LAUNCHDARKLY_SDK_KEY_2!);
 
     ...
   },
@@ -203,3 +207,4 @@ export const myQuery = query({
 - Events and diagnostic telemetry
 - Experimentation
 - Big segments
+- Diagnostic events
