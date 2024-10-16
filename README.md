@@ -1,4 +1,4 @@
-# LaunchDarkly Convex Component
+# Convex Component: LaunchDarkly
 
 This is a Convex component for [LaunchDarkly](https://launchdarkly.com). It syncs your LaunchDarkly environment to your Convex deployment, allowing you to use your feature flags in Convex.
 
