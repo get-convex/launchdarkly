@@ -46,7 +46,6 @@ const validateHeader = async (
   ctx: GenericActionCtx<AnyDataModel>,
   component: LaunchDarklyComponent
 ) => {
-  // TODO: Replace with hmac signature in X-LD-Signature
   const auth = req.headers.get("Authorization");
   const token = auth?.split("Bearer ")[1];
   const res = await ctx.runQuery(component.tokens.validate, {

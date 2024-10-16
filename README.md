@@ -17,7 +17,7 @@ You'll need a Convex App to use the component. Follow any of the [Convex quickst
 ### Install and configure the component package
 
 ```bash
-npm install @convex-dev/launchdarkly-component
+npm install @convex-dev/launchdarkly
 ```
 
 Create a `convex.config.ts` file in your app's `convex/` folder and install the component by calling `use`:
@@ -25,7 +25,7 @@ Create a `convex.config.ts` file in your app's `convex/` folder and install the 
 ```typescript
 // convex/convex.config.js
 import { defineApp } from "convex/server";
-import launchdarkly from "launchdarkly-component/convex.config.js";
+import launchdarkly from "@convex-dev/launchdarkly/convex.config.js";
 
 const app = defineApp();
 
@@ -39,7 +39,7 @@ Register webhooks by creating an `http.ts` file in your `convex/` folder and use
 ```typescript
 // http.ts
 import { httpRouter } from "convex/server";
-import { registerRoutes } from "launchdarkly-component";
+import { registerRoutes } from "@convex-dev/launchdarkly";
 import { components } from "./_generated/server";
 
 const http = httpRouter();
@@ -73,7 +73,7 @@ npx convex run --component-path=launchdarkly tokens:generate
 
 You can now configure the LaunchDarkly integration. On the [Integrations page](https://app.launchdarkly.com/settings/integrations) of the LaunchDarkly dashboard, search for Convex and click "Add Integration".
 
-Each of your Convex deployments (e.g. Production and other developer's environments) will need it's own integration configured in LaunchDarkly.
+Each of your Convex deployments (e.g. Production and other developer's environments) will need their own integration configured in LaunchDarkly.
 
 ![Add Integration](./images/launchdarkly-integration-configuration.png)
 
@@ -90,7 +90,7 @@ For "Webhook URL", use your deployment's HTTP Actions URL suffixed with the path
 You may initialize the LDClient class with the component configuration and use the LaunchDarkly SDK as you would in a normal JavaScript application.
 
 ```typescript
-import { LDClient } from "launchdarkly-component";
+import { LDClient } from "@convex-dev/launchdarkly";
 import { components, query } from "./_generated/server";
 
 export const myQuery = query({
@@ -150,7 +150,7 @@ If you have multiple LaunchDarkly environments, you can create a separate compon
 ```typescript
 // convex/convex.config.js
 import { defineApp } from "convex/server";
-import launchdarkly from "launchdarkly-component/convex.config.js";
+import launchdarkly from "@convex-dev/launchdarkly/convex.config.js";
 
 const app = defineApp();
 
@@ -170,7 +170,7 @@ Be sure to also update your `http.ts` file to register the routes for each compo
 ```typescript
 // http.ts
 import { httpRouter } from "convex/server";
-import { registerRoutes } from "launchdarkly-component";
+import { registerRoutes } from "@convex-dev/launchdarkly";
 import { components } from "./_generated/server";
 
 const http = httpRouter();
@@ -193,7 +193,7 @@ These secrets can be plugged into seperate integration configurations in LaunchD
 once configured, you may initialize `LDClient` with the appropriate component configuration:
 
 ```typescript
-import { LDClient } from "launchdarkly-component";
+import { LDClient } from "@convex-dev/launchdarkly";
 
 export const myQuery = query({
   args: {},

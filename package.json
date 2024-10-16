@@ -1,8 +1,19 @@
 {
-  "name": "launchdarkly-component",
-  "private": true,
+  "name": "@convex-dev/launchdarkly",
   "version": "0.0.1",
   "type": "module",
+  "repository": "github:get-convex/launchdarkly",
+  "bugs": {
+    "email": "support@convex.dev",
+    "url": "https://github.com/get-convex/launchdarkly"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "convex",
+    "launchdarkly",
+    "component",
+    "feature-flags"
+  ],
   "scripts": {
     "build": "npm run build:esm && npm run build:cjs",
     "build:esm": "tsc --project ./esm.json && echo '{\\n  \"type\": \"module\"\\n}' > dist/esm/package.json",
@@ -17,8 +28,8 @@
     "src"
   ],
   "dependencies": {
-    "@launchdarkly/js-server-sdk-common": "^2.3.9",
-    "convex": "1.16.0-alpha.2",
+    "@launchdarkly/js-server-sdk-common": "2.6.1",
+    "convex": "^1.16.1",
     "crypto-js": "^4.2.0"
   },
   "devDependencies": {

@@ -8,7 +8,6 @@ import {
 import { internal } from "./_generated/api";
 import { sendEvents } from "../sdk/EventProcessor";
 
-// TODO: Tune and make all these configurable.
 const EVENT_CAPACITY = 1000;
 const EVENT_BATCH_SIZE = 100;
 const EVENT_PROCESSING_INTERVAL_SECONDS = 30;
