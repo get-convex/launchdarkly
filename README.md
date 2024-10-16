@@ -109,7 +109,7 @@ export const myQuery = query({
 
 #### LaunchDarkly Events
 
-As noted in the examples above, queries are unable to send events to LaunchDarkly. If you need would like to have the SDK send events to LaunchDarkly (e.g. flag evaluation insights and for experimentation), you should use LaunchDarkly in a mutation or action instead.
+As noted in the examples above, queries are unable to send events to LaunchDarkly. If you would like to have the SDK send events to LaunchDarkly (e.g. flag evaluation insights and for experimentation), you should use LaunchDarkly in a mutation or action instead.
 
 ## Example App
 
