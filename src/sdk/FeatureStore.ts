@@ -8,7 +8,8 @@ import type {
 } from "@launchdarkly/js-server-sdk-common";
 import { noop } from "@launchdarkly/js-server-sdk-common";
 import serialization from "@launchdarkly/js-server-sdk-common/dist/store/serialization";
-import { LaunchDarklyStore, RunQueryCtx } from "../component/types";
+import { RunQueryCtx } from "../component/types";
+import { Mounts } from "../component/_generated/api";
 
 export class FeatureStore implements LDFeatureStore {
   // If you've ever call getAll on flags or segments, the cache should have all the data.
@@ -26,7 +27,7 @@ export class FeatureStore implements LDFeatureStore {
 
   constructor(
     private readonly ctx: RunQueryCtx,
-    private readonly store: LaunchDarklyStore,
+    private readonly store: Mounts["store"],
     private logger: LDLogger
   ) {}
 

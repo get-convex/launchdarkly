@@ -47,8 +47,24 @@ export declare const components: {
       storeEvents: FunctionReference<
         "mutation",
         "internal",
-        { eventsUri?: string; payloads: Array<string>; sdkKey: string },
+        {
+          options?: {
+            allAttributesPrivate?: boolean;
+            eventsUri?: string;
+            privateAttributes?: Array<string>;
+          };
+          payloads: Array<string>;
+          sdkKey: string;
+        },
         null
+      >;
+    };
+    initialize: {
+      poll: FunctionReference<
+        "action",
+        "internal",
+        { intervalSeconds?: number; sdkKey: string; timeoutSeconds?: number },
+        any
       >;
     };
     store: {

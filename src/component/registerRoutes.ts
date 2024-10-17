@@ -1,9 +1,9 @@
 import { AnyDataModel, GenericActionCtx, HttpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
-import { LaunchDarklyComponent } from "./types";
+import { Mounts } from "./_generated/api";
 
 export const registerRoutes = (
-  component: LaunchDarklyComponent,
+  component: Mounts,
   http: HttpRouter,
   path = "/ld/webhook"
 ) => {
@@ -44,7 +44,7 @@ export const registerRoutes = (
 const validateHeader = async (
   req: Request,
   ctx: GenericActionCtx<AnyDataModel>,
-  component: LaunchDarklyComponent
+  component: Mounts
 ) => {
   const auth = req.headers.get("Authorization");
   const token = auth?.split("Bearer ")[1];

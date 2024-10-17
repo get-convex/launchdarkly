@@ -9,15 +9,12 @@ import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";
 import { FeatureStore } from "./FeatureStore";
 import { EventProcessor } from "./EventProcessor";
-import {
-  LaunchDarklyComponent,
-  RunMutationCtx,
-  RunQueryCtx,
-} from "../component/types";
+import { RunMutationCtx, RunQueryCtx } from "../component/types";
+import { Mounts } from "../component/_generated/api";
 
 export class LDClient extends LDClientImpl {
   constructor(
-    component: LaunchDarklyComponent,
+    component: Mounts,
     ctx: RunQueryCtx | RunMutationCtx,
     options?: {
       application?: LDOptions["application"];
