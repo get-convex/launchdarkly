@@ -141,14 +141,20 @@ npm install
 
 Follow the instructions above for [configuring the LaunchDarkly integration](#configure-the-launchdarkly-integration) and then run the example:
 
-````bash
 In seperate terminals:
 
 ```bash
+# Push the code to Convex
 npm run cvx
-````
+```
 
 ```bash
+# Seed the database with some example data
+npx convex run fruits:seedData
+```
+
+```bash
+# Run the front-end
 npm run dev
 ```
 
@@ -240,3 +246,7 @@ If you encounter any issues or need help with a specific feature, please file an
 - Diagnostic events
 
 <!-- END: Include on https://convex.dev/components -->
+
+```
+
+```
