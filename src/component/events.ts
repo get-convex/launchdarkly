@@ -18,6 +18,7 @@ export const storeEvents = mutation({
     sdkKey: v.string(),
     eventsUri: v.optional(v.string()),
   },
+  returns: v.null(),
   handler: async (ctx, { payloads, sdkKey, eventsUri }) => {
     await ctx.runMutation(internal.events.scheduleProcessing, {
       sdkKey,

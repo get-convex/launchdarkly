@@ -150,46 +150,4 @@ export type DatabaseReader = GenericDatabaseReader<DataModel>;
  */
 export type DatabaseWriter = GenericDatabaseWriter<DataModel>;
 
-export declare const components: {
-  launchdarkly: {
-    events: {
-      storeEvents: FunctionReference<
-        "mutation",
-        "internal",
-        { eventsUri?: string; payloads: Array<string>; sdkKey: string },
-        any
-      >;
-    };
-    store: {
-      get: FunctionReference<
-        "query",
-        "internal",
-        { key: string; kind: "flags" | "segments" },
-        string | null
-      >;
-      getAll: FunctionReference<
-        "query",
-        "internal",
-        { kind: "flags" | "segments" },
-        Array<string>
-      >;
-      initialized: FunctionReference<"query", "internal", {}, boolean>;
-      write: FunctionReference<
-        "mutation",
-        "internal",
-        { payload: string },
-        null
-      >;
-    };
-    tokens: {
-      validate: FunctionReference<
-        "query",
-        "internal",
-        { token?: string },
-        { error?: string; success: boolean }
-      >;
-    };
-  };
-};
-
 /* prettier-ignore-end */

@@ -1,5 +1,6 @@
-import { LDClient } from "launchdarkly-component";
-import { components, mutation, query } from "./_generated/server";
+import { LDClient } from "@convex-dev/launchdarkly";
+import { mutation, query } from "./_generated/server";
+import { components } from "./_generated/api";
 
 export const listFruits = query({
   handler: async (ctx) => {

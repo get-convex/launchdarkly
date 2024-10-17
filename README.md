@@ -1,5 +1,11 @@
 # Convex Component: LaunchDarkly
 
+[![npm version](https://badge.fury.io/js/@convex-dev%2Flaunchdarkly.svg)](https://badge.fury.io/js/@convex-dev%2Flaunchdarkly)
+
+**Note: Convex Components are currently in beta**
+
+<!-- START: Include on https://convex.dev/components -->
+
 This is a Convex component for [LaunchDarkly](https://launchdarkly.com). It syncs your LaunchDarkly environment to your Convex deployment, allowing you to use your feature flags in Convex.
 
 ## Prerequisites
@@ -10,7 +16,11 @@ To use the LaunchDarkly Convex component, you'll need a LaunchDarkly account. Yo
 
 ### Convex App
 
-You'll need a Convex App to use the component. Follow any of the [Convex quickstarts](https://docs.convex.dev/home) to set one up.
+You'll need an existing Convex project to use the component.
+Convex is a hosted backend platform, including a database, serverless functions,
+and a ton more you can learn about [here](https://docs.convex.dev/get-started).
+
+Run `npm create convex` or follow any of the [quickstarts](https://docs.convex.dev/home) to set one up.
 
 ## Installation
 
@@ -23,9 +33,9 @@ npm install @convex-dev/launchdarkly
 Create a `convex.config.ts` file in your app's `convex/` folder and install the component by calling `use`:
 
 ```typescript
-// convex/convex.config.js
+// convex/convex.config.ts
 import { defineApp } from "convex/server";
-import launchdarkly from "@convex-dev/launchdarkly/convex.config.js";
+import launchdarkly from "@convex-dev/launchdarkly/convex.config";
 
 const app = defineApp();
 
@@ -34,13 +44,13 @@ app.use(launchdarkly);
 export default app;
 ```
 
-Register webhooks by creating an `http.ts` file in your `convex/` folder and use the client you've exported above:
+Register webhooks by creating an `http.ts` file in your `convex/` folder:
 
 ```typescript
-// http.ts
+// convex/http.ts
 import { httpRouter } from "convex/server";
 import { registerRoutes } from "@convex-dev/launchdarkly";
-import { components } from "./_generated/server";
+import { components } from "./_generated/api";
 
 const http = httpRouter();
 
@@ -55,7 +65,7 @@ This will register two webhook HTTP handlers in your your Convex app's deploymen
 - `GET YOUR_CONVEX_SITE_URL/ld/webhook` - LaunchDarkly will use this endpoint to verify the installation of your component.
 - `PUT YOUR_CONVEX_SITE_URL/ld/webhook` - LaunchDarkly will send your flag and segment data to this endpoint.
 
-Copy your LaunchDarkly environment's SDK Key and store it as an environment variable (e.g. `LAUNCHDARKLY_SDK_KEY` in your Convex deployment. You can do so on the [environment variables](https://dashboard.convex.dev/deployment/settings/environment-variables) page.
+Copy your LaunchDarkly environment's SDK Key and store it as an environment variable `LAUNCHDARKLY_SDK_KEY` in your Convex deployment. You can do so on the [environment variables](https://dashboard.convex.dev/deployment/settings/environment-variables) page or via `npx convex env set LAUNCHDARKLY_SDK_KEY <key>` from the CLI.
 
 ### Configure the LaunchDarkly integration
 
@@ -68,7 +78,7 @@ npx convex dev
 Generate a shared secret to be used by the LaunchDarkly integration. This will ensure the payloads sent to your webhook are coming from LaunchDarkly.
 
 ```bash
-npx convex run --component-path=launchdarkly tokens:generate
+npx convex run --component=launchdarkly tokens:generate
 ```
 
 You can now configure the LaunchDarkly integration. On the [Integrations page](https://app.launchdarkly.com/settings/integrations) of the LaunchDarkly dashboard, search for Convex and click "Add Integration".
@@ -91,7 +101,8 @@ You may initialize the LDClient class with the component configuration and use t
 
 ```typescript
 import { LDClient } from "@convex-dev/launchdarkly";
-import { components, query } from "./_generated/server";
+import { components } from "./_generated/api";
+import { query } from "./_generated/server";
 
 export const myQuery = query({
   args: {},
@@ -109,9 +120,10 @@ As noted in the examples above, queries are unable to send events to LaunchDarkl
 
 ## Example App
 
-You can run the example in the `examples` folder to see how the LaunchDarkly component works.
+You can run the example in the [`examples`](./example/) folder to see how the LaunchDarkly component works.
 
 ```bash
+npm install
 cd example
 npm install
 ```
@@ -146,7 +158,7 @@ If you have multiple LaunchDarkly environments, you can create a separate compon
 ```typescript
 // convex/convex.config.js
 import { defineApp } from "convex/server";
-import launchdarkly from "@convex-dev/launchdarkly/convex.config.js";
+import launchdarkly from "@convex-dev/launchdarkly/convex.config";
 
 const app = defineApp();
 
@@ -167,7 +179,7 @@ Be sure to also update your `http.ts` file to register the routes for each compo
 // http.ts
 import { httpRouter } from "convex/server";
 import { registerRoutes } from "@convex-dev/launchdarkly";
-import { components } from "./_generated/server";
+import { components } from "./_generated/api";
 
 const http = httpRouter();
 
@@ -180,8 +192,8 @@ export default http;
 Then you can generate a separate shared secret for each environment:
 
 ```bash
-npx convex run --component-path=first tokens:generate
-npx convex run --component-path=second tokens:generate
+npx convex run --component=first tokens:generate
+npx convex run --component=second tokens:generate
 ```
 
 These secrets can be plugged into seperate integration configurations in LaunchDarkly.
@@ -195,11 +207,11 @@ export const myQuery = query({
   args: {},
   handler: async ({ ctx }) => {
     const launchdarklyFirst = new LDClient(components.first, ctx, {
-      LAUNCHDARKLY_SDK_KEY: process.env.LAUNCHDARKLY_SDK_KEY!
+      LAUNCHDARKLY_SDK_KEY: process.env.LAUNCHDARKLY_SDK_KEY_FIRST!
     });
 
     const launchdarklySecond = new LDClient(components.second, ctx, {
-      LAUNCHDARKLY_SDK_KEY: process.env.LAUNCHDARKLY_SDK_KEY_2!
+      LAUNCHDARKLY_SDK_KEY: process.env.LAUNCHDARKLY_SDK_KEY_SECOND!
     });
 
     ...
@@ -211,3 +223,5 @@ export const myQuery = query({
 
 - Big segments
 - Diagnostic events
+
+<!-- END: Include on https://convex.dev/components -->

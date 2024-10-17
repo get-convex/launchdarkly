@@ -1,5 +1,5 @@
 import { defineApp } from "convex/server";
-import launchdarkly from "launchdarkly-component/convex.config.js";
+import launchdarkly from "@convex-dev/launchdarkly/convex.config";
 
 const app = defineApp();
 
