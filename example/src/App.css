@@ -5,32 +5,52 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.card {
-  margin-top: 1rem;
-  padding: 0.25rem;
-  height: 20rem;
-  max-height: 20rem;
-  overflow-y: auto;
-  border: 1px solid black;
-}
-
-.input {
+.fruitStore {
   display: flex;
   flex-direction: column;
-  align-items: start;
-  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
 }
 
-.input input {
-  width: 20rem;
+.fruitList {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.fruit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  border: 1px solid black;
+  border-radius: 8px;
+  width: 8rem;
+  height: 8rem;
+  background-color: transparent;
+}
+
+.fruit-selected {
+  background-color: lightblue;
+  font-weight: bold;
+}
+
+.fruit:hover,
+.fruit:focus {
+  background-color: lightblue;
+}
+
+.error {
+  color: red;
+}
+
+.result {
+  color: green;
+}
+
+.welcome {
+  max-width: 65ch;
 }

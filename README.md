@@ -116,8 +116,16 @@ export const myQuery = query({
   args: {},
   handler: async ({ ctx }) => {
     const launchdarkly = new LaunchDarkly(components.launchdarkly, ctx);
-    const res = await launchdarkly.allFlagsState({ key: "myUser" });
-    return res.allFlagValues();
+    const isFlagOn = await launchdarkly.boolVariation(
+      "my-flag",
+      { key: "myUser" },
+      false
+    );
+    if (isFlagOn) {
+      // Do something when flag is on
+    } else {
+      // Do something when flag is off
+    }
   },
 });
 ```
@@ -127,7 +135,6 @@ export const myQuery = query({
 You can run the example in the [`examples`](./example/) folder to see how the LaunchDarkly component works.
 
 ```bash
-npm install
 cd example
 npm install
 ```
