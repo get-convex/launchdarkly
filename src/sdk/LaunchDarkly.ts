@@ -12,7 +12,7 @@ import { EventProcessor } from "./EventProcessor";
 import { RunMutationCtx, RunQueryCtx } from "../component/types";
 import { ComponentApi } from "./useApi";
 
-export class LDClient extends LDClientImpl {
+export class LaunchDarkly extends LDClientImpl {
   constructor(
     component: ComponentApi,
     ctx: RunQueryCtx | RunMutationCtx,

@@ -1,10 +1,10 @@
-import { LDClient } from "@convex-dev/launchdarkly";
+import { LaunchDarkly } from "@convex-dev/launchdarkly";
 import { mutation, query } from "./_generated/server";
 import { components } from "./_generated/api";
 
 export const listFruits = query({
   handler: async (ctx) => {
-    const launchdarkly = new LDClient(components.launchdarkly, ctx);
+    const launchdarkly = new LaunchDarkly(components.launchdarkly, ctx);
 
     const showFruits = await launchdarkly.boolVariation(
       "show-fruits",
@@ -22,7 +22,7 @@ export const listFruits = query({
 
 export const buyFruit = mutation({
   handler: async (ctx) => {
-    const launchdarkly = new LDClient(components.launchdarkly, ctx);
+    const launchdarkly = new LaunchDarkly(components.launchdarkly, ctx);
 
     const user = { key: "user" };
 

@@ -3,7 +3,7 @@ import { LDClientImpl, Context } from "@launchdarkly/js-server-sdk-common";
 import { RunMutationCtx } from "../component/types";
 import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";
-import { createCallbacks, createOptions } from "./LDClient";
+import { createCallbacks, createOptions } from "./LaunchDarkly";
 import { ComponentApi } from "./useApi";
 
 // This is a replacement for the built-in event processor that

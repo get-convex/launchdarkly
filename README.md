@@ -99,17 +99,17 @@ For "Webhook URL", use your deployment's HTTP Actions URL suffixed with the path
 
 ### Using the LaunchDarkly component
 
-You may initialize the LDClient class with the component configuration and use the LaunchDarkly SDK as you would in a normal JavaScript application.
+You may initialize the LaunchDarkly class with the component configuration and use the LaunchDarkly SDK as you would in a normal JavaScript application.
 
 ```typescript
-import { LDClient } from "@convex-dev/launchdarkly";
+import { LaunchDarkly } from "@convex-dev/launchdarkly";
 import { components } from "./_generated/api";
 import { query } from "./_generated/server";
 
 export const myQuery = query({
   args: {},
   handler: async ({ ctx }) => {
-    const launchdarkly = new LDClient(components.launchdarkly, ctx);
+    const launchdarkly = new LaunchDarkly(components.launchdarkly, ctx);
     const res = await launchdarkly.allFlagsState({ key: "myUser" });
     return res.allFlagValues();
   },
@@ -196,19 +196,19 @@ npx convex run --component=second tokens:generate
 
 These secrets can be plugged into seperate integration configurations in LaunchDarkly.
 
-once configured, you may initialize `LDClient` with the appropriate component configuration:
+once configured, you may initialize `LaunchDarkly` with the appropriate component configuration:
 
 ```typescript
-import { LDClient } from "@convex-dev/launchdarkly";
+import { LaunchDarkly } from "@convex-dev/launchdarkly";
 
 export const myQuery = query({
   args: {},
   handler: async ({ ctx }) => {
-    const launchdarklyFirst = new LDClient(components.first, ctx, {
+    const launchdarklyFirst = new LaunchDarkly(components.first, ctx, {
       LAUNCHDARKLY_SDK_KEY: process.env.LAUNCHDARKLY_SDK_KEY_FIRST!
     });
 
-    const launchdarklySecond = new LDClient(components.second, ctx, {
+    const launchdarklySecond = new LaunchDarkly(components.second, ctx, {
       LAUNCHDARKLY_SDK_KEY: process.env.LAUNCHDARKLY_SDK_KEY_SECOND!
     });
 
