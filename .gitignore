@@ -25,3 +25,5 @@ dist-ssr
 
 # It's a package
 package-lock.json
+
+*.tgz
