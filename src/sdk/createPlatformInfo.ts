@@ -13,7 +13,7 @@ class ConvexPlatformInfo implements Info {
 
   sdkData(): SdkData {
     return {
-      name: "@convex/launchdarkly-component",
+      name: "@convex/launchdarkly",
       version: "__LD_VERSION__",
       userAgentBase: "ConvexSdk",
     };

@@ -40,7 +40,11 @@ export class EventProcessor {
 export const sendEvents = async (
   events: { payload: string }[],
   sdkKey: string,
-  eventsUri?: string
+  options?: {
+    allAttributesPrivate?: boolean;
+    privateAttributes?: string[];
+    eventsUri?: string;
+  }
 ) => {
   const platform: Platform = {
     info: createPlatformInfo(),
@@ -49,7 +53,7 @@ export const sendEvents = async (
     requests: { fetch },
   };
 
-  const options: LDOptions = {
+  const ldOptions: LDOptions = {
     ...createOptions(console),
     sendEvents: true,
     // We will flush manually at the end, so make this value really high.
@@ -61,14 +65,20 @@ export const sendEvents = async (
     // Don't connect to any stream.
     streamUri: "",
   };
-  if (eventsUri) {
-    options.eventsUri = eventsUri;
+  if (options?.eventsUri) {
+    ldOptions.eventsUri = options.eventsUri;
+  }
+  if (options?.allAttributesPrivate !== undefined) {
+    ldOptions.allAttributesPrivate = options.allAttributesPrivate;
+  }
+  if (options?.privateAttributes) {
+    ldOptions.privateAttributes = options.privateAttributes;
   }
 
   const client: LDClientImpl = new LDClientImpl(
     sdkKey,
     platform,
-    options,
+    ldOptions,
     createCallbacks(console)
   );
 

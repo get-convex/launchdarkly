@@ -8,21 +8,30 @@ import {
 import { internal } from "./_generated/api";
 import { sendEvents } from "../sdk/EventProcessor";
 
+// TODO: Make this configurable.
 const EVENT_CAPACITY = 1000;
 const EVENT_BATCH_SIZE = 100;
 const EVENT_PROCESSING_INTERVAL_SECONDS = 30;
+
+const eventsOptions = v.optional(
+  v.object({
+    allAttributesPrivate: v.optional(v.boolean()),
+    privateAttributes: v.optional(v.array(v.string())),
+    eventsUri: v.optional(v.string()),
+  })
+);
 
 export const storeEvents = mutation({
   args: {
     payloads: v.array(v.string()),
     sdkKey: v.string(),
-    eventsUri: v.optional(v.string()),
+    options: eventsOptions,
   },
   returns: v.null(),
-  handler: async (ctx, { payloads, sdkKey, eventsUri }) => {
+  handler: async (ctx, { payloads, sdkKey, options }) => {
     await ctx.runMutation(internal.events.scheduleProcessing, {
       sdkKey,
-      eventsUri,
+      options,
     });
 
     // @ts-expect-error Count is internal
@@ -43,10 +52,10 @@ export const storeEvents = mutation({
 export const scheduleProcessing = internalMutation({
   args: {
     sdkKey: v.string(),
-    eventsUri: v.optional(v.string()),
     doneProcessing: v.optional(v.boolean()),
+    options: eventsOptions,
   },
-  handler: async (ctx, { sdkKey, eventsUri, doneProcessing = false }) => {
+  handler: async (ctx, { sdkKey, options, doneProcessing = false }) => {
     const scheduled = await ctx.db.query("eventSchedule").first();
     if (scheduled !== null) {
       if (!doneProcessing) {
@@ -69,7 +78,7 @@ export const scheduleProcessing = internalMutation({
     const jobId = await ctx.scheduler.runAfter(
       (areThereMoreEvents ? 0 : EVENT_PROCESSING_INTERVAL_SECONDS) * 1000,
       internal.events.processEvents,
-      { sdkKey, eventsUri }
+      { sdkKey, options }
     );
 
     await ctx.db.insert("eventSchedule", { jobId });
@@ -77,13 +86,16 @@ export const scheduleProcessing = internalMutation({
 });
 
 export const processEvents = internalAction({
-  args: { sdkKey: v.string(), eventsUri: v.optional(v.string()) },
-  handler: async (ctx, { sdkKey, eventsUri }) => {
+  args: {
+    sdkKey: v.string(),
+    options: eventsOptions,
+  },
+  handler: async (ctx, { sdkKey, options }) => {
     const events = await ctx.runQuery(internal.events.getOldestEvents, {
       count: EVENT_BATCH_SIZE,
     });
 
-    await sendEvents(events, sdkKey, eventsUri);
+    await sendEvents(events, sdkKey, options);
 
     await ctx.runMutation(internal.events.deleteOldestEvents, {
       count: events.length,

@@ -6,7 +6,9 @@
 
 <!-- START: Include on https://convex.dev/components -->
 
-This is a Convex component for [LaunchDarkly](https://launchdarkly.com). It syncs your LaunchDarkly environment to your Convex deployment, allowing you to use your feature flags in Convex.
+This is a Convex component for feature flagging and experimentation using [LaunchDarkly](https://launchdarkly.com).
+
+It syncs your LaunchDarkly environment to your Convex deployment, allowing you to use your feature flags in Convex.
 
 ## Prerequisites
 
@@ -65,7 +67,7 @@ This will register two webhook HTTP handlers in your your Convex app's deploymen
 - `GET YOUR_CONVEX_SITE_URL/ld/webhook` - LaunchDarkly will use this endpoint to verify the installation of your component.
 - `PUT YOUR_CONVEX_SITE_URL/ld/webhook` - LaunchDarkly will send your flag and segment data to this endpoint.
 
-Copy your LaunchDarkly environment's SDK Key and store it as an environment variable `LAUNCHDARKLY_SDK_KEY` in your Convex deployment. You can do so on the [environment variables](https://dashboard.convex.dev/deployment/settings/environment-variables) page or via `npx convex env set LAUNCHDARKLY_SDK_KEY <key>` from the CLI.
+Copy your LaunchDarkly environment's SDK Key and store it as an environment variable named `LAUNCHDARKLY_SDK_KEY` in your Convex deployment. You can do so on the [environment variables](https://dashboard.convex.dev/deployment/settings/environment-variables) page or via `npx convex env set LAUNCHDARKLY_SDK_KEY <key>` from the CLI.
 
 ### Configure the LaunchDarkly integration
 
@@ -113,10 +115,6 @@ export const myQuery = query({
   },
 });
 ```
-
-#### LaunchDarkly Events
-
-As noted in the examples above, queries are unable to send events to LaunchDarkly. If you would like to have the SDK send events to LaunchDarkly (e.g. flag evaluation insights and for experimentation), you should use LaunchDarkly in a mutation or action instead.
 
 ## Example App
 
@@ -219,8 +217,12 @@ export const myQuery = query({
 });
 ```
 
-## Unsupported features
+## Unsupported LaunchDarkly features
 
+The LaunchDarkly component for Convex is in beta, and may not support all functionality available in the LaunchDarkly SDK.
+If you encounter any issues or need help with a specific feature, please file an issue in the ]GitHub repository](https://github.com/get-convex/launchdarkly/issues).
+
+- Sending events in Convex queries is not supported. If you would like to have the SDK send events to LaunchDarkly (e.g. flag evaluation insights and for experimentation), you should use LaunchDarkly in a mutation or action instead.
 - Big segments
 - Diagnostic events
 
