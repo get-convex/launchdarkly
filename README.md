@@ -246,7 +246,3 @@ If you encounter any issues or need help with a specific feature, please file an
 - Diagnostic events
 
 <!-- END: Include on https://convex.dev/components -->
-
-```
-
-```
