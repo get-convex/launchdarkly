@@ -96,11 +96,7 @@ import { components, query } from "./_generated/server";
 export const myQuery = query({
   args: {},
   handler: async ({ ctx }) => {
-    const launchdarkly = new LDClient(
-      components.launchdarkly,
-      ctx,
-      process.env.LAUNCHDARKLY_SDK_KEY!
-    );
+    const launchdarkly = new LDClient(components.launchdarkly, ctx);
     const res = await launchdarkly.allFlagsState({ key: "myUser" });
     return res.allFlagValues();
   },
@@ -198,9 +194,13 @@ import { LDClient } from "@convex-dev/launchdarkly";
 export const myQuery = query({
   args: {},
   handler: async ({ ctx }) => {
-    const launchdarklyFirst = new LDClient(components.first, ctx, process.env.LAUNCHDARKLY_SDK_KEY!);
+    const launchdarklyFirst = new LDClient(components.first, ctx, {
+      LAUNCHDARKLY_SDK_KEY: process.env.LAUNCHDARKLY_SDK_KEY!
+    });
 
-    const launchdarklySecond = new LDClient(components.second, ctx, process.env.LAUNCHDARKLY_SDK_KEY_2!);
+    const launchdarklySecond = new LDClient(components.second, ctx, {
+      LAUNCHDARKLY_SDK_KEY: process.env.LAUNCHDARKLY_SDK_KEY_2!
+    });
 
     ...
   },

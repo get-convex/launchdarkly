@@ -3,11 +3,7 @@ import { components, mutation, query } from "./_generated/server";
 
 export const listFruits = query({
   handler: async (ctx) => {
-    const launchdarkly = new LDClient(
-      components.launchdarkly,
-      ctx,
-      process.env.LAUNCHDARKLY_SDK_KEY!
-    );
+    const launchdarkly = new LDClient(components.launchdarkly, ctx);
 
     const showFruits = await launchdarkly.boolVariation(
       "show-fruits",
@@ -25,11 +21,7 @@ export const listFruits = query({
 
 export const buyFruit = mutation({
   handler: async (ctx) => {
-    const launchdarkly = new LDClient(
-      components.launchdarkly,
-      ctx,
-      process.env.LAUNCHDARKLY_SDK_KEY!
-    );
+    const launchdarkly = new LDClient(components.launchdarkly, ctx);
 
     const user = { key: "user" };
 

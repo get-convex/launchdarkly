@@ -21,10 +21,10 @@ export class LDClient extends LDClientImpl {
   constructor(
     component: LaunchDarklyComponent,
     ctx: RunQueryCtx | RunMutationCtx,
-    sdkKey: string,
     options?: {
       application?: LDOptions["application"];
       sendEvents?: boolean;
+      LAUNCHDARKLY_SDK_KEY?: string;
     }
   ) {
     const { store, events } = component;
@@ -47,6 +47,11 @@ export class LDClient extends LDClientImpl {
       requests: undefined,
     };
 
+    const sdkKey =
+      options?.LAUNCHDARKLY_SDK_KEY || process.env.LAUNCHDARKLY_SDK_KEY;
+    if (!sdkKey) {
+      throw new Error("LAUNCHDARKLY_SDK_KEY is required");
+    }
     super(sdkKey, platform, ldOptions, createCallbacks(logger));
 
     // We can only send events if the context has a runMutation function.
