@@ -27,7 +27,6 @@ export class FeatureStore implements LDFeatureStore {
   constructor(
     private readonly ctx: RunQueryCtx,
     private readonly store: LaunchDarklyStore,
-    private readonly description: string,
     private logger: LDLogger
   ) {}
 
@@ -137,7 +136,7 @@ export class FeatureStore implements LDFeatureStore {
   }
 
   getDescription(): string {
-    return this.description;
+    return "CONVEX";
   }
 
   // unused

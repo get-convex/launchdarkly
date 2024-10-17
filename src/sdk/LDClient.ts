@@ -15,8 +15,6 @@ import {
   RunQueryCtx,
 } from "../component/types";
 
-const convex = "CONVEX";
-
 export class LDClient extends LDClientImpl {
   constructor(
     component: LaunchDarklyComponent,
@@ -30,7 +28,7 @@ export class LDClient extends LDClientImpl {
     const { store, events } = component;
     const logger = console;
 
-    const featureStore = new FeatureStore(ctx, store, convex, logger);
+    const featureStore = new FeatureStore(ctx, store, logger);
 
     const sendEvents = options?.sendEvents !== false;
     const ldOptions: LDOptions = {
@@ -85,9 +83,6 @@ export const createOptions = (logger: LDLogger): LDOptions => ({
   },
 
   logger,
-
-  wrapperName: convex,
-  wrapperVersion: "0.0.1",
 });
 
 export const createCallbacks = (logger: LDLogger) => ({
