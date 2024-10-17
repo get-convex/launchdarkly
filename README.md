@@ -101,7 +101,7 @@ For "Component API Token", use the shared secret you generated earlier.
 
 Once you save, you can open the integration form again and click the Validate button to test the connection. If you encounter errors, check the logs page in the Convex dashboard for more information.
 
-For "Webhook URL", use your deployment's HTTP Actions URL suffixed with the path provided to the `registerRoutes` call in your `http.ts` file. By default, the path is `/ld/webhook`. You can retrieve your HTTP Actions URL on the [Deployment Settings page](https://dashboard.convex.dev/deployment/settings) of the Convex dashboard. Example: https://techno-kitten-138.convex.site/ld/webhook
+For "Webhook URL", use your deployment's HTTP Actions URL suffixed with the path provided to the `registerRoutes` call in your `http.ts` file. By default, the path is `/ld/webhook`. You can retrieve your HTTP Actions URL on the [Deployment Settings page](https://dashboard.convex.dev/deployment/settings) of the Convex dashboard. Example: `https://techno-kitten-138.convex.site/ld/webhook`
 
 ### Using the LaunchDarkly component
 
@@ -226,7 +226,7 @@ export const myQuery = query({
 ## Unsupported LaunchDarkly features
 
 The LaunchDarkly component for Convex is in beta, and may not support all functionality available in the LaunchDarkly SDK.
-If you encounter any issues or need help with a specific feature, please file an issue in the ]GitHub repository](https://github.com/get-convex/launchdarkly/issues).
+If you encounter any issues or need help with a specific feature, please file an issue in the [GitHub repository](https://github.com/get-convex/launchdarkly/issues).
 
 - Sending events in Convex queries is not supported. If you would like to have the SDK send events to LaunchDarkly (e.g. flag evaluation insights and for experimentation), you should use LaunchDarkly in a mutation or action instead.
 - Big segments
