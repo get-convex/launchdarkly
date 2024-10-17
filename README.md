@@ -10,6 +10,12 @@ This is a Convex component for feature flagging and experimentation using [Launc
 
 It syncs your LaunchDarkly environment to your Convex deployment, allowing you to use your feature flags in Convex.
 
+## Why use LaunchDarkly with Convex?
+
+- **Feature flags in your backend**: Use feature flags in your Convex functions to dynamically control the behavior of your app.
+- **Experimentation**: Run A/B tests and feature experiments in Convex using LaunchDarkly.
+- **Real-time updates**: Your LaunchDarkly flags and segments are synced to Convex in real-time, so you can use them in your app without needing to make additional API requests.
+
 ## Prerequisites
 
 ### LaunchDarkly account
