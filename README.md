@@ -193,7 +193,7 @@ export default app;
 Be sure to also update your `http.ts` file to register the routes for each component:
 
 ```typescript
-// http.ts
+// convex/http.ts
 import { httpRouter } from "convex/server";
 import { registerRoutes } from "@convex-dev/launchdarkly";
 import { components } from "./_generated/api";

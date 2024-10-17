@@ -2,7 +2,7 @@
   "name": "@convex-dev/launchdarkly",
   "description": "A Convex component that syncs LaunchDarkly feature flags.",
   "homepage": "https://github.com/get-convex/launchdarkly#readme",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "repository": "github:get-convex/launchdarkly",
   "bugs": {
@@ -21,9 +21,7 @@
     "build:esm": "tsc --project ./esm.json && echo '{\\n  \"type\": \"module\"\\n}' > dist/esm/package.json",
     "build:cjs": "tsc --project ./commonjs.json && echo '{\\n  \"type\": \"commonjs\"\\n}' > dist/commonjs/package.json",
     "typecheck": "tsc --noEmit",
-    "prepare": "npm run build",
-    "prepack": "node node10stubs.mjs",
-    "postpack": "node node10stubs.mjs --cleanup"
+    "prepare": "npm run build"
   },
   "files": [
     "dist",
