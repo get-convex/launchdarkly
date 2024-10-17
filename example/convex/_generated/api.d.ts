@@ -59,14 +59,6 @@ export declare const components: {
         null
       >;
     };
-    initialize: {
-      poll: FunctionReference<
-        "action",
-        "internal",
-        { intervalSeconds?: number; sdkKey: string; timeoutSeconds?: number },
-        any
-      >;
-    };
     store: {
       get: FunctionReference<
         "query",

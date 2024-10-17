@@ -1,2 +1,2 @@
-export { registerRoutes } from "./component/registerRoutes";
+export { registerRoutes } from "./sdk/registerRoutes";
 export { LDClient } from "./sdk/LDClient";

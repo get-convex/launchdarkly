@@ -8,10 +8,10 @@ import {
 import { internal } from "./_generated/api";
 import { sendEvents } from "../sdk/EventProcessor";
 
-// TODO: Make this configurable.
+// TODO: Make these configurable.
 const EVENT_CAPACITY = 1000;
 const EVENT_BATCH_SIZE = 100;
-const EVENT_PROCESSING_INTERVAL_SECONDS = 30;
+const EVENT_PROCESSING_INTERVAL_SECONDS = 5;
 
 const eventsOptions = v.optional(
   v.object({

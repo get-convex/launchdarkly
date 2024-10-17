@@ -4,7 +4,7 @@ import { RunMutationCtx } from "../component/types";
 import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";
 import { createCallbacks, createOptions } from "./LDClient";
-import { Mounts } from "../component/_generated/api";
+import { ComponentApi } from "./useApi";
 
 // This is a replacement for the built-in event processor that
 // stores events in the convex component instead of sending them to LaunchDarkly.
@@ -12,7 +12,7 @@ import { Mounts } from "../component/_generated/api";
 // and sent to LaunchDarkly.
 export class EventProcessor {
   constructor(
-    private readonly eventStore: Mounts["events"],
+    private readonly eventStore: ComponentApi["events"],
     private readonly ctx: RunMutationCtx,
     private readonly sdkKey: string
   ) {}
@@ -63,18 +63,8 @@ export const sendEvents = async (
     // Then the number of events to account for any extra events,
     // like debug events.
     capacity: events.length * 2,
-    // Don't connect to any stream.
-    streamUri: "",
+    ...options,
   };
-  if (options?.eventsUri) {
-    ldOptions.eventsUri = options.eventsUri;
-  }
-  if (options?.allAttributesPrivate !== undefined) {
-    ldOptions.allAttributesPrivate = options.allAttributesPrivate;
-  }
-  if (options?.privateAttributes) {
-    ldOptions.privateAttributes = options.privateAttributes;
-  }
 
   const client: LDClientImpl = new LDClientImpl(
     sdkKey,

@@ -1,12 +1,12 @@
 import { AnyDataModel, GenericActionCtx, HttpRouter } from "convex/server";
-import { httpAction } from "./_generated/server";
-import { Mounts } from "./_generated/api";
+import { httpAction } from "../component/_generated/server";
+import { ComponentApi } from "./useApi";
 
 export const registerRoutes = (
-  component: Mounts,
+  component: ComponentApi,
   http: HttpRouter,
   path = "/ld/webhook"
-) => {
+): void => {
   const receiveUpdate = httpAction(async (ctx, req) => {
     const validateHeaderResult = await validateHeader(req, ctx, component);
     if (validateHeaderResult) {
@@ -44,7 +44,7 @@ export const registerRoutes = (
 const validateHeader = async (
   req: Request,
   ctx: GenericActionCtx<AnyDataModel>,
-  component: Mounts
+  component: ComponentApi
 ) => {
   const auth = req.headers.get("Authorization");
   const token = auth?.split("Bearer ")[1];

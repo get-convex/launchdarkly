@@ -11,7 +11,6 @@
  */
 
 import type * as events from "../events.js";
-import type * as registerRoutes from "../registerRoutes.js";
 import type * as store from "../store.js";
 import type * as tokens from "../tokens.js";
 import type * as types from "../types.js";
@@ -31,7 +30,6 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   events: typeof events;
-  registerRoutes: typeof registerRoutes;
   store: typeof store;
   tokens: typeof tokens;
   types: typeof types;
@@ -41,8 +39,16 @@ export type Mounts = {
     storeEvents: FunctionReference<
       "mutation",
       "public",
-      { eventsUri?: string; payloads: Array<string>; sdkKey: string },
-      any
+      {
+        options?: {
+          allAttributesPrivate?: boolean;
+          eventsUri?: string;
+          privateAttributes?: Array<string>;
+        };
+        payloads: Array<string>;
+        sdkKey: string;
+      },
+      null
     >;
   };
   store: {
@@ -83,5 +89,7 @@ export declare const internal: FilterApi<
   typeof fullApiWithMounts,
   FunctionReference<any, "internal">
 >;
+
+export declare const components: {};
 
 /* prettier-ignore-end */

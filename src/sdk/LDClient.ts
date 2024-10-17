@@ -10,11 +10,11 @@ import ConvexCrypto from "./crypto";
 import { FeatureStore } from "./FeatureStore";
 import { EventProcessor } from "./EventProcessor";
 import { RunMutationCtx, RunQueryCtx } from "../component/types";
-import { Mounts } from "../component/_generated/api";
+import { ComponentApi } from "./useApi";
 
 export class LDClient extends LDClientImpl {
   constructor(
-    component: Mounts,
+    component: ComponentApi,
     ctx: RunQueryCtx | RunMutationCtx,
     options?: {
       application?: LDOptions["application"];
