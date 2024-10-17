@@ -33,7 +33,7 @@
     "convex": "~1.16.5 || ~1.17.0"
   },
   "dependencies": {
-    "@launchdarkly/js-server-sdk-common": "2.6.1",
+    "@launchdarkly/js-server-sdk-common": "2.8.0",
     "crypto-js": "^4.2.0"
   },
   "devDependencies": {
