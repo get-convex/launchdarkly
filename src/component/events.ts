@@ -59,7 +59,6 @@ export const scheduleProcessing = internalMutation({
     const scheduled = await ctx.db.query("eventSchedule").first();
     if (scheduled !== null) {
       if (!doneProcessing) {
-        console.debug("Event processing is already scheduled");
         return;
       }
 
@@ -71,7 +70,6 @@ export const scheduleProcessing = internalMutation({
         .length > 0;
 
     if (!areThereMoreEvents && doneProcessing) {
-      console.debug("No more events to process");
       return;
     }
 
