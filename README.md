@@ -165,7 +165,7 @@ When you're ready to deploy your app to production with LaunchDarkly, be sure to
 You may use this command to generate your production secret:
 
 ```bash
-npx convex run --component-path=launchdarkly --prod tokens:generate
+npx convex run --component=launchdarkly --prod tokens:generate
 ```
 
 ## Syncing multiple LaunchDarkly environments in one Convex app
