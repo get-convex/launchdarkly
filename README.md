@@ -20,7 +20,7 @@ It syncs your LaunchDarkly environment to your Convex deployment, allowing you t
 
 ### LaunchDarkly account
 
-To use the LaunchDarkly Convex component, you'll need a LaunchDarkly account. Your LaunchDarkly subscription must include access to integrations.
+To use this component you must have a LaunchDarkly account on the [LaunchDarkly Foundation](https://launchdarkly.com/pricing/) plan.
 
 ### Convex App
 
