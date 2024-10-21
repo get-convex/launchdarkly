@@ -132,7 +132,7 @@ export const myQuery = query({
 
 ## Example App
 
-You can run the example in the [`examples`](./example/) folder to see how the LaunchDarkly component works.
+You can run the example in the [`examples`](./example/README.md) folder to see how the LaunchDarkly component works.
 
 ```bash
 cd example
