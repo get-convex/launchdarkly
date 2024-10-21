@@ -9,6 +9,9 @@ function App() {
   const [selectedFruit, setSelectedFruit] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<string | null>(null);
+  if (selectedFruit && !fruits?.find((f) => f._id === selectedFruit)) {
+    setSelectedFruit(null);
+  }
   const isInitialized = useQuery(api.fruits.initialized);
   if (!isInitialized) {
     return (
