@@ -4,6 +4,17 @@ import { components } from "./_generated/api";
 
 export const listFruits = query({
   handler: async (ctx) => {
+    const launchdarkly = new LaunchDarkly(components.launchdarkly, ctx);
+    const user = { key: "myUserId" };
+
+    const showFruits = await launchdarkly.boolVariation(
+      "can-show-fruits",
+      user,
+      true
+    );
+    if (!showFruits) {
+      return [];
+    }
     return await ctx.db.query("fruits").collect();
   },
 });
@@ -12,7 +23,7 @@ export const buyFruit = mutation({
   handler: async (ctx) => {
     const launchdarkly = new LaunchDarkly(components.launchdarkly, ctx);
 
-    const user = { key: "user" };
+    const user = { key: "myUserId" };
 
     const showFruits = await launchdarkly.boolVariation(
       "can-buy-fruits",
