@@ -41,6 +41,21 @@ export const buyFruit = mutation({
   },
 });
 
+export const initialized = query({
+  args: {},
+  handler: async (ctx) => {
+    if (!process.env.LAUNCHDARKLY_SDK_KEY) {
+      return false;
+    }
+    const launchdarkly = new LaunchDarkly(components.launchdarkly, ctx);
+    return (
+      (await launchdarkly.allFlagsState({ key: "any" })).allValues()[
+        "can-buy-fruits"
+      ] !== undefined
+    );
+  },
+});
+
 export const seedData = mutation({
   handler: async (ctx) => {
     await ctx.db.insert("fruits", { name: "Apple", emoji: "🍎" });
