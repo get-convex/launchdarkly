@@ -40,11 +40,3 @@ export const buyFruit = mutation({
     launchdarkly.track("buy-fruit", user);
   },
 });
-
-export const seedData = mutation({
-  handler: async (ctx) => {
-    await ctx.db.insert("fruits", { name: "Apple", emoji: "🍎" });
-    await ctx.db.insert("fruits", { name: "Banana", emoji: "🍌" });
-    await ctx.db.insert("fruits", { name: "Cherry", emoji: "🍒" });
-  },
-});
