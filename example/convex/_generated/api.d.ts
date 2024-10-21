@@ -10,7 +10,7 @@
  * @module
  */
 
-import type * as fruits from "../fruits.js";
+import type * as example from "../example.js";
 import type * as http from "../http.js";
 
 import type {
@@ -27,7 +27,7 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  fruits: typeof fruits;
+  example: typeof example;
   http: typeof http;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

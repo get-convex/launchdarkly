@@ -4,15 +4,15 @@ import { api } from "../convex/_generated/api";
 import { useState } from "react";
 
 function App() {
-  const fruits = useQuery(api.fruits.listFruits);
-  const buyFruit = useMutation(api.fruits.buyFruit);
+  const fruits = useQuery(api.example.listFruits);
+  const buyFruit = useMutation(api.example.buyFruit);
   const [selectedFruit, setSelectedFruit] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<string | null>(null);
   if (selectedFruit && !fruits?.find((f) => f._id === selectedFruit)) {
     setSelectedFruit(null);
   }
-  const isInitialized = useQuery(api.fruits.initialized);
+  const isInitialized = useQuery(api.example.initialized);
   if (!isInitialized) {
     return (
       <div className="welcome">
