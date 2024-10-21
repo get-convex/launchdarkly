@@ -9,15 +9,16 @@ function App() {
   const [selectedFruit, setSelectedFruit] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<string | null>(null);
+  if (selectedFruit && !fruits?.find((f) => f._id === selectedFruit)) {
+    setSelectedFruit(null);
+  }
 
   return (
     <div className="fruitStore">
-      <div className="welcome">
-        Welcome to the LaunchDarkly Convex component demo! You'll need to
-        configure the LaunchDarkly Convex integration by following the
-        instructions in <code>README.md</code> and create a boolean flag with
-        they key <code>can-buy-fruits</code>.
-      </div>
+      <h1>Fruit Store</h1>
+      {fruits !== undefined && fruits.length === 0 && (
+        <div className="error">No fruit available</div>
+      )}
       <div className="fruitList">
         {fruits &&
           fruits.map((fruit) => (
