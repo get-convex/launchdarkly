@@ -4,15 +4,16 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "cvx": "convex dev --live-component-sources --typecheck-components",
+    "dev": "npm-run-all --parallel dev:backend dev:frontend",
+    "dev:frontend": "vite",
+    "dev:backend": "convex dev --live-component-sources --typecheck-components",
     "build": "tsc -b && vite build",
     "lint": "tsc -p convex && eslint convex",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@convex-dev/launchdarkly": "file:..",
     "convex": "file:../node_modules/convex",
-    "@convex-dev/launchdarkly": "0.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -25,6 +26,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.7",
+    "npm-run-all2": "^6.2.4",
     "typescript": "^5.2.2",
     "vite": "^5.3.4"
   }
