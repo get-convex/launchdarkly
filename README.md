@@ -20,7 +20,9 @@ It syncs your LaunchDarkly environment to your Convex deployment, allowing you t
 
 ### LaunchDarkly account
 
-To use this component you must have a LaunchDarkly account on the [LaunchDarkly Foundation](https://launchdarkly.com/pricing/) plan.
+To use the LaunchDarkly Convex component, you'll need a LaunchDarkly account. Your LaunchDarkly subscription must include access to integrations.
+
+Copy your LaunchDarkly environment's SDK Key and store it as an environment variable named `LAUNCHDARKLY_SDK_KEY` in your Convex deployment. You can do so on the [environment variables](https://dashboard.convex.dev/deployment/settings/environment-variables) page or via `npx convex env set LAUNCHDARKLY_SDK_KEY <key>` from the CLI.
 
 ### Convex App
 
@@ -52,6 +54,12 @@ app.use(launchdarkly);
 export default app;
 ```
 
+Once you've installed the component, make sure you push your changes to your Convex app:
+
+```bash
+npx convex dev
+```
+
 Register webhooks by creating an `http.ts` file in your `convex/` folder:
 
 ```typescript
@@ -73,21 +81,9 @@ This will register two webhook HTTP handlers in your your Convex app's deploymen
 - `GET YOUR_CONVEX_SITE_URL/ld/webhook` - LaunchDarkly will use this endpoint to verify the installation of your component.
 - `PUT YOUR_CONVEX_SITE_URL/ld/webhook` - LaunchDarkly will send your flag and segment data to this endpoint.
 
-Copy your LaunchDarkly environment's SDK Key and store it as an environment variable named `LAUNCHDARKLY_SDK_KEY` in your Convex deployment. You can do so on the [environment variables](https://dashboard.convex.dev/deployment/settings/environment-variables) page or via `npx convex env set LAUNCHDARKLY_SDK_KEY <key>` from the CLI.
-
 ### Configure the LaunchDarkly integration
 
-Once you've installed the component, make sure you push your changes to your Convex app:
-
-```bash
-npx convex dev
-```
-
-Generate a shared secret to be used by the LaunchDarkly integration. This will ensure the payloads sent to your webhook are coming from LaunchDarkly.
-
-```bash
-npx convex run --component=launchdarkly tokens:generate
-```
+Copy your LaunchDarkly environment's SDK Key and store it as an environment variable named `LAUNCHDARKLY_SDK_KEY` in your Convex deployment. You can do so on the [environment variables](https://dashboard.convex.dev/deployment/settings/environment-variables) page or via `npx convex env set LAUNCHDARKLY_SDK_KEY sdk-***` from the CLI.
 
 You can now configure the LaunchDarkly integration. On the [Integrations page](https://app.launchdarkly.com/settings/integrations) of the LaunchDarkly dashboard, search for Convex and click "Add Integration".
 
@@ -97,11 +93,15 @@ Each of your Convex deployments (e.g. Production and other developer's environme
 
 Select a name and environment for the integration.
 
-For "Component API Token", use the shared secret you generated earlier.
+For "Webhook URL", use your deployment's HTTP Actions URL suffixed with the path provided to the `registerRoutes` call in your `http.ts` file. By default, the path is `/ld/webhook`. You can retrieve your HTTP Actions URL on the [Deployment Settings page](https://dashboard.convex.dev/deployment/settings) of the Convex dashboard. Example: `https://techno-kitten-138.convex.site/ld/webhook`
+
+For "Component API Token", generate a shared secret to be used by the LaunchDarkly integration. This will ensure the payloads sent to your webhook are coming from LaunchDarkly.
+
+```bash
+npx convex run --component=launchdarkly tokens:generate --push
+```
 
 Once you save, you can open the integration form again and click the Validate button to test the connection. If you encounter errors, check the logs page in the Convex dashboard for more information.
-
-For "Webhook URL", use your deployment's HTTP Actions URL suffixed with the path provided to the `registerRoutes` call in your `http.ts` file. By default, the path is `/ld/webhook`. You can retrieve your HTTP Actions URL on the [Deployment Settings page](https://dashboard.convex.dev/deployment/settings) of the Convex dashboard. Example: `https://techno-kitten-138.convex.site/ld/webhook`
 
 ### Using the LaunchDarkly component
 
