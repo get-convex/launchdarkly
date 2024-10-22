@@ -1,5 +1,9 @@
 import type { Platform, LDOptions } from "@launchdarkly/js-server-sdk-common";
-import { LDClientImpl, Context } from "@launchdarkly/js-server-sdk-common";
+import {
+  LDClientImpl,
+  Context,
+  BasicLogger,
+} from "@launchdarkly/js-server-sdk-common";
 import { RunMutationCtx } from "../component/types";
 import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";
@@ -52,8 +56,12 @@ export const sendEvents = async (
     requests: { fetch },
   };
 
+  const logger = new BasicLogger({
+    level: "info",
+  });
+
   const ldOptions: LDOptions = {
-    ...createOptions(console),
+    ...createOptions(logger),
     sendEvents: true,
     // We will flush manually at the end, so make this value really high.
     flushInterval: 5,

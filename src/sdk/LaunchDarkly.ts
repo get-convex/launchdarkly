@@ -3,6 +3,7 @@ import {
   type Platform,
   type LDLogger,
   LDClientImpl,
+  BasicLogger,
 } from "@launchdarkly/js-server-sdk-common";
 
 import { createPlatformInfo } from "./createPlatformInfo";
@@ -22,7 +23,9 @@ export class LaunchDarkly extends LDClientImpl {
     }
   ) {
     const { store, events } = component;
-    const logger = console;
+    const logger = new BasicLogger({
+      level: "info",
+    });
 
     const featureStore = new FeatureStore(ctx, store, logger);
 
