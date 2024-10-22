@@ -26,6 +26,12 @@ function App() {
 
   return (
     <div className="fruitStore">
+      <h1>Fruit Store</h1>
+      {fruits !== undefined && fruits.length === 0 && (
+        <div className="error">
+          No fruit available. Run `npx convex run example:seedData` to add some.
+        </div>
+      )}
       <div className="fruitList">
         {fruits &&
           fruits.map((fruit) => (
