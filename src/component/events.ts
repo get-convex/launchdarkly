@@ -24,13 +24,16 @@ const eventsOptions = v.optional(
 export const storeEvents = mutation({
   args: {
     payloads: v.array(v.string()),
-    sdkKey: v.string(),
     options: eventsOptions,
   },
   returns: v.null(),
-  handler: async (ctx, { payloads, sdkKey, options }) => {
+  handler: async (ctx, { payloads, options }) => {
+    const sdkKey = await ctx.runQuery(internal.sdkKey.get);
+    if (!sdkKey) {
+      return;
+    }
+
     await ctx.runMutation(internal.events.scheduleProcessing, {
-      sdkKey,
       options,
     });
 
@@ -51,11 +54,10 @@ export const storeEvents = mutation({
 
 export const scheduleProcessing = internalMutation({
   args: {
-    sdkKey: v.string(),
     doneProcessing: v.optional(v.boolean()),
     options: eventsOptions,
   },
-  handler: async (ctx, { sdkKey, options, doneProcessing = false }) => {
+  handler: async (ctx, { options, doneProcessing = false }) => {
     const scheduled = await ctx.db.query("eventSchedule").first();
     if (scheduled !== null) {
       if (!doneProcessing) {
@@ -76,7 +78,7 @@ export const scheduleProcessing = internalMutation({
     const jobId = await ctx.scheduler.runAfter(
       (areThereMoreEvents ? 0 : EVENT_PROCESSING_INTERVAL_SECONDS) * 1000,
       internal.events.processEvents,
-      { sdkKey, options }
+      { options }
     );
 
     await ctx.db.insert("eventSchedule", { jobId });
@@ -85,13 +87,18 @@ export const scheduleProcessing = internalMutation({
 
 export const processEvents = internalAction({
   args: {
-    sdkKey: v.string(),
     options: eventsOptions,
   },
-  handler: async (ctx, { sdkKey, options }) => {
+  handler: async (ctx, { options }) => {
     const events = await ctx.runQuery(internal.events.getOldestEvents, {
       count: EVENT_BATCH_SIZE,
     });
+
+    const sdkKey = await ctx.runQuery(internal.sdkKey.get);
+    if (!sdkKey) {
+      console.error("No SDK key found, cannot send events.");
+      return;
+    }
 
     await sendEvents(events, sdkKey, options);
 
@@ -100,8 +107,8 @@ export const processEvents = internalAction({
     });
 
     await ctx.runMutation(internal.events.scheduleProcessing, {
-      sdkKey,
       doneProcessing: true,
+      options,
     });
   },
 });
