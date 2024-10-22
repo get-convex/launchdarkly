@@ -208,7 +208,7 @@ npx convex run --component=second sdkKey:store '{ "sdkKey": "<second_key>" }'
 
 These secrets can be plugged into seperate integration configurations in LaunchDarkly.
 
-once configured, you may initialize `LaunchDarkly` with the appropriate component configuration:
+Once configured, you may initialize `LaunchDarkly` with the appropriate component configuration:
 
 ```typescript
 import { LaunchDarkly } from "@convex-dev/launchdarkly";
