@@ -134,30 +134,6 @@ export const myQuery = query({
 
 You can run the example in the [`examples`](./example/README.md) folder to see how the LaunchDarkly component works.
 
-```bash
-cd example
-npm install
-```
-
-Follow the instructions above for [configuring the LaunchDarkly integration](#configure-the-launchdarkly-integration) and then run the example:
-
-In seperate terminals:
-
-```bash
-# Push the code to Convex
-npm run cvx
-```
-
-```bash
-# Seed the database with some example data
-npx convex run fruits:seedData
-```
-
-```bash
-# Run the front-end
-npm run dev
-```
-
 ## Production
 
 When you're ready to deploy your app to production with LaunchDarkly, be sure to follow all the setup steps for produciton, including adding the `LAUNCHDARKLY_SDK_KEY` evnironment variable and configuring an additional shared secret and integration for Production. You'll want this to be configured before any of your code relies on the LaunchDarkly flags.
