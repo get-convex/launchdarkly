@@ -84,7 +84,5 @@ export const sendEvents = async (
     eventProcessor.sendEvent(e);
   }
 
-  console.debug("EVENTS FLUSHING NOW");
-
   await eventProcessor.flush();
 };
