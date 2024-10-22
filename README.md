@@ -103,7 +103,7 @@ Once you save, you can open the integration form again and click the Validate bu
 
 Now, you'll need to copy your LaunchDarkly environment's SDK Key and store it in the component. You can copy your LaunchDarkly SDK by loading the [LaunchDarkly dashboard](https://app.launchdarkly.com), selecting your environment, and pressing Cmd + K (or Ctrl + K) to open the command palette. Select the "Copy SDK Key for the current environment" option.
 
-[![Copy SDK Key](./images/copy-sdk-key.png)](./images/copy-sdk-key.png)
+![Copy SDK Key](./images/copy-sdk-key.png)
 
 The value you copied should start with `sdk-`.
 
