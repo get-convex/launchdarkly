@@ -81,8 +81,6 @@ This will register two webhook HTTP handlers in your your Convex app's deploymen
 
 ### Configure the LaunchDarkly integration
 
-Copy your LaunchDarkly environment's SDK Key and store it as an environment variable named `LAUNCHDARKLY_SDK_KEY` in your Convex deployment. You can do so on the [environment variables](https://dashboard.convex.dev/deployment/settings/environment-variables) page or via `npx convex env set LAUNCHDARKLY_SDK_KEY sdk-***` from the CLI.
-
 You can now configure the LaunchDarkly integration. On the [Integrations page](https://app.launchdarkly.com/settings/integrations) of the LaunchDarkly dashboard, search for Convex and click "Add Integration".
 
 Each of your Convex deployments (e.g. Production and other developer's environments) will need their own integration configured in LaunchDarkly.
