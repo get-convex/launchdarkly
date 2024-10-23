@@ -4,6 +4,7 @@ import {
   internalMutation,
   internalQuery,
   mutation,
+  MutationCtx,
 } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { sendEvents } from "../sdk/EventProcessor";
@@ -29,10 +30,7 @@ export const storeEvents = mutation({
   },
   returns: v.null(),
   handler: async (ctx, { sdkKey, payloads, options }) => {
-    await ctx.runMutation(internal.events.scheduleProcessing, {
-      sdkKey,
-      options,
-    });
+    await handleScheduleProcessing(ctx, { sdkKey, options });
 
     // @ts-expect-error Count is internal
     const numEvents = await ctx.db.query("events").count();
@@ -49,38 +47,54 @@ export const storeEvents = mutation({
   },
 });
 
-export const scheduleProcessing = internalMutation({
-  args: {
-    sdkKey: v.string(),
-    doneProcessing: v.optional(v.boolean()),
-    options: eventsOptions,
-  },
-  handler: async (ctx, { sdkKey, options, doneProcessing = false }) => {
-    const scheduled = await ctx.db.query("eventSchedule").first();
-    if (scheduled !== null) {
-      if (!doneProcessing) {
-        return;
-      }
-
-      await ctx.db.delete(scheduled._id);
-    }
-
-    const areThereMoreEvents =
-      (await ctx.runQuery(internal.events.getOldestEvents, { count: 1 }))
-        .length > 0;
-
-    if (!areThereMoreEvents && doneProcessing) {
+const handleScheduleProcessing = async (
+  ctx: MutationCtx,
+  {
+    sdkKey,
+    options,
+    isRescheduling = false,
+  }: {
+    sdkKey: string;
+    isRescheduling?: boolean;
+    options?: {
+      allAttributesPrivate?: boolean;
+      privateAttributes?: string[];
+      eventsUri?: string;
+    };
+  }
+) => {
+  const scheduled = await ctx.db.query("eventSchedule").first();
+  if (scheduled !== null) {
+    if (!isRescheduling) {
       return;
     }
 
-    const jobId = await ctx.scheduler.runAfter(
-      (areThereMoreEvents ? 0 : EVENT_PROCESSING_INTERVAL_SECONDS) * 1000,
-      internal.events.processEvents,
-      { sdkKey, options }
-    );
+    // We want to scheduled a new job immediately, so delete the old one.
+    await ctx.db.delete(scheduled._id);
+  }
 
-    await ctx.db.insert("eventSchedule", { jobId });
+  const areThereMoreEvents = (await ctx.db.query("events").take(1)).length > 0;
+
+  if (!areThereMoreEvents && isRescheduling) {
+    return;
+  }
+
+  const jobId = await ctx.scheduler.runAfter(
+    (areThereMoreEvents ? 0 : EVENT_PROCESSING_INTERVAL_SECONDS) * 1000,
+    internal.events.processEvents,
+    { sdkKey, options }
+  );
+
+  await ctx.db.insert("eventSchedule", { jobId });
+};
+
+export const rescheduleProcessing = internalMutation({
+  args: {
+    sdkKey: v.string(),
+    options: eventsOptions,
   },
+  handler: (ctx, args) =>
+    handleScheduleProcessing(ctx, { ...args, isRescheduling: true }),
 });
 
 export const processEvents = internalAction({
@@ -99,9 +113,8 @@ export const processEvents = internalAction({
       count: events.length,
     });
 
-    await ctx.runMutation(internal.events.scheduleProcessing, {
+    await ctx.runMutation(internal.events.rescheduleProcessing, {
       sdkKey,
-      doneProcessing: true,
       options,
     });
   },
