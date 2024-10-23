@@ -9,7 +9,7 @@ import { internal } from "./_generated/api";
 import { sendEvents } from "../sdk/EventProcessor";
 
 // TODO: Make these configurable.
-const EVENT_CAPACITY = 1000;
+export const EVENT_CAPACITY = 1000;
 const EVENT_BATCH_SIZE = 100;
 const EVENT_PROCESSING_INTERVAL_SECONDS = 5;
 
@@ -37,15 +37,21 @@ export const storeEvents = mutation({
       options,
     });
 
-    // @ts-expect-error Count is internal
-    const numEvents = await ctx.db.query("events").count();
-    if (numEvents + payloads.length > EVENT_CAPACITY) {
-      console.warn("LaunchDarkly event store is full, dropping event.");
+    const numEvents = (await ctx.db.query("events").collect()).length;
+    if (numEvents >= EVENT_CAPACITY) {
+      console.warn("Event store is full, dropping events.");
       return;
     }
 
+    const payloadsToStore = payloads.slice(0, EVENT_CAPACITY - numEvents);
+    if (payloadsToStore.length !== payloads.length) {
+      console.warn(
+        `${payloads.length - payloadsToStore.length} events were dropped due to capacity limits.`
+      );
+    }
+
     await Promise.all(
-      payloads.map(async (payload) => {
+      payloadsToStore.map(async (payload) => {
         await ctx.db.insert("events", { payload });
       })
     );

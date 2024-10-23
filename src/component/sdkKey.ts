@@ -7,7 +7,7 @@ export const store = internalMutation({
     const existing = await ctx.db.query("sdkKeys").first();
     if (existing) {
       throw new Error(
-        'An sdkKey token already exists. Run the "replace" function instead of "store" to update your SDK key.'
+        'An sdkKey already exists. Run the "replace" function instead of "store" to update your SDK key.'
       );
     }
     await ctx.db.insert("sdkKeys", {
@@ -27,7 +27,7 @@ export const replace = internalMutation({
     await ctx.db.insert("sdkKeys", {
       key: sdkKey,
     });
-    console.log("SDK key stored.");
+    console.log("SDK key replaced.");
   },
 });
 
