@@ -7,6 +7,7 @@ import {
 } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { sendEvents } from "../sdk/EventProcessor";
+import { getSdkKey } from "./sdkKey";
 
 // TODO: Make these configurable.
 export const EVENT_CAPACITY = 1000;
@@ -28,7 +29,7 @@ export const storeEvents = mutation({
   },
   returns: v.null(),
   handler: async (ctx, { payloads, options }) => {
-    const sdkKey = await ctx.runQuery(internal.sdkKey.get);
+    const sdkKey = await getSdkKey(ctx);
     if (!sdkKey) {
       return;
     }
