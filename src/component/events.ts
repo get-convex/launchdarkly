@@ -109,8 +109,8 @@ export const processEvents = internalAction({
 
     await sendEvents(events, sdkKey, options);
 
-    await ctx.runMutation(internal.events.deleteOldestEvents, {
-      count: events.length,
+    await ctx.runMutation(internal.events.deleteEvents, {
+      ids: events.map((event) => event._id),
     });
 
     await ctx.runMutation(internal.events.rescheduleProcessing, {
@@ -134,13 +134,12 @@ export const getOldestEvents = internalQuery({
   },
 });
 
-export const deleteOldestEvents = internalMutation({
-  args: { count: v.number() },
-  handler: async (ctx, { count }) => {
-    const events = await ctx.db.query("events").take(count);
+export const deleteEvents = internalMutation({
+  args: { ids: v.array(v.id("events")) },
+  handler: async (ctx, { ids }) => {
     await Promise.all(
-      events.map(async (event) => {
-        await ctx.db.delete(event._id);
+      ids.map(async (id) => {
+        await ctx.db.delete(id);
       })
     );
   },
