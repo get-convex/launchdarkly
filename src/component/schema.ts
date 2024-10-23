@@ -5,9 +5,6 @@ export default defineSchema({
   tokens: defineTable({
     token: v.string(),
   }),
-  sdkKeys: defineTable({
-    key: v.string(),
-  }),
   payloads: defineTable({
     kind: v.union(v.literal("flags"), v.literal("segments")),
     key: v.string(),

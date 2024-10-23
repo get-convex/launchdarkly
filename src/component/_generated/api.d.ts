@@ -11,7 +11,6 @@
  */
 
 import type * as events from "../events.js";
-import type * as sdkKey from "../sdkKey.js";
 import type * as store from "../store.js";
 import type * as tokens from "../tokens.js";
 import type * as types from "../types.js";
@@ -31,7 +30,6 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   events: typeof events;
-  sdkKey: typeof sdkKey;
   store: typeof store;
   tokens: typeof tokens;
   types: typeof types;
@@ -48,6 +46,7 @@ export type Mounts = {
           privateAttributes?: Array<string>;
         };
         payloads: Array<string>;
+        sdkKey: string;
       },
       null
     >;
