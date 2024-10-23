@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { internalMutation, internalQuery } from "./_generated/server";
+import { internalMutation, internalQuery, QueryCtx } from "./_generated/server";
 
 export const store = internalMutation({
   args: { sdkKey: v.string() },
@@ -34,7 +34,9 @@ export const replace = internalMutation({
 export const get = internalQuery({
   args: {},
   handler: async (ctx) => {
-    const existing = await ctx.db.query("sdkKeys").first();
-    return existing ? existing.key : null;
+    return getSdkKey(ctx);
   },
 });
+
+export const getSdkKey = async (ctx: QueryCtx) =>
+  (await ctx.db.query("sdkKeys").first())?.key;
