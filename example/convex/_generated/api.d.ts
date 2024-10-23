@@ -54,7 +54,6 @@ export declare const components: {
             privateAttributes?: Array<string>;
           };
           payloads: Array<string>;
-          sdkKey: string;
         },
         null
       >;

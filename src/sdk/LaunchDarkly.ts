@@ -3,6 +3,7 @@ import {
   type Platform,
   type LDLogger,
   LDClientImpl,
+  BasicLogger,
 } from "@launchdarkly/js-server-sdk-common";
 
 import { createPlatformInfo } from "./createPlatformInfo";
@@ -19,11 +20,12 @@ export class LaunchDarkly extends LDClientImpl {
     options?: {
       application?: LDOptions["application"];
       sendEvents?: boolean;
-      LAUNCHDARKLY_SDK_KEY?: string;
     }
   ) {
     const { store, events } = component;
-    const logger = console;
+    const logger = new BasicLogger({
+      level: "info",
+    });
 
     const featureStore = new FeatureStore(ctx, store, logger);
 
@@ -41,18 +43,12 @@ export class LaunchDarkly extends LDClientImpl {
       // @ts-expect-error We do not allow LDClient to send requests inside of the Convex runtime.
       requests: undefined,
     };
-
-    const sdkKey =
-      options?.LAUNCHDARKLY_SDK_KEY || process.env.LAUNCHDARKLY_SDK_KEY;
-    if (!sdkKey) {
-      throw new Error("LAUNCHDARKLY_SDK_KEY is required");
-    }
-    super(sdkKey, platform, ldOptions, createCallbacks(logger));
+    super("sdk-unused", platform, ldOptions, createCallbacks(logger));
 
     // We can only send events if the context has a runMutation function.
     // This exists in Convex mutations and actions, but not in queries.
     if ("runMutation" in ctx && sendEvents) {
-      const eventProcessor = new EventProcessor(events, ctx, sdkKey);
+      const eventProcessor = new EventProcessor(events, ctx);
       // @ts-expect-error We are setting the eventProcessor directly here.
       this.eventProcessor = eventProcessor;
     }

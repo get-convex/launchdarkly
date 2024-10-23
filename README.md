@@ -22,8 +22,6 @@ It syncs your LaunchDarkly environment to your Convex deployment, allowing you t
 
 To use the LaunchDarkly Convex component, you'll need a LaunchDarkly account. Your LaunchDarkly subscription must include access to integrations.
 
-Copy your LaunchDarkly environment's SDK Key and store it as an environment variable named `LAUNCHDARKLY_SDK_KEY` in your Convex deployment. You can do so on the [environment variables](https://dashboard.convex.dev/deployment/settings/environment-variables) page or via `npx convex env set LAUNCHDARKLY_SDK_KEY <key>` from the CLI.
-
 ### Convex App
 
 You'll need an existing Convex project to use the component.
@@ -83,8 +81,6 @@ This will register two webhook HTTP handlers in your your Convex app's deploymen
 
 ### Configure the LaunchDarkly integration
 
-Copy your LaunchDarkly environment's SDK Key and store it as an environment variable named `LAUNCHDARKLY_SDK_KEY` in your Convex deployment. You can do so on the [environment variables](https://dashboard.convex.dev/deployment/settings/environment-variables) page or via `npx convex env set LAUNCHDARKLY_SDK_KEY sdk-***` from the CLI.
-
 You can now configure the LaunchDarkly integration. On the [Integrations page](https://app.launchdarkly.com/settings/integrations) of the LaunchDarkly dashboard, search for Convex and click "Add Integration".
 
 Each of your Convex deployments (e.g. Production and other developer's environments) will need their own integration configured in LaunchDarkly.
@@ -102,6 +98,18 @@ npx convex run --component=launchdarkly tokens:generate --push
 ```
 
 Once you save, you can open the integration form again and click the Validate button to test the connection. If you encounter errors, check the logs page in the Convex dashboard for more information.
+
+Now, you'll need to copy your LaunchDarkly environment's SDK Key and store it in the component. You can copy your LaunchDarkly SDK by loading the [LaunchDarkly dashboard](https://app.launchdarkly.com), selecting your environment, and pressing Cmd + K (or Ctrl + K) to open the command palette. Select the "Copy SDK Key for the current environment" option.
+
+![Copy SDK Key](./images/copy-sdk-key.png)
+
+The value you copied should start with `sdk-`.
+
+You can store the SDK key in your Convex deployment using the following command:
+
+```bash
+npx convex run --component=launchdarkly --push sdkKey:store '{ "sdkKey": "<key>" }'
+```
 
 ### Using the LaunchDarkly component
 
@@ -136,12 +144,13 @@ You can run the example in the [`examples`](./example/README.md) folder to see h
 
 ## Production
 
-When you're ready to deploy your app to production with LaunchDarkly, be sure to follow all the setup steps for produciton, including adding the `LAUNCHDARKLY_SDK_KEY` evnironment variable and configuring an additional shared secret and integration for Production. You'll want this to be configured before any of your code relies on the LaunchDarkly flags.
+When you're ready to deploy your app to production with LaunchDarkly, be sure to follow all the setup steps for produciton, You'll want this to be configured before any of your code relies on the LaunchDarkly flags.
 
-You may use this command to generate your production secret:
+You may use these commands to generate your production secret and store your production SDK key:
 
 ```bash
 npx convex run --component=launchdarkly --prod tokens:generate
+npx convex run --component=launchdarkly --prod sdkKey:store '{ "sdkKey": "<production_sdk_key>" }'
 ```
 
 ## Syncing multiple LaunchDarkly environments in one Convex app
@@ -189,9 +198,16 @@ npx convex run --component=first tokens:generate
 npx convex run --component=second tokens:generate
 ```
 
+Also, store the appropriate SDK keys in your Convex deployment for each LaunchDarkly environment:
+
+```bash
+npx convex run --component=first sdkKey:store '{ "sdkKey": "<first_key>" }'
+npx convex run --component=second sdkKey:store '{ "sdkKey": "<second_key>" }'
+```
+
 These secrets can be plugged into seperate integration configurations in LaunchDarkly.
 
-once configured, you may initialize `LaunchDarkly` with the appropriate component configuration:
+Once configured, you may initialize `LaunchDarkly` with the appropriate component configuration:
 
 ```typescript
 import { LaunchDarkly } from "@convex-dev/launchdarkly";
@@ -199,13 +215,9 @@ import { LaunchDarkly } from "@convex-dev/launchdarkly";
 export const myQuery = query({
   args: {},
   handler: async ({ ctx }) => {
-    const launchdarklyFirst = new LaunchDarkly(components.first, ctx, {
-      LAUNCHDARKLY_SDK_KEY: process.env.LAUNCHDARKLY_SDK_KEY_FIRST!
-    });
+    const launchdarklyFirst = new LaunchDarkly(components.first, ctx);
 
-    const launchdarklySecond = new LaunchDarkly(components.second, ctx, {
-      LAUNCHDARKLY_SDK_KEY: process.env.LAUNCHDARKLY_SDK_KEY_SECOND!
-    });
+    const launchdarklySecond = new LaunchDarkly(components.second, ctx);
 
     ...
   },
