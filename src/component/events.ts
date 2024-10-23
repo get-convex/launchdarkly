@@ -29,9 +29,8 @@ export const storeEvents = mutation({
   },
   returns: v.null(),
   handler: async (ctx, { sdkKey, payloads, options }) => {
-
     await ctx.runMutation(internal.events.scheduleProcessing, {
-      sdkKey
+      sdkKey,
       options,
     });
 
@@ -77,7 +76,7 @@ export const scheduleProcessing = internalMutation({
     const jobId = await ctx.scheduler.runAfter(
       (areThereMoreEvents ? 0 : EVENT_PROCESSING_INTERVAL_SECONDS) * 1000,
       internal.events.processEvents,
-      {sdkKey, options }
+      { sdkKey, options }
     );
 
     await ctx.db.insert("eventSchedule", { jobId });
