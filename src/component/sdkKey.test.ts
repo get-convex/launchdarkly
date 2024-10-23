@@ -8,7 +8,7 @@ describe("sdkKey", () => {
   test("that it works", async () => {
     const t = convexTest(schema, modules);
     await t.run(async (ctx) => {
-      expect(await get(ctx, {})).toBe(null);
+      expect(await get(ctx, {})).toBe(undefined);
       await store(ctx, { sdkKey: "test-sdk-key" });
       expect(await get(ctx, {})).toBe("test-sdk-key");
       await expect(
