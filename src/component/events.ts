@@ -8,6 +8,7 @@ import {
 } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { sendEvents } from "../sdk/EventProcessor";
+import isEqual from "lodash.isequal";
 
 // TODO: Make these configurable.
 const EVENT_CAPACITY = 1000;
@@ -63,24 +64,47 @@ const handleScheduleProcessing = async (
     };
   }
 ) => {
-  const scheduled = await ctx.db.query("eventSchedule").first();
-  if (scheduled !== null) {
-    if (!isRescheduling) {
-      return;
-    }
-
-    // We want to scheduled a new job immediately, so delete the old one.
-    await ctx.db.delete(scheduled._id);
-  }
-
   const areThereMoreEvents = (await ctx.db.query("events").take(1)).length > 0;
 
-  if (!areThereMoreEvents && isRescheduling) {
+  // We do not need to reschedule if there are no more events.
+  if (isRescheduling && !areThereMoreEvents) {
     return;
   }
 
+  const existingScheduledJob = await ctx.db.query("eventSchedule").first();
+  if (existingScheduledJob !== null) {
+    const existingSystemJob = await ctx.db.system.get(
+      existingScheduledJob.jobId
+    );
+
+    const didScheduledJobsArgsChange = existingSystemJob
+      ? !isEqual(existingSystemJob.args[0].sdkKey, sdkKey) ||
+        !isEqual(existingSystemJob.args[0].options, options)
+      : false;
+
+    // If we are not rescheduling a job, and the job exists and has the same args as the scheduled jobs, we can return early
+    // because the correct job is already scheduled.
+    if (!isRescheduling && existingSystemJob && !didScheduledJobsArgsChange) {
+      return;
+    }
+
+    if (didScheduledJobsArgsChange) {
+      console.info("Rescheduling event processing job due to changed args.");
+    }
+
+    // We want to scheduled a new job immediately, so delete the old one.
+    await ctx.db.delete(existingScheduledJob._id);
+    if (existingSystemJob?.state.kind === "pending") {
+      await ctx.scheduler.cancel(existingScheduledJob.jobId);
+    }
+  }
+
+  // If there are more events than the ones we just received, we can run the job immediately.
+  const runAfterSeconds = areThereMoreEvents
+    ? 0
+    : EVENT_PROCESSING_INTERVAL_SECONDS;
   const jobId = await ctx.scheduler.runAfter(
-    (areThereMoreEvents ? 0 : EVENT_PROCESSING_INTERVAL_SECONDS) * 1000,
+    runAfterSeconds * 1000,
     internal.events.processEvents,
     { sdkKey, options }
   );
@@ -107,6 +131,8 @@ export const processEvents = internalAction({
       count: EVENT_BATCH_SIZE,
     });
 
+    // If this errors out, we won't schedule the next job.
+    // Processing will be re-attempted when we receive the next event.
     await sendEvents(events, sdkKey, options);
 
     await ctx.runMutation(internal.events.deleteEvents, {
