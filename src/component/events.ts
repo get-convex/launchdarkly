@@ -12,8 +12,8 @@ import isEqual from "lodash.isequal";
 
 // TODO: Make these configurable.
 export const EVENT_CAPACITY = 1000;
-const EVENT_BATCH_SIZE = 100;
-const EVENT_PROCESSING_INTERVAL_SECONDS = 5;
+export const EVENT_BATCH_SIZE = 100;
+export const EVENT_PROCESSING_INTERVAL_SECONDS = 5;
 
 const eventsOptions = v.optional(
   v.object({
@@ -31,7 +31,10 @@ export const storeEvents = mutation({
   },
   returns: v.null(),
   handler: async (ctx, { sdkKey, payloads, options }) => {
-    await handleScheduleProcessing(ctx, { sdkKey, options });
+    await handleScheduleProcessing(ctx, {
+      sdkKey,
+      options,
+    });
 
     const numEvents = (await ctx.db.query("events").collect()).length;
     if (numEvents >= EVENT_CAPACITY) {
@@ -59,10 +62,10 @@ const handleScheduleProcessing = async (
   {
     sdkKey,
     options,
-    isRescheduling = false,
+    runImmediately = false,
   }: {
     sdkKey: string;
-    isRescheduling?: boolean;
+    runImmediately?: boolean;
     options?: {
       allAttributesPrivate?: boolean;
       privateAttributes?: string[];
@@ -70,13 +73,6 @@ const handleScheduleProcessing = async (
     };
   }
 ) => {
-  const areThereMoreEvents = (await ctx.db.query("events").take(1)).length > 0;
-
-  // We do not need to reschedule if there are no more events.
-  if (isRescheduling && !areThereMoreEvents) {
-    return;
-  }
-
   const existingScheduledJob = await ctx.db.query("eventSchedule").first();
   if (existingScheduledJob !== null) {
     const existingSystemJob = await ctx.db.system.get(
@@ -90,7 +86,7 @@ const handleScheduleProcessing = async (
 
     // If we are not rescheduling a job, and the job exists and has the same args as the scheduled jobs, we can return early
     // because the correct job is already scheduled.
-    if (!isRescheduling && existingSystemJob && !didScheduledJobsArgsChange) {
+    if (!runImmediately && existingSystemJob && !didScheduledJobsArgsChange) {
       return;
     }
 
@@ -100,13 +96,12 @@ const handleScheduleProcessing = async (
 
     // We want to scheduled a new job immediately, so delete the old one.
     await ctx.db.delete(existingScheduledJob._id);
-    if (existingSystemJob?.state.kind === "pending") {
+    if (existingSystemJob?.state.kind !== "inProgress") {
       await ctx.scheduler.cancel(existingScheduledJob.jobId);
     }
   }
 
-  // If there are more events than the ones we just received, we can run the job immediately.
-  const runAfterSeconds = areThereMoreEvents
+  const runAfterSeconds = runImmediately
     ? 0
     : EVENT_PROCESSING_INTERVAL_SECONDS;
   const jobId = await ctx.scheduler.runAfter(
@@ -118,15 +113,6 @@ const handleScheduleProcessing = async (
   await ctx.db.insert("eventSchedule", { jobId });
 };
 
-export const rescheduleProcessing = internalMutation({
-  args: {
-    sdkKey: v.string(),
-    options: eventsOptions,
-  },
-  handler: (ctx, args) =>
-    handleScheduleProcessing(ctx, { ...args, isRescheduling: true }),
-});
-
 export const processEvents = internalAction({
   args: {
     sdkKey: v.string(),
@@ -137,18 +123,49 @@ export const processEvents = internalAction({
       count: EVENT_BATCH_SIZE,
     });
 
-    // If this errors out, we won't schedule the next job.
-    // Processing will be re-attempted when we receive the next event.
-    await sendEvents(events, sdkKey, options);
+    if (events.length === 0) {
+      return;
+    }
 
-    await ctx.runMutation(internal.events.deleteEvents, {
-      ids: events.map((event) => event._id),
-    });
+    try {
+      await sendEvents(events, sdkKey, options);
 
-    await ctx.runMutation(internal.events.rescheduleProcessing, {
-      sdkKey,
-      options,
-    });
+      try {
+        await ctx.runMutation(internal.events.deleteEvents, {
+          ids: events.map((event) => event._id),
+        });
+      } catch (error) {
+        // If we fail to delete events, we can log the error.
+        // This will cause us to send some events to LaunchDarkly again,
+        // but LaunchDarkly should de-dupe them.
+        console.error(error);
+      }
+    } catch (error) {
+      console.error("Error processing events:", error);
+      // If there's an error, we can reschedule the job to try again later.
+    } finally {
+      await ctx.runMutation(internal.events.rescheduleProcessing, {
+        sdkKey,
+        options,
+      });
+    }
+  },
+});
+
+export const rescheduleProcessing = internalMutation({
+  args: {
+    sdkKey: v.string(),
+    options: eventsOptions,
+  },
+  handler: async (ctx, args) => {
+    const areThereMoreEvents =
+      (await ctx.db.query("events").take(1)).length > 0;
+
+    // We do not need to reschedule if there are no more events.
+    if (!areThereMoreEvents) {
+      return;
+    }
+    return handleScheduleProcessing(ctx, { ...args, runImmediately: true });
   },
 });
 
