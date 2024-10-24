@@ -192,7 +192,8 @@ describe("events", () => {
       JSON.stringify({ event: "test-event-2" }),
     ];
     const t = convexTest(schema, modules);
-    let events;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let events: any;
     await t.run(async (ctx) => {
       await storeEvents(ctx, { sdkKey: "test-sdk-key", payloads });
       events = await ctx.db.query("events").collect();
@@ -221,7 +222,8 @@ describe("events", () => {
 
   test("should process a large number of events in multiple calls", async () => {
     const t = convexTest(schema, modules);
-    let events;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let events: any;
     await t.run(async (ctx) => {
       const payloads = Array.from({ length: EVENT_CAPACITY }, (_, i) =>
         JSON.stringify({ event: `test-event-${i}` })
