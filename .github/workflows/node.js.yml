@@ -15,5 +15,6 @@ jobs:
         cache-dependency-path: example/package-lock.json
         node-version: '18.x'
         cache: 'npm'
+    - run: npm i
     - run: npm ci
     - run: npm test
