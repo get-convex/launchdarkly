@@ -84,9 +84,20 @@ const handleScheduleProcessing = async (
         !isEqual(existingSystemJob.args[0].options, options)
       : false;
 
+    const jobIsStuck = existingSystemJob
+      ? ["canceled", "failed", "success"].some(
+          (k) => k === existingSystemJob.state.kind
+        )
+      : false;
+
     // If we are not rescheduling a job, and the job exists and has the same args as the scheduled jobs, we can return early
     // because the correct job is already scheduled.
-    if (!runImmediately && existingSystemJob && !didScheduledJobsArgsChange) {
+    if (
+      !runImmediately &&
+      existingSystemJob &&
+      !jobIsStuck &&
+      !didScheduledJobsArgsChange
+    ) {
       return;
     }
 
@@ -127,28 +138,18 @@ export const processEvents = internalAction({
       return;
     }
 
-    try {
-      await sendEvents(events, sdkKey, options);
+    await sendEvents(events, sdkKey, options);
 
-      try {
-        await ctx.runMutation(internal.events.deleteEvents, {
-          ids: events.map((event) => event._id),
-        });
-      } catch (error) {
-        // If we fail to delete events, we can log the error.
-        // This will cause us to send some events to LaunchDarkly again,
-        // but LaunchDarkly should de-dupe them.
-        console.error(error);
-      }
-    } catch (error) {
-      console.error("Error processing events:", error);
-      // If there's an error, we can reschedule the job to try again later.
-    } finally {
-      await ctx.runMutation(internal.events.rescheduleProcessing, {
-        sdkKey,
-        options,
-      });
-    }
+    // If we fail to send events, we won't end up deleting them.
+    // Next time an event is stored, we will try to send them again.
+    await ctx.runMutation(internal.events.deleteEvents, {
+      ids: events.map((event) => event._id),
+    });
+
+    await ctx.runMutation(internal.events.rescheduleProcessing, {
+      sdkKey,
+      options,
+    });
   },
 });
 

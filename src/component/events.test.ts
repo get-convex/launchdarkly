@@ -254,4 +254,71 @@ describe("events", () => {
       expect(scheduledSystemJob?.scheduledTime).toBe(Date.now());
     });
   });
+
+  test("does not send events if there are none to send", async () => {
+    const t = convexTest(schema, modules);
+    await t.run(async (ctx) => {
+      await storeEvents(ctx, {
+        sdkKey: "test-sdk-key",
+        payloads: [],
+      });
+
+      const scheduledJob = await ctx.db.query("eventSchedule").first();
+      expect(scheduledJob).not.toBeNull();
+    });
+
+    await t.finishAllScheduledFunctions(vi.runAllTimers);
+    expect(sendEvents).toHaveBeenCalledTimes(0);
+
+    await t.run(async (ctx) => {
+      const scheduledJob = await ctx.db.query("eventSchedule").first();
+      const scheduledSystemJob = await ctx.db.system.get(scheduledJob!.jobId);
+      expect(scheduledSystemJob).not.toBeNull();
+      expect(scheduledSystemJob!.state.kind).toBe("success");
+    });
+  });
+
+  test("should not delete events if there was an error sending them", async () => {
+    const t = convexTest(schema, modules);
+    vi.mocked(sendEvents).mockImplementationOnce(() => {
+      throw new Error("Test error");
+    });
+
+    await t.run(async (ctx) => {
+      const payloads = [
+        JSON.stringify({ event: "test-event-1" }),
+        JSON.stringify({ event: "test-event-2" }),
+      ];
+      await storeEvents(ctx, { sdkKey: "test-sdk-key", payloads });
+    });
+
+    await t.finishAllScheduledFunctions(vi.runAllTimers);
+
+    await t.run(async (ctx) => {
+      const storedEvents = await ctx.db.query("events").collect();
+      expect(storedEvents.length).toEqual(2);
+
+      const scheduledJob = await ctx.db.query("eventSchedule").first();
+      const scheduledSystemJob = await ctx.db.system.get(scheduledJob!.jobId);
+      expect(scheduledSystemJob).not.toBeNull();
+      expect(scheduledSystemJob!.state.kind).toBe("failed");
+
+      // Sending a new event should attempt to reprocess by scheduling a new job.
+      await storeEvents(ctx, {
+        sdkKey: "test-sdk-key",
+        payloads: [JSON.stringify({ event: "test-event-3" })],
+      });
+
+      const updatedStoredEvents = await ctx.db.query("events").collect();
+      expect(updatedStoredEvents.length).toEqual(3);
+
+      const updatedScheduledJob = await ctx.db.query("eventSchedule").first();
+      expect(updatedScheduledJob).not.toBeNull();
+      const updatedScheduledSystemJob = await ctx.db.system.get(
+        updatedScheduledJob!.jobId
+      );
+      expect(updatedScheduledSystemJob).not.toBeNull();
+      expect(updatedScheduledSystemJob!.state.kind).toBe("pending");
+    });
+  });
 });
