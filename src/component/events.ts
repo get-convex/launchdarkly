@@ -36,7 +36,9 @@ export const storeEvents = mutation({
       options,
     });
 
-    const numEvents = (await ctx.db.query("events").collect()).length;
+    const numEvents = (await ctx.db.query("events").take(EVENT_CAPACITY + 1))
+      .length;
+
     if (numEvents >= EVENT_CAPACITY) {
       console.warn("Event store is full, dropping events.");
       return;
