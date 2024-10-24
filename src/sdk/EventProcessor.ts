@@ -17,13 +17,15 @@ import { ComponentApi } from "./useApi";
 export class EventProcessor {
   constructor(
     private readonly eventStore: ComponentApi["events"],
-    private readonly ctx: RunMutationCtx
+    private readonly ctx: RunMutationCtx,
+    private readonly sdkKey: string
   ) {}
 
   sendEvent(inputEvent: object) {
     void (async () => {
       await this.ctx.runMutation(this.eventStore.storeEvents, {
         payloads: [JSON.stringify(inputEvent)],
+        sdkKey: this.sdkKey,
       });
     })();
   }

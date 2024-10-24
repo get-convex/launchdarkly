@@ -4,10 +4,11 @@ import {
   internalMutation,
   internalQuery,
   mutation,
+  MutationCtx,
 } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { sendEvents } from "../sdk/EventProcessor";
-import { getSdkKey } from "./sdkKey";
+import isEqual from "lodash.isequal";
 
 // TODO: Make these configurable.
 export const EVENT_CAPACITY = 1000;
@@ -24,19 +25,13 @@ const eventsOptions = v.optional(
 
 export const storeEvents = mutation({
   args: {
+    sdkKey: v.string(),
     payloads: v.array(v.string()),
     options: eventsOptions,
   },
   returns: v.null(),
-  handler: async (ctx, { payloads, options }) => {
-    const sdkKey = await getSdkKey(ctx);
-    if (!sdkKey) {
-      return;
-    }
-
-    await ctx.runMutation(internal.events.scheduleProcessing, {
-      options,
-    });
+  handler: async (ctx, { sdkKey, payloads, options }) => {
+    await handleScheduleProcessing(ctx, { sdkKey, options });
 
     const numEvents = (await ctx.db.query("events").collect()).length;
     if (numEvents >= EVENT_CAPACITY) {
@@ -59,62 +54,99 @@ export const storeEvents = mutation({
   },
 });
 
-export const scheduleProcessing = internalMutation({
-  args: {
-    doneProcessing: v.optional(v.boolean()),
-    options: eventsOptions,
-  },
-  handler: async (ctx, { options, doneProcessing = false }) => {
-    const scheduled = await ctx.db.query("eventSchedule").first();
-    if (scheduled !== null) {
-      if (!doneProcessing) {
-        return;
-      }
+const handleScheduleProcessing = async (
+  ctx: MutationCtx,
+  {
+    sdkKey,
+    options,
+    isRescheduling = false,
+  }: {
+    sdkKey: string;
+    isRescheduling?: boolean;
+    options?: {
+      allAttributesPrivate?: boolean;
+      privateAttributes?: string[];
+      eventsUri?: string;
+    };
+  }
+) => {
+  const areThereMoreEvents = (await ctx.db.query("events").take(1)).length > 0;
 
-      await ctx.db.delete(scheduled._id);
-    }
+  // We do not need to reschedule if there are no more events.
+  if (isRescheduling && !areThereMoreEvents) {
+    return;
+  }
 
-    const areThereMoreEvents =
-      (await ctx.runQuery(internal.events.getOldestEvents, { count: 1 }))
-        .length > 0;
+  const existingScheduledJob = await ctx.db.query("eventSchedule").first();
+  if (existingScheduledJob !== null) {
+    const existingSystemJob = await ctx.db.system.get(
+      existingScheduledJob.jobId
+    );
 
-    if (!areThereMoreEvents && doneProcessing) {
+    const didScheduledJobsArgsChange = existingSystemJob
+      ? !isEqual(existingSystemJob.args[0].sdkKey, sdkKey) ||
+        !isEqual(existingSystemJob.args[0].options, options)
+      : false;
+
+    // If we are not rescheduling a job, and the job exists and has the same args as the scheduled jobs, we can return early
+    // because the correct job is already scheduled.
+    if (!isRescheduling && existingSystemJob && !didScheduledJobsArgsChange) {
       return;
     }
 
-    const jobId = await ctx.scheduler.runAfter(
-      (areThereMoreEvents ? 0 : EVENT_PROCESSING_INTERVAL_SECONDS) * 1000,
-      internal.events.processEvents,
-      { options }
-    );
+    if (didScheduledJobsArgsChange) {
+      console.info("Rescheduling event processing job due to changed args.");
+    }
 
-    await ctx.db.insert("eventSchedule", { jobId });
+    // We want to scheduled a new job immediately, so delete the old one.
+    await ctx.db.delete(existingScheduledJob._id);
+    if (existingSystemJob?.state.kind === "pending") {
+      await ctx.scheduler.cancel(existingScheduledJob.jobId);
+    }
+  }
+
+  // If there are more events than the ones we just received, we can run the job immediately.
+  const runAfterSeconds = areThereMoreEvents
+    ? 0
+    : EVENT_PROCESSING_INTERVAL_SECONDS;
+  const jobId = await ctx.scheduler.runAfter(
+    runAfterSeconds * 1000,
+    internal.events.processEvents,
+    { sdkKey, options }
+  );
+
+  await ctx.db.insert("eventSchedule", { jobId });
+};
+
+export const rescheduleProcessing = internalMutation({
+  args: {
+    sdkKey: v.string(),
+    options: eventsOptions,
   },
+  handler: (ctx, args) =>
+    handleScheduleProcessing(ctx, { ...args, isRescheduling: true }),
 });
 
 export const processEvents = internalAction({
   args: {
+    sdkKey: v.string(),
     options: eventsOptions,
   },
-  handler: async (ctx, { options }) => {
+  handler: async (ctx, { sdkKey, options }) => {
     const events = await ctx.runQuery(internal.events.getOldestEvents, {
       count: EVENT_BATCH_SIZE,
     });
 
-    const sdkKey = await ctx.runQuery(internal.sdkKey.get);
-    if (!sdkKey) {
-      console.error("No SDK key found, cannot send events.");
-      return;
-    }
-
+    // If this errors out, we won't schedule the next job.
+    // Processing will be re-attempted when we receive the next event.
     await sendEvents(events, sdkKey, options);
 
-    await ctx.runMutation(internal.events.deleteOldestEvents, {
-      count: events.length,
+    await ctx.runMutation(internal.events.deleteEvents, {
+      ids: events.map((event) => event._id),
     });
 
-    await ctx.runMutation(internal.events.scheduleProcessing, {
-      doneProcessing: true,
+    await ctx.runMutation(internal.events.rescheduleProcessing, {
+      sdkKey,
       options,
     });
   },
@@ -134,13 +166,12 @@ export const getOldestEvents = internalQuery({
   },
 });
 
-export const deleteOldestEvents = internalMutation({
-  args: { count: v.number() },
-  handler: async (ctx, { count }) => {
-    const events = await ctx.db.query("events").take(count);
+export const deleteEvents = internalMutation({
+  args: { ids: v.array(v.id("events")) },
+  handler: async (ctx, { ids }) => {
     await Promise.all(
-      events.map(async (event) => {
-        await ctx.db.delete(event._id);
+      ids.map(async (id) => {
+        await ctx.db.delete(id);
       })
     );
   },
