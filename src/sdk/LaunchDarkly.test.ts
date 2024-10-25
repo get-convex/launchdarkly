@@ -12,21 +12,21 @@ describe("LaunchDarkly", () => {
     new LaunchDarkly(
       // @ts-expect-error It's ok
       api,
-      {},
       {
         LAUNCHDARKLY_SDK_KEY: "test-key",
       }
-    );
+      // @ts-expect-error It's ok
+    ).sdk({});
 
     expect(setTimeoutSpy).not.toHaveBeenCalled();
     expect(setIntervalSpy).not.toHaveBeenCalled();
   });
 
   test("should throw an error if LAUNCHDARKLY_SDK_KEY is not provided", async () => {
-    await expect(
-      // @ts-expect-error It's ok
-      () => new LaunchDarkly(api, {}, {})
-    ).toThrow(new Error("LAUNCHDARKLY_SDK_KEY is required"));
+    // @ts-expect-error It's ok
+    await expect(() => new LaunchDarkly(api, {}).sdk({})).toThrow(
+      new Error("LAUNCHDARKLY_SDK_KEY is required")
+    );
   });
 
   test("should not throw an error if the env var is set", () => {
@@ -34,7 +34,7 @@ describe("LaunchDarkly", () => {
 
     expect(() => {
       // @ts-expect-error It's ok
-      new LaunchDarkly(api, {}, {});
+      new LaunchDarkly(api, {}).sdk({});
     }).not.toThrow();
 
     vi.unstubAllEnvs();
@@ -44,11 +44,11 @@ describe("LaunchDarkly", () => {
     const ld = new LaunchDarkly(
       // @ts-expect-error It's ok
       api,
-      {},
       {
         LAUNCHDARKLY_SDK_KEY: "test-key",
       }
-    );
+      // @ts-expect-error It's ok
+    ).sdk({});
 
     // @ts-expect-error We are testing internal state
     expect(ld.eventProcessor).not.toBeInstanceOf(EventProcessor);
@@ -58,11 +58,11 @@ describe("LaunchDarkly", () => {
     const ld = new LaunchDarkly(
       // @ts-expect-error It's ok
       api,
-      { runMutation: () => {} },
       {
         LAUNCHDARKLY_SDK_KEY: "test-key",
       }
-    );
+      // @ts-expect-error It's ok
+    ).sdk({ runMutation: () => {} });
 
     // @ts-expect-error We are testing internal state
     expect(ld.eventProcessor).toBeInstanceOf(EventProcessor);
@@ -72,12 +72,12 @@ describe("LaunchDarkly", () => {
     const ld = new LaunchDarkly(
       // @ts-expect-error It's ok
       api,
-      { runMutation: () => {} },
       {
         LAUNCHDARKLY_SDK_KEY: "test-key",
         sendEvents: false,
       }
-    );
+      // @ts-expect-error It's ok
+    ).sdk({ runMutation: () => {} });
 
     // @ts-expect-error We are testing internal state
     expect(ld.eventProcessor).not.toBeInstanceOf(EventProcessor);

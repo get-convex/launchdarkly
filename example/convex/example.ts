@@ -2,12 +2,14 @@ import { LaunchDarkly } from "@convex-dev/launchdarkly";
 import { mutation, query } from "./_generated/server";
 import { components } from "./_generated/api";
 
+const launchdarkly = new LaunchDarkly(components.launchdarkly);
+
 export const listFruits = query({
   handler: async (ctx) => {
-    const launchdarkly = new LaunchDarkly(components.launchdarkly, ctx);
+    const ld= = launchdarkly.sdk(ctx);
     const user = { key: "myUserId" };
 
-    const showFruits = await launchdarkly.boolVariation(
+    const showFruits = await ld.boolVariation(
       "can-show-fruits",
       user,
       true
@@ -21,11 +23,11 @@ export const listFruits = query({
 
 export const buyFruit = mutation({
   handler: async (ctx) => {
-    const launchdarkly = new LaunchDarkly(components.launchdarkly, ctx);
+    const ld = launchdarkly.sdk(ctx);
 
     const user = { key: "myUserId" };
 
-    const showFruits = await launchdarkly.boolVariation(
+    const showFruits = await ld.boolVariation(
       "can-buy-fruits",
       user,
       false
@@ -37,7 +39,7 @@ export const buyFruit = mutation({
       };
     }
 
-    launchdarkly.track("buy-fruit", user);
+    ld.track("buy-fruit", user);
   },
 });
 
@@ -47,9 +49,9 @@ export const initialized = query({
     if (!process.env.LAUNCHDARKLY_SDK_KEY) {
       return false;
     }
-    const launchdarkly = new LaunchDarkly(components.launchdarkly, ctx);
+    const ld = launchdarkly.sdk(ctx);
     return (
-      (await launchdarkly.allFlagsState({ key: "any" })).allValues()[
+      (await ld.allFlagsState({ key: "any" })).allValues()[
         "can-buy-fruits"
       ] !== undefined
     );
