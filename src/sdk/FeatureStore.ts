@@ -64,7 +64,6 @@ export class FeatureStore implements LDFeatureStore {
         kind: kindKey,
         key: dataKey,
       });
-      console.log(i);
 
       const deserialized = deserialize(kindKey, i);
       this.cache[kindKey][dataKey] = deserialized;
