@@ -7,10 +7,13 @@ import {
   MutationCtx,
 } from "./_generated/server";
 import { internal } from "./_generated/api";
-import { sendEvents } from "../sdk/EventProcessor";
+import {
+  EventProcessorOptions,
+  sendEvents,
+  validateEventProcessorOptions,
+} from "../sdk/EventProcessor";
 import isEqual from "lodash.isequal";
 
-// TODO: Make these configurable.
 export const EVENT_CAPACITY = 1000;
 export const EVENT_BATCH_SIZE = 100;
 export const EVENT_PROCESSING_INTERVAL_SECONDS = 5;
@@ -20,6 +23,9 @@ const eventsOptions = v.optional(
     allAttributesPrivate: v.optional(v.boolean()),
     privateAttributes: v.optional(v.array(v.string())),
     eventsUri: v.optional(v.string()),
+    eventCapacity: v.optional(v.number()),
+    eventBatchSize: v.optional(v.number()),
+    eventProcessingIntervalSeconds: v.optional(v.number()),
   })
 );
 
@@ -31,20 +37,23 @@ export const storeEvents = mutation({
   },
   returns: v.null(),
   handler: async (ctx, { sdkKey, payloads, options }) => {
+    validateEventProcessorOptions(options);
     await handleScheduleProcessing(ctx, {
       sdkKey,
       options,
     });
 
-    const numEvents = (await ctx.db.query("events").take(EVENT_CAPACITY + 1))
+    const eventCapacity = options?.eventCapacity ?? EVENT_CAPACITY;
+
+    const numEvents = (await ctx.db.query("events").take(eventCapacity + 1))
       .length;
 
-    if (numEvents >= EVENT_CAPACITY) {
+    if (numEvents >= eventCapacity) {
       console.warn("Event store is full, dropping events.");
       return;
     }
 
-    const payloadsToStore = payloads.slice(0, EVENT_CAPACITY - numEvents);
+    const payloadsToStore = payloads.slice(0, eventCapacity - numEvents);
     if (payloadsToStore.length !== payloads.length) {
       console.warn(
         `${payloads.length - payloadsToStore.length} events were dropped due to capacity limits.`
@@ -68,13 +77,10 @@ const handleScheduleProcessing = async (
   }: {
     sdkKey: string;
     runImmediately?: boolean;
-    options?: {
-      allAttributesPrivate?: boolean;
-      privateAttributes?: string[];
-      eventsUri?: string;
-    };
+    options?: EventProcessorOptions;
   }
 ) => {
+  validateEventProcessorOptions(options);
   const existingScheduledJob = await ctx.db.query("eventSchedule").first();
   if (existingScheduledJob !== null) {
     const existingSystemJob = await ctx.db.system.get(
@@ -132,8 +138,10 @@ export const processEvents = internalAction({
     options: eventsOptions,
   },
   handler: async (ctx, { sdkKey, options }) => {
+    validateEventProcessorOptions(options);
+    const eventBatchSize = options?.eventBatchSize ?? EVENT_BATCH_SIZE;
     const events = await ctx.runQuery(internal.events.getOldestEvents, {
-      count: EVENT_BATCH_SIZE,
+      count: eventBatchSize,
     });
 
     if (events.length === 0) {

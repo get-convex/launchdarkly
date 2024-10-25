@@ -9,7 +9,11 @@ import {
 import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";
 import { FeatureStore } from "./FeatureStore";
-import { EventProcessor } from "./EventProcessor";
+import {
+  EventProcessor,
+  EventProcessorOptions,
+  validateEventProcessorOptions,
+} from "./EventProcessor";
 import { RunMutationCtx, RunQueryCtx } from "../component/types";
 import { ComponentApi } from "./useApi";
 
@@ -21,7 +25,7 @@ export class LaunchDarkly extends LDClientImpl {
       application?: LDOptions["application"];
       sendEvents?: boolean;
       LAUNCHDARKLY_SDK_KEY?: string;
-    }
+    } & EventProcessorOptions
   ) {
     const { store, events } = component;
     const logger = new BasicLogger({
@@ -56,7 +60,8 @@ export class LaunchDarkly extends LDClientImpl {
     // We can only send events if the context has a runMutation function.
     // This exists in Convex mutations and actions, but not in queries.
     if ("runMutation" in ctx && sendEvents) {
-      const eventProcessor = new EventProcessor(events, ctx, sdkKey);
+      validateEventProcessorOptions(options);
+      const eventProcessor = new EventProcessor(events, ctx, sdkKey, options);
       // @ts-expect-error We are setting the eventProcessor directly here.
       this.eventProcessor = eventProcessor;
     }
