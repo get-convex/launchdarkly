@@ -42,6 +42,9 @@ export type Mounts = {
       {
         options?: {
           allAttributesPrivate?: boolean;
+          eventBatchSize?: number;
+          eventCapacity?: number;
+          eventProcessingIntervalSeconds?: number;
           eventsUri?: string;
           privateAttributes?: Array<string>;
         };
