@@ -2,9 +2,11 @@ import { LaunchDarkly } from "@convex-dev/launchdarkly";
 import { mutation, query } from "./_generated/server";
 import { components } from "./_generated/api";
 
+const ld = new LaunchDarkly(components.launchdarkly);
+
 export const listFruits = query({
   handler: async (ctx) => {
-    const launchdarkly = new LaunchDarkly(components.launchdarkly, ctx);
+    const launchdarkly = ld.sdk(ctx);
     const user = { key: "myUserId" };
 
     const showFruits = await launchdarkly.boolVariation(
@@ -21,7 +23,7 @@ export const listFruits = query({
 
 export const buyFruit = mutation({
   handler: async (ctx) => {
-    const launchdarkly = new LaunchDarkly(components.launchdarkly, ctx);
+    const launchdarkly = ld.sdk(ctx);
 
     const user = { key: "myUserId" };
 
@@ -47,7 +49,7 @@ export const initialized = query({
     if (!process.env.LAUNCHDARKLY_SDK_KEY) {
       return false;
     }
-    const launchdarkly = new LaunchDarkly(components.launchdarkly, ctx);
+    const launchdarkly = ld.sdk(ctx);
     return (
       (await launchdarkly.allFlagsState({ key: "any" })).allValues()[
         "can-buy-fruits"

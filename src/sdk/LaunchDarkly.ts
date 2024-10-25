@@ -17,7 +17,22 @@ import {
 import { RunMutationCtx, RunQueryCtx } from "../component/types";
 import { ComponentApi } from "./useApi";
 
-export class LaunchDarkly extends LDClientImpl {
+export class LaunchDarkly {
+  constructor(
+    private component: ComponentApi,
+    private options?: {
+      application?: LDOptions["application"];
+      sendEvents?: boolean;
+      LAUNCHDARKLY_SDK_KEY?: string;
+    } & EventProcessorOptions
+  ) {}
+
+  sdk(ctx: RunQueryCtx | RunMutationCtx) {
+    return new LDClient(this.component, ctx, this.options);
+  }
+}
+
+class LDClient extends LDClientImpl {
   constructor(
     component: ComponentApi,
     ctx: RunQueryCtx | RunMutationCtx,
