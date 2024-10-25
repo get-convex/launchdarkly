@@ -31,6 +31,7 @@ describe("events", () => {
 
   test("should store an event", async () => {
     const t = convexTest(schema, modules);
+
     await t.run(async (ctx) => {
       const payload = JSON.stringify({ event: "test-event" });
       await storeEvents(ctx, { sdkKey: "test-sdk-key", payloads: [payload] });
@@ -204,7 +205,7 @@ describe("events", () => {
 
     await t.finishAllScheduledFunctions(vi.runAllTimers);
 
-    expect(sendEvents).toHaveBeenCalledTimes(1);
+    expect(sendEvents).toHaveBeenCalledOnce();
     expect(sendEvents).toBeCalledWith(events, "test-sdk-key", undefined);
 
     await t.run(async (ctx) => {

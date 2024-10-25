@@ -35,6 +35,8 @@ export class LaunchDarkly extends LDClientImpl {
       featureStore,
       ...createOptions(logger),
       ...(options || {}),
+      // Even though the SDK can send events with our own implementation, we need
+      // to set this value to false so the super() constructor does not call EventProcessor.start() which calls setInterval.
       sendEvents: false,
     };
 
@@ -62,9 +64,6 @@ export class LaunchDarkly extends LDClientImpl {
 }
 
 export const createOptions = (logger: LDLogger): LDOptions => ({
-  // Even though the SDK can send events with our own implementation, we need
-  // to set this value to false so the super() constructor does not call EventProcessor.start() which calls setInterval.
-  sendEvents: false,
   diagnosticOptOut: true,
   useLdd: false,
 

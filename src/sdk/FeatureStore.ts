@@ -47,6 +47,8 @@ export class FeatureStore implements LDFeatureStore {
       this.logger.error(
         "The LaunchDarkly data store has not been initialized. Is your integration configuration correct?"
       );
+      callback(null);
+      return;
     }
 
     if (this.cache[kindKey][dataKey]) {
@@ -88,6 +90,7 @@ export class FeatureStore implements LDFeatureStore {
       this.logger.error(
         "The LaunchDarkly data store has not been initialized. Is your integration configuration correct?"
       );
+      callback({});
     }
 
     if (kindKey === "flags" ? this.gotAllFlags : this.gotAllSegments) {
