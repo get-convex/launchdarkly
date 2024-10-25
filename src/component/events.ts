@@ -13,6 +13,7 @@ import {
   validateEventProcessorOptions,
 } from "../sdk/EventProcessor";
 import isEqual from "lodash.isequal";
+import pick from "lodash.pick";
 
 export const EVENT_CAPACITY = 1000;
 export const EVENT_BATCH_SIZE = 100;
@@ -148,7 +149,11 @@ export const processEvents = internalAction({
       return;
     }
 
-    await sendEvents(events, sdkKey, options);
+    await sendEvents(
+      events,
+      sdkKey,
+      pick(options, ["allAttributesPrivate", "privateAttributes", "eventsUri"])
+    );
 
     // If we fail to send events, we won't end up deleting them.
     // Next time an event is stored, we will try to send them again.
