@@ -206,7 +206,7 @@ describe("events", () => {
     await t.finishAllScheduledFunctions(vi.runAllTimers);
 
     expect(sendEvents).toHaveBeenCalledOnce();
-    expect(sendEvents).toBeCalledWith(events, "test-sdk-key", undefined);
+    expect(sendEvents).toBeCalledWith(events, "test-sdk-key", {});
 
     await t.run(async (ctx) => {
       const newEvents = await ctx.db.query("events").collect();
@@ -241,7 +241,7 @@ describe("events", () => {
         i + 1,
         events!.slice(i * EVENT_BATCH_SIZE, (i + 1) * EVENT_BATCH_SIZE),
         "test-sdk-key",
-        undefined
+        {}
       );
     }
 
