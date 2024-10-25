@@ -42,6 +42,7 @@ describe("EventProcessor", () => {
 describe("validateEventProcessorOptions", () => {
   test("should throw an error if allAttributesPrivate is not a boolean", () => {
     const options = { allAttributesPrivate: "true" };
+    // @ts-expect-error testing invalid input
     expect(() => validateEventProcessorOptions(options)).toThrow(
       new Error("allAttributesPrivate must be a boolean")
     );
