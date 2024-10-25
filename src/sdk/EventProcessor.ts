@@ -22,12 +22,10 @@ export class EventProcessor {
   ) {}
 
   sendEvent(inputEvent: object) {
-    void (async () => {
-      await this.ctx.runMutation(this.eventStore.storeEvents, {
-        payloads: [JSON.stringify(inputEvent)],
-        sdkKey: this.sdkKey,
-      });
-    })();
+    return this.ctx.runMutation(this.eventStore.storeEvents, {
+      payloads: [JSON.stringify(inputEvent)],
+      sdkKey: this.sdkKey,
+    });
   }
 
   async flush() {
@@ -54,7 +52,7 @@ export const sendEvents = async (
   const platform: Platform = {
     info: createPlatformInfo(),
     crypto: new ConvexCrypto(),
-    // @ts-expect-error We only alow fetch
+    // @ts-expect-error We only allow fetch
     requests: { fetch },
   };
 
