@@ -6,14 +6,10 @@ const launchdarkly = new LaunchDarkly(components.launchdarkly);
 
 export const listFruits = query({
   handler: async (ctx) => {
-    const ld= = launchdarkly.sdk(ctx);
+    const ld = launchdarkly.sdk(ctx);
     const user = { key: "myUserId" };
 
-    const showFruits = await ld.boolVariation(
-      "can-show-fruits",
-      user,
-      true
-    );
+    const showFruits = await ld.boolVariation("can-show-fruits", user, true);
     if (!showFruits) {
       return [];
     }
@@ -27,11 +23,7 @@ export const buyFruit = mutation({
 
     const user = { key: "myUserId" };
 
-    const showFruits = await ld.boolVariation(
-      "can-buy-fruits",
-      user,
-      false
-    );
+    const showFruits = await ld.boolVariation("can-buy-fruits", user, false);
     if (!showFruits) {
       return {
         error:
@@ -51,9 +43,8 @@ export const initialized = query({
     }
     const ld = launchdarkly.sdk(ctx);
     return (
-      (await ld.allFlagsState({ key: "any" })).allValues()[
-        "can-buy-fruits"
-      ] !== undefined
+      (await ld.allFlagsState({ key: "any" })).allValues()["can-buy-fruits"] !==
+      undefined
     );
   },
 });

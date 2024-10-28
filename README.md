@@ -121,8 +121,8 @@ const launchdarkly = new LaunchDarkly(components.launchdarkly);
 export const myQuery = query({
   args: {},
   handler: async ({ ctx }) => {
-    const launchdarkly = ld.sdk(ctx);
-    const isFlagOn = await launchdarkly.boolVariation(
+    const ld = launchdarkly.sdk(ctx);
+    const isFlagOn = await ld.boolVariation(
       "my-flag",
       { key: "myUser" },
       false
@@ -204,20 +204,20 @@ Once configured, you may initialize `LaunchDarkly` with the appropriate componen
 ```typescript
 import { LaunchDarkly } from "@convex-dev/launchdarkly";
 
-const ldFirst = new LaunchDarkly(components.first, {
+const launchDarklyFirst = new LaunchDarkly(components.first, {
   LAUNCHDARKLY_SDK_KEY: process.env.LAUNCHDARKLY_SDK_KEY_FIRST!,
 });
 
-const ldSecond = new LaunchDarkly(components.second, {
+const launchDarklySecond = new LaunchDarkly(components.second, {
   LAUNCHDARKLY_SDK_KEY: process.env.LAUNCHDARKLY_SDK_KEY_SECOND!,
 });
 
 export const myQuery = query({
   args: {},
   handler: async ({ ctx }) => {
-    const launchdarklyFirst = ldFirst.sdk(ctx);
+    const ldFirst = launchdarklyFirst.sdk(ctx);
 
-    const launchdarklySecond = ldSecond.sdk(ctx);
+    const ldSecond = launchDarklySecond.sdk(ctx);
 
     ...
   },
