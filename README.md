@@ -20,7 +20,7 @@ It syncs your LaunchDarkly environment to your Convex deployment, allowing you t
 
 ### LaunchDarkly account
 
-To use the LaunchDarkly Convex component, you'll need a LaunchDarkly account. Your LaunchDarkly subscription must include access to integrations.
+To use this component you must have a LaunchDarkly account on the [LaunchDarkly Foundation](https://launchdarkly.com/pricing/) plan.
 
 ### Convex App
 
@@ -89,7 +89,7 @@ The value you copied should start with `sdk-`.
 
 Store the SDK key you copied as an environment variable named `LAUNCHDARKLY_SDK_KEY` in your Convex deployment. You can do so on the [environment variables](https://dashboard.convex.dev/deployment/settings/environment-variables) page or via `npx convex env set LAUNCHDARKLY_SDK_KEY sdk-***` from the CLI.
 
-You can now configure the LaunchDarkly integration. On the [Integrations page](https://app.launchdarkly.com/settings/integrations) of the LaunchDarkly dashboard, search for Convex and click "Add Integration".
+You can now configure the LaunchDarkly integration. On the [Integrations page](https://app.launchdarkly.com/settings/integrations/convex/new) of the LaunchDarkly dashboard, search for Convex and click "Add Integration". **Note that the Convex integration will only be available here for LaunchDarkly Foundation and Enterprise plans.**
 
 Each of your Convex deployments (e.g. Production and other developer's environments) will need their own integration configured in LaunchDarkly.
 
