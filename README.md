@@ -2,8 +2,6 @@
 
 [![npm version](https://badge.fury.io/js/@convex-dev%2Flaunchdarkly.svg)](https://badge.fury.io/js/@convex-dev%2Flaunchdarkly)
 
-**Note: Convex Components are currently in beta**
-
 <!-- START: Include on https://convex.dev/components -->
 
 This is a Convex component for feature flagging and experimentation using [LaunchDarkly](https://launchdarkly.com).
