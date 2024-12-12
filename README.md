@@ -140,7 +140,7 @@ You can run the example in the [`examples`](./example/README.md) folder to see h
 
 ## Production
 
-When you're ready to deploy your app to production with LaunchDarkly, be sure to follow all the setup steps for produciton, including adding the `LAUNCHDARKLY_SDK_KEY` evnironment variable and configuring an additional shared secret and integration for Production. You'll want this to be configured before any of your code relies on the LaunchDarkly flags.
+When you're ready to deploy your app to production with LaunchDarkly, be sure to follow all the setup steps for production, including adding the `LAUNCHDARKLY_SDK_KEY` evnironment variable and configuring an additional shared secret and integration for Production. You'll want this to be configured before any of your code relies on the LaunchDarkly flags.
 
 You may use this command to generate your production secret:
 
