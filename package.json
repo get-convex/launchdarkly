@@ -2,7 +2,7 @@
   "name": "@convex-dev/launchdarkly",
   "description": "A Convex component that syncs LaunchDarkly feature flags.",
   "homepage": "https://github.com/get-convex/launchdarkly#readme",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "repository": "github:get-convex/launchdarkly",
   "bugs": {
@@ -32,7 +32,7 @@
     "src"
   ],
   "peerDependencies": {
-    "convex": "~1.16.5 || ~1.17.0"
+    "convex": "~1.16.5 || ~1.17.0 || ~1.18.0"
   },
   "dependencies": {
     "@launchdarkly/js-server-sdk-common": "2.8.0",
