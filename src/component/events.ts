@@ -12,8 +12,7 @@ import {
   sendEvents,
   validateEventProcessorOptions,
 } from "../sdk/EventProcessor";
-import isEqual from "lodash.isequal";
-import pick from "lodash.pick";
+import { isEqual, pick } from "lodash";
 
 export const EVENT_CAPACITY = 1000;
 export const EVENT_BATCH_SIZE = 100;

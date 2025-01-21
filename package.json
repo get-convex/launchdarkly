@@ -37,8 +37,7 @@
   "dependencies": {
     "@launchdarkly/js-server-sdk-common": "2.8.0",
     "crypto-js": "^4.2.0",
-    "lodash.isequal": "^4.5.0",
-    "lodash.pick": "^4.4.0"
+    "lodash-es": "^4.17.21"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
