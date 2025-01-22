@@ -7,7 +7,7 @@
     "dev": "npm-run-all --parallel dev:backend dev:frontend",
     "dev:frontend": "vite",
     "dev:backend": "convex dev --live-component-sources --typecheck-components",
-    "setup": "npm run dev:backend -- --once --run examples:seedData",
+    "setup": "npm run dev:backend -- --once --run example:seedData",
     "build": "tsc -b && vite build",
     "lint": "tsc -p convex && eslint convex",
     "preview": "vite preview"
