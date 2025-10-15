@@ -1,6 +1,6 @@
-import { Expand, FunctionReference } from "convex/server";
-import { GenericId } from "convex/values";
-import { Mounts } from "../component/_generated/api";
+import type { Expand, FunctionReference } from "convex/server";
+import type { GenericId } from "convex/values";
+import type { api } from "../component/_generated/api";
 
 export type UseApi<API> = Expand<{
   [mod in keyof API]: API[mod] extends FunctionReference<
@@ -29,4 +29,4 @@ type OpaqueIds<T> =
         ? { [K in keyof T]: OpaqueIds<T[K]> }
         : T;
 
-export type ComponentApi = UseApi<Mounts>;
+export type ComponentApi = UseApi<typeof api>;
