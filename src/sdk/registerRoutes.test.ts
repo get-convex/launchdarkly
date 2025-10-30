@@ -5,7 +5,7 @@ import { httpRouter } from "convex/server";
 import { convexTest } from "convex-test";
 import schema from "../component/schema";
 import { modules } from "../component/setup.test";
-import { store as storeToken } from "../component/tokens";
+import { storeHandler } from "../component/tokens";
 import * as store from "../component/store";
 
 describe("registerRoutes", () => {
@@ -22,7 +22,7 @@ describe("registerRoutes", () => {
       });
 
       await t.run(async (ctx) => {
-        const result = await storeToken(ctx, { token: "valid" });
+        const result = await storeHandler(ctx, { token: "valid" });
         expect(result).toBe("valid");
       });
 
@@ -46,7 +46,7 @@ describe("registerRoutes", () => {
       });
 
       await t.run(async (ctx) => {
-        const result = await storeToken(ctx, { token: "valid" });
+        const result = await storeHandler(ctx, { token: "valid" });
         expect(result).toBe("valid");
       });
 
@@ -71,7 +71,7 @@ describe("registerRoutes", () => {
     });
 
     await t.run(async (ctx) => {
-      const result = await storeToken(ctx, { token: "valid" });
+      const result = await storeHandler(ctx, { token: "valid" });
       expect(result).toBe("valid");
     });
 
@@ -97,7 +97,7 @@ describe("registerRoutes", () => {
     });
 
     await t.run(async (ctx) => {
-      const result = await storeToken(ctx, { token: "valid" });
+      const result = await storeHandler(ctx, { token: "valid" });
       expect(result).toBe("valid");
     });
 

@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { Infer, v } from "convex/values";
 import {
   internalAction,
   internalMutation,
@@ -29,44 +29,50 @@ const eventsOptions = v.optional(
   })
 );
 
-export const storeEvents = mutation({
-  args: {
-    sdkKey: v.string(),
-    payloads: v.array(v.string()),
-    options: eventsOptions,
-  },
-  returns: v.null(),
-  handler: async (ctx, { sdkKey, payloads, options }) => {
-    validateEventProcessorOptions(options);
-    await handleScheduleProcessing(ctx, {
-      sdkKey,
-      options,
-    });
-
-    const eventCapacity = options?.eventCapacity ?? EVENT_CAPACITY;
-
-    const numEvents = (await ctx.db.query("events").take(eventCapacity + 1))
-      .length;
-
-    if (numEvents >= eventCapacity) {
-      console.warn("Event store is full, dropping events.");
-      return;
-    }
-
-    const payloadsToStore = payloads.slice(0, eventCapacity - numEvents);
-    if (payloadsToStore.length !== payloads.length) {
-      console.warn(
-        `${payloads.length - payloadsToStore.length} events were dropped due to capacity limits.`
-      );
-    }
-
-    await Promise.all(
-      payloadsToStore.map(async (payload) => {
-        await ctx.db.insert("events", { payload });
-      })
-    );
-  },
+const storeEventsArgs = v.object({
+  sdkKey: v.string(),
+  payloads: v.array(v.string()),
+  options: eventsOptions,
 });
+export const storeEvents = mutation({
+  args: storeEventsArgs,
+  returns: v.null(),
+  handler: storeEventsHandler,
+});
+
+export async function storeEventsHandler(
+  ctx: MutationCtx,
+  { sdkKey, payloads, options }: Infer<typeof storeEventsArgs>
+): Promise<void> {
+  validateEventProcessorOptions(options);
+  await handleScheduleProcessing(ctx, {
+    sdkKey,
+    options,
+  });
+
+  const eventCapacity = options?.eventCapacity ?? EVENT_CAPACITY;
+
+  const numEvents = (await ctx.db.query("events").take(eventCapacity + 1))
+    .length;
+
+  if (numEvents >= eventCapacity) {
+    console.warn("Event store is full, dropping events.");
+    return;
+  }
+
+  const payloadsToStore = payloads.slice(0, eventCapacity - numEvents);
+  if (payloadsToStore.length !== payloads.length) {
+    console.warn(
+      `${payloads.length - payloadsToStore.length} events were dropped due to capacity limits.`
+    );
+  }
+
+  await Promise.all(
+    payloadsToStore.map(async (payload) => {
+      await ctx.db.insert("events", { payload });
+    })
+  );
+}
 
 const handleScheduleProcessing = async (
   ctx: MutationCtx,

@@ -4,7 +4,6 @@ import { convexTest } from "convex-test";
 import schema from "../component/schema";
 import { modules } from "../component/setup.test";
 import { api } from "../component/_generated/api";
-import { write } from "../component/store";
 import * as store from "../component/store";
 
 describe("FeatureStore", () => {
@@ -54,7 +53,7 @@ describe("FeatureStore", () => {
         await t.run(async (ctx) => {
           const config = { key: "existingKey", version: 1 };
 
-          await write(ctx, {
+          await store.writeHandler(ctx, {
             payload: JSON.stringify({
               flags: {
                 [config.key]: config,
@@ -125,7 +124,7 @@ describe("FeatureStore", () => {
         await t.run(async (ctx) => {
           const config = { key: "existingKey", version: 1 };
 
-          await write(ctx, {
+          await store.writeHandler(ctx, {
             payload: JSON.stringify({
               flags: {
                 [config.key]: config,

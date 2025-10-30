@@ -6,7 +6,7 @@ import {
   EVENT_BATCH_SIZE,
   EVENT_CAPACITY,
   EVENT_PROCESSING_INTERVAL_SECONDS,
-  storeEvents,
+  storeEventsHandler as storeEvents,
 } from "./events";
 import { sendEvents } from "../sdk/EventProcessor";
 

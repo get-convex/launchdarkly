@@ -2,7 +2,12 @@ import { describe, expect, test } from "vitest";
 import { convexTest } from "convex-test";
 import { modules } from "./setup.test.js";
 import schema from "./schema";
-import { get, getAll, initialized, write } from "./store";
+import {
+  getHandler as get,
+  getAllHandler as getAll,
+  initializedHandler as initialized,
+  writeHandler as write,
+} from "./store";
 
 const sampleFlagData = {
   key: "flag1",
@@ -40,11 +45,11 @@ describe("store", () => {
     test("should initialize", async () => {
       const t = convexTest(schema, modules);
       await t.run(async (ctx) => {
-        expect(await initialized(ctx, {})).toBe(false);
+        expect(await initialized(ctx)).toBe(false);
         await write(ctx, {
           payload: JSON.stringify(sampleData),
         });
-        expect(await initialized(ctx, {})).toBe(true);
+        expect(await initialized(ctx)).toBe(true);
       });
     });
   });

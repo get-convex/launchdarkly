@@ -1,62 +1,76 @@
-import { v } from "convex/values";
+import { Infer, v } from "convex/values";
 import { GenericMutationCtx } from "convex/server";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, QueryCtx } from "./_generated/server";
 import { DataModel } from "./_generated/dataModel";
 import type { LDFeatureStoreKindData } from "@launchdarkly/js-server-sdk-common";
 
 export const initialized = query({
   args: {},
   returns: v.boolean(),
-  handler: async (ctx) => {
-    return (await ctx.db.query("payloads").first()) !== null;
-  },
+  handler: initializedHandler,
 });
+
+export async function initializedHandler(ctx: QueryCtx): Promise<boolean> {
+  return (await ctx.db.query("payloads").first()) !== null;
+}
+
+const vKind = v.union(v.literal("flags"), v.literal("segments"));
 
 export const get = query({
-  args: {
-    kind: v.union(v.literal("flags"), v.literal("segments")),
-    key: v.string(),
-  },
+  args: { kind: vKind, key: v.string() },
   returns: v.union(v.string(), v.null()),
-  handler: async (ctx, { kind, key }) => {
-    const item = await ctx.db
-      .query("payloads")
-      .withIndex("kind_key", (q) => q.eq("kind", kind).eq("key", key))
-      .first();
-    if (!item) {
-      return null;
-    }
-    return item.payload;
-  },
+  handler: getHandler,
 });
 
+export async function getHandler(
+  ctx: QueryCtx,
+  { kind, key }: { kind: Infer<typeof vKind>; key: string }
+): Promise<string | null> {
+  const item = await ctx.db
+    .query("payloads")
+    .withIndex("kind_key", (q) => q.eq("kind", kind).eq("key", key))
+    .first();
+  if (!item) {
+    return null;
+  }
+  return item.payload;
+}
+
 export const getAll = query({
-  args: {
-    kind: v.union(v.literal("flags"), v.literal("segments")),
-  },
+  args: v.object({ kind: vKind }),
   returns: v.array(v.string()),
-  handler: async (ctx, { kind }) => {
-    const items = await ctx.db
-      .query("payloads")
-      .withIndex("kind_key", (q) => q.eq("kind", kind))
-      .collect();
-    return items.map((i) => i.payload);
-  },
+  handler: getAllHandler,
 });
+
+export async function getAllHandler(
+  ctx: QueryCtx,
+  { kind }: { kind: Infer<typeof vKind> }
+): Promise<string[]> {
+  const items = await ctx.db
+    .query("payloads")
+    .withIndex("kind_key", (q) => q.eq("kind", kind))
+    .collect();
+  return items.map((i) => i.payload);
+}
 
 export const write = mutation({
   args: {
     payload: v.string(),
   },
   returns: v.null(),
-  handler: async (ctx, { payload }) => {
-    const { flags, segments } = JSON.parse(payload);
-    await Promise.all([
-      upsertItems(ctx, "flags", flags),
-      upsertItems(ctx, "segments", segments),
-    ]);
-  },
+  handler: writeHandler,
 });
+
+export async function writeHandler(
+  ctx: GenericMutationCtx<DataModel>,
+  { payload }: { payload: string }
+) {
+  const { flags, segments } = JSON.parse(payload);
+  await Promise.all([
+    upsertItems(ctx, "flags", flags),
+    upsertItems(ctx, "segments", segments),
+  ]);
+}
 
 async function upsertItems(
   ctx: GenericMutationCtx<DataModel>,

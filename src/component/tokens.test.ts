@@ -2,7 +2,7 @@ import { convexTest } from "convex-test";
 import { describe, expect, test } from "vitest";
 import schema from "./schema";
 import { modules } from "./setup.test";
-import { store, validate } from "./tokens";
+import { storeHandler as store, validateHandler as validate } from "./tokens";
 
 describe("tokens", () => {
   describe("generate", () => {
