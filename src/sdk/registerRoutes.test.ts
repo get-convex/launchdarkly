@@ -30,7 +30,7 @@ describe("registerRoutes", () => {
         method,
       });
       expect(res.status).toBe(401);
-    },
+    }
   );
 
   test.each(["PUT", "GET"])(
@@ -57,7 +57,7 @@ describe("registerRoutes", () => {
         },
       });
       expect(res.status).toBe(401);
-    },
+    }
   );
 
   test("GET should return 200 with valid token", async () => {
@@ -114,7 +114,6 @@ describe("registerRoutes", () => {
   });
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function spyOnMutation(api: any, method: string) {
   const spy = vi.spyOn(api, method);
   // @ts-expect-error It's a query ;)
