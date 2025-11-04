@@ -19,7 +19,7 @@ export class EventProcessor {
     private readonly eventStore: ComponentApi["events"],
     private readonly ctx: RunMutationCtx,
     private readonly sdkKey: string,
-    private readonly options?: EventProcessorOptions
+    private readonly options?: EventProcessorOptions,
   ) {}
 
   sendEvent(inputEvent: object) {
@@ -49,7 +49,7 @@ export const sendEvents = async (
     allAttributesPrivate?: boolean;
     privateAttributes?: string[];
     eventsUri?: string;
-  }
+  },
 ) => {
   const platform: Platform = {
     info: createPlatformInfo(),
@@ -78,7 +78,7 @@ export const sendEvents = async (
     sdkKey,
     platform,
     ldOptions,
-    createCallbacks(console)
+    createCallbacks(console),
   );
 
   // @ts-expect-error Accessing internals
@@ -115,7 +115,7 @@ export type EventProcessorOptions = {
 };
 
 export const validateEventProcessorOptions = (
-  options?: EventProcessorOptions
+  options?: EventProcessorOptions,
 ) => {
   if (!options) {
     return;
@@ -150,7 +150,7 @@ export const validateEventProcessorOptions = (
       options.eventProcessingIntervalSeconds <= 0
     ) {
       throw new Error(
-        "eventProcessingIntervalSeconds must be a positive number"
+        "eventProcessingIntervalSeconds must be a positive number",
       );
     }
   }
@@ -168,7 +168,7 @@ export const validateEventProcessorOptions = (
       options.eventCapacity <= options.eventBatchSize
     ) {
       throw new Error(
-        "eventCapacity must be greater than or equal to eventBatchSize"
+        "eventCapacity must be greater than or equal to eventBatchSize",
       );
     }
   }

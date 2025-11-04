@@ -24,7 +24,7 @@ export class LaunchDarkly {
       application?: LDOptions["application"];
       sendEvents?: boolean;
       LAUNCHDARKLY_SDK_KEY?: string;
-    } & EventProcessorOptions
+    } & EventProcessorOptions,
   ) {}
 
   sdk(ctx: RunQueryCtx | RunMutationCtx) {
@@ -40,7 +40,7 @@ class LDClient extends LDClientImpl {
       application?: LDOptions["application"];
       sendEvents?: boolean;
       LAUNCHDARKLY_SDK_KEY?: string;
-    } & EventProcessorOptions
+    } & EventProcessorOptions,
   ) {
     const { store, events } = component;
     const logger = new BasicLogger({

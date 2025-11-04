@@ -44,7 +44,7 @@ describe("validateEventProcessorOptions", () => {
     const options = { allAttributesPrivate: "true" };
     // @ts-expect-error testing invalid input
     expect(() => validateEventProcessorOptions(options)).toThrow(
-      new Error("allAttributesPrivate must be a boolean")
+      new Error("allAttributesPrivate must be a boolean"),
     );
   });
 
@@ -52,7 +52,7 @@ describe("validateEventProcessorOptions", () => {
     const options = { privateAttributes: "not-an-array" };
     // @ts-expect-error testing invalid input
     expect(() => validateEventProcessorOptions(options)).toThrow(
-      new Error("privateAttributes must be an array of strings")
+      new Error("privateAttributes must be an array of strings"),
     );
   });
 
@@ -60,49 +60,51 @@ describe("validateEventProcessorOptions", () => {
     const options = { eventsUri: 12345 };
     // @ts-expect-error testing invalid input
     expect(() => validateEventProcessorOptions(options)).toThrow(
-      new Error("eventsUri must be a string")
+      new Error("eventsUri must be a string"),
     );
   });
 
   test("should throw an error if eventsUri is not a valid URL", () => {
     const options = { eventsUri: "invalid-url" };
     expect(() => validateEventProcessorOptions(options)).toThrow(
-      new Error("eventsUri must be a valid URL")
+      new Error("eventsUri must be a valid URL"),
     );
   });
 
   test("should throw an error if eventProcessingIntervalSeconds is not a positive number", () => {
     const options = { eventProcessingIntervalSeconds: -1 };
     expect(() => validateEventProcessorOptions(options)).toThrow(
-      new Error("eventProcessingIntervalSeconds must be a positive number")
+      new Error("eventProcessingIntervalSeconds must be a positive number"),
     );
   });
 
   test("should throw an error if eventCapacity is not a positive number", () => {
     const options = { eventCapacity: 0 };
     expect(() => validateEventProcessorOptions(options)).toThrow(
-      new Error("eventCapacity must be a positive number")
+      new Error("eventCapacity must be a positive number"),
     );
   });
 
   test("should throw an error if eventCapacity is less than eventBatchSize", () => {
     const options = { eventCapacity: 10, eventBatchSize: 20 };
     expect(() => validateEventProcessorOptions(options)).toThrow(
-      new Error("eventCapacity must be greater than or equal to eventBatchSize")
+      new Error(
+        "eventCapacity must be greater than or equal to eventBatchSize",
+      ),
     );
   });
 
   test("should throw an error if eventBatchSize is not a positive number", () => {
     const options = { eventBatchSize: -1 };
     expect(() => validateEventProcessorOptions(options)).toThrow(
-      new Error("eventBatchSize must be a positive number")
+      new Error("eventBatchSize must be a positive number"),
     );
   });
 
   test("should throw an error if eventBatchSize exceeds 4000", () => {
     const options = { eventBatchSize: 5000 };
     expect(() => validateEventProcessorOptions(options)).toThrow(
-      new Error("eventBatchSize must be less than or equal to 4000")
+      new Error("eventBatchSize must be less than or equal to 4000"),
     );
   });
 

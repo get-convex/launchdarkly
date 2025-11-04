@@ -38,7 +38,7 @@ class CryptoJSHmac implements Hmac {
         break;
       default:
         throw new Error(
-          "unsupported hash algorithm. Only sha1 and sha256 are supported."
+          "unsupported hash algorithm. Only sha1 and sha256 are supported.",
         );
     }
 
@@ -57,7 +57,7 @@ class CryptoJSHmac implements Hmac {
     }
 
     throw new Error(
-      "unsupported output encoding. Only base64 and hex are supported."
+      "unsupported output encoding. Only base64 and hex are supported.",
     );
   }
 
@@ -82,7 +82,7 @@ class CryptoJSHasher implements Hasher {
         break;
       default:
         throw new Error(
-          "unsupported hash algorithm. Only sha1 and sha256 are supported."
+          "unsupported hash algorithm. Only sha1 and sha256 are supported.",
         );
     }
 
@@ -102,7 +102,7 @@ class CryptoJSHasher implements Hasher {
         break;
       default:
         throw new Error(
-          "unsupported output encoding. Only base64 and hex are supported."
+          "unsupported output encoding. Only base64 and hex are supported.",
         );
     }
 

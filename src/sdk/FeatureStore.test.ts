@@ -16,7 +16,7 @@ describe("FeatureStore", () => {
         const invalidKind = "invalidKind";
 
         await expect(
-          featureStore.get({ namespace: invalidKind }, "someKey", vi.fn())
+          featureStore.get({ namespace: invalidKind }, "someKey", vi.fn()),
         ).rejects.toThrow(new Error(`Unsupported DataKind: ${invalidKind}`));
       });
     });
@@ -40,10 +40,10 @@ describe("FeatureStore", () => {
             expect(res).toBeNull();
           });
           expect(consoleSpy).toHaveBeenCalledWith(
-            "The LaunchDarkly data store has not been initialized. Is your integration configuration correct?"
+            "The LaunchDarkly data store has not been initialized. Is your integration configuration correct?",
           );
         });
-      }
+      },
     );
 
     test.each(["features", "segments"])(
@@ -83,7 +83,7 @@ describe("FeatureStore", () => {
 
           expect(spy).toHaveBeenCalledOnce(); // should not call get again
         });
-      }
+      },
     );
   });
 
@@ -96,7 +96,7 @@ describe("FeatureStore", () => {
         const invalidKind = "invalidKind";
 
         await expect(
-          featureStore.all({ namespace: invalidKind }, vi.fn())
+          featureStore.all({ namespace: invalidKind }, vi.fn()),
         ).rejects.toThrow(new Error(`Unsupported DataKind: ${invalidKind}`));
       });
     });
@@ -114,7 +114,7 @@ describe("FeatureStore", () => {
             expect(res).toEqual({});
           });
         });
-      }
+      },
     );
 
     test.each(["features", "segments"])(
@@ -161,7 +161,7 @@ describe("FeatureStore", () => {
 
           expect(getSpy).toHaveBeenCalledTimes(0); // should not call get because getAll was already called
         });
-      }
+      },
     );
   });
 });

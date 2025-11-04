@@ -26,7 +26,7 @@ const eventsOptions = v.optional(
     eventCapacity: v.optional(v.number()),
     eventBatchSize: v.optional(v.number()),
     eventProcessingIntervalSeconds: v.optional(v.number()),
-  })
+  }),
 );
 
 const storeEventsArgs = v.object({
@@ -42,7 +42,7 @@ export const storeEvents = mutation({
 
 export async function storeEventsHandler(
   ctx: MutationCtx,
-  { sdkKey, payloads, options }: Infer<typeof storeEventsArgs>
+  { sdkKey, payloads, options }: Infer<typeof storeEventsArgs>,
 ): Promise<void> {
   validateEventProcessorOptions(options);
   await handleScheduleProcessing(ctx, {
@@ -63,14 +63,14 @@ export async function storeEventsHandler(
   const payloadsToStore = payloads.slice(0, eventCapacity - numEvents);
   if (payloadsToStore.length !== payloads.length) {
     console.warn(
-      `${payloads.length - payloadsToStore.length} events were dropped due to capacity limits.`
+      `${payloads.length - payloadsToStore.length} events were dropped due to capacity limits.`,
     );
   }
 
   await Promise.all(
     payloadsToStore.map(async (payload) => {
       await ctx.db.insert("events", { payload });
-    })
+    }),
   );
 }
 
@@ -84,13 +84,13 @@ const handleScheduleProcessing = async (
     sdkKey: string;
     runImmediately?: boolean;
     options?: EventProcessorOptions;
-  }
+  },
 ) => {
   validateEventProcessorOptions(options);
   const existingScheduledJob = await ctx.db.query("eventSchedule").first();
   if (existingScheduledJob !== null) {
     const existingSystemJob = await ctx.db.system.get(
-      existingScheduledJob.jobId
+      existingScheduledJob.jobId,
     );
 
     const didScheduledJobsArgsChange = existingSystemJob
@@ -100,7 +100,7 @@ const handleScheduleProcessing = async (
 
     const jobIsStuck = existingSystemJob
       ? ["canceled", "failed", "success"].some(
-          (k) => k === existingSystemJob.state.kind
+          (k) => k === existingSystemJob.state.kind,
         )
       : false;
 
@@ -132,7 +132,7 @@ const handleScheduleProcessing = async (
   const jobId = await ctx.scheduler.runAfter(
     runAfterSeconds * 1000,
     internal.events.processEvents,
-    { sdkKey, options }
+    { sdkKey, options },
   );
 
   await ctx.db.insert("eventSchedule", { jobId });
@@ -157,7 +157,7 @@ export const processEvents = internalAction({
     await sendEvents(
       events,
       sdkKey,
-      pick(options, ["allAttributesPrivate", "privateAttributes", "eventsUri"])
+      pick(options, ["allAttributesPrivate", "privateAttributes", "eventsUri"]),
     );
 
     // If we fail to send events, we won't end up deleting them.
@@ -197,7 +197,7 @@ export const getOldestEvents = internalQuery({
       payload: v.string(),
       _id: v.id("events"),
       _creationTime: v.number(),
-    })
+    }),
   ),
   handler: async (ctx, { count }) => {
     return ctx.db.query("events").order("asc").take(count);
@@ -210,7 +210,7 @@ export const deleteEvents = internalMutation({
     await Promise.all(
       ids.map(async (id) => {
         await ctx.db.delete(id);
-      })
+      }),
     );
   },
 });

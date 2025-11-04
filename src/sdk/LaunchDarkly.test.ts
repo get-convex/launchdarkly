@@ -14,7 +14,7 @@ describe("LaunchDarkly", () => {
       api,
       {
         LAUNCHDARKLY_SDK_KEY: "test-key",
-      }
+      },
       // @ts-expect-error It's ok
     ).sdk({});
 
@@ -25,7 +25,7 @@ describe("LaunchDarkly", () => {
   test("should throw an error if LAUNCHDARKLY_SDK_KEY is not provided", async () => {
     // @ts-expect-error It's ok
     await expect(() => new LaunchDarkly(api, {}).sdk({})).toThrow(
-      new Error("LAUNCHDARKLY_SDK_KEY is required")
+      new Error("LAUNCHDARKLY_SDK_KEY is required"),
     );
   });
 
@@ -46,7 +46,7 @@ describe("LaunchDarkly", () => {
       api,
       {
         LAUNCHDARKLY_SDK_KEY: "test-key",
-      }
+      },
       // @ts-expect-error It's ok
     ).sdk({});
 
@@ -60,7 +60,7 @@ describe("LaunchDarkly", () => {
       api,
       {
         LAUNCHDARKLY_SDK_KEY: "test-key",
-      }
+      },
       // @ts-expect-error It's ok
     ).sdk({ runMutation: () => {} });
 
@@ -75,7 +75,7 @@ describe("LaunchDarkly", () => {
       {
         LAUNCHDARKLY_SDK_KEY: "test-key",
         sendEvents: false,
-      }
+      },
       // @ts-expect-error It's ok
     ).sdk({ runMutation: () => {} });
 

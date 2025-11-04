@@ -1,7 +1,7 @@
 import { type Infer, v } from "convex/values";
 import { type GenericMutationCtx } from "convex/server";
 import { mutation, query, type QueryCtx } from "./_generated/server";
-import { type DataModel } from "./_generated/dataModel";
+import type { DataModel } from "./_generated/dataModel";
 import type { LDFeatureStoreKindData } from "@launchdarkly/js-server-sdk-common";
 
 export const initialized = query({
@@ -24,7 +24,7 @@ export const get = query({
 
 export async function getHandler(
   ctx: QueryCtx,
-  { kind, key }: { kind: Infer<typeof vKind>; key: string }
+  { kind, key }: { kind: Infer<typeof vKind>; key: string },
 ): Promise<string | null> {
   const item = await ctx.db
     .query("payloads")
@@ -44,7 +44,7 @@ export const getAll = query({
 
 export async function getAllHandler(
   ctx: QueryCtx,
-  { kind }: { kind: Infer<typeof vKind> }
+  { kind }: { kind: Infer<typeof vKind> },
 ): Promise<string[]> {
   const items = await ctx.db
     .query("payloads")
@@ -63,7 +63,7 @@ export const write = mutation({
 
 export async function writeHandler(
   ctx: GenericMutationCtx<DataModel>,
-  { payload }: { payload: string }
+  { payload }: { payload: string },
 ) {
   const { flags, segments } = JSON.parse(payload);
   await Promise.all([
@@ -75,7 +75,7 @@ export async function writeHandler(
 async function upsertItems(
   ctx: GenericMutationCtx<DataModel>,
   kind: "flags" | "segments",
-  items: LDFeatureStoreKindData
+  items: LDFeatureStoreKindData,
 ) {
   const existingItems = await ctx.db
     .query("payloads")

@@ -17,7 +17,7 @@ describe("tokens", () => {
 
         // Attempt to store a second token
         await expect(
-          async () => await store(ctx, { token: "another-token" })
+          async () => await store(ctx, { token: "another-token" }),
         ).rejects.toThrowError(/A token already exists/);
       });
     });
@@ -30,7 +30,7 @@ describe("tokens", () => {
         const result = await validate(ctx, { token: undefined });
         expect(result.success).toBe(false);
         expect(result.error).toBe(
-          "Token not provided. Pass a token in the Authorization header."
+          "Token not provided. Pass a token in the Authorization header.",
         );
       });
     });
@@ -41,7 +41,7 @@ describe("tokens", () => {
         const result = await validate(ctx, { token: "non-existent-token" });
         expect(result.success).toBe(false);
         expect(result.error).toBe(
-          "Token not found. Run the tokens:generate function to create a token."
+          "Token not found. Run the tokens:generate function to create a token.",
         );
       });
     });

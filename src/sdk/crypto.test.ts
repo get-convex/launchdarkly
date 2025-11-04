@@ -21,14 +21,14 @@ describe("ConvexCrypto", () => {
       hasher.update("test");
       const digest = hasher.digest!("hex");
       expect(digest).toBe(
-        "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+        "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
       );
     });
 
     test("should throw an error for unsupported hash algorithm", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(() => convexCrypto.createHash("md5" as any)).toThrow(
-        "unsupported hash algorithm. Only sha1 and sha256 are supported."
+        "unsupported hash algorithm. Only sha1 and sha256 are supported.",
       );
     });
   });
@@ -46,14 +46,14 @@ describe("ConvexCrypto", () => {
       hmac.update("test");
       const digest = hmac.digest("hex");
       expect(digest).toBe(
-        "02afb56304902c656fcb737cdd03de6205bb6d401da2812efd9b2d36a08af159"
+        "02afb56304902c656fcb737cdd03de6205bb6d401da2812efd9b2d36a08af159",
       );
     });
 
     test("should throw an error for unsupported hash algorithm", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(() => convexCrypto.createHmac("md5" as any, "key")).toThrow(
-        "unsupported hash algorithm. Only sha1 and sha256 are supported."
+        "unsupported hash algorithm. Only sha1 and sha256 are supported.",
       );
     });
   });

@@ -30,7 +30,7 @@ describe("registerRoutes", () => {
         method,
       });
       expect(res.status).toBe(401);
-    }
+    },
   );
 
   test.each(["PUT", "GET"])(
@@ -57,7 +57,7 @@ describe("registerRoutes", () => {
         },
       });
       expect(res.status).toBe(401);
-    }
+    },
   );
 
   test("GET should return 200 with valid token", async () => {

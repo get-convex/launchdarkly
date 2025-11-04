@@ -17,7 +17,7 @@ export const generate = internalAction({
       token,
     });
     console.log(
-      `Copy the token below (without quotes) into the "Component API Token" field of the LaunchDarkly integration form.`
+      `Copy the token below (without quotes) into the "Component API Token" field of the LaunchDarkly integration form.`,
     );
     return token;
   },
@@ -31,12 +31,12 @@ export const store = internalMutation({
 
 export async function storeHandler(
   ctx: MutationCtx,
-  { token }: { token: string }
+  { token }: { token: string },
 ) {
   const existingToken = await ctx.db.query("tokens").first();
   if (existingToken) {
     throw new Error(
-      "A token already exists. Delete the existing token from the tokens table to generate a new one."
+      "A token already exists. Delete the existing token from the tokens table to generate a new one.",
     );
   }
   await ctx.db.insert("tokens", {
@@ -56,7 +56,7 @@ export const validate = query({
 
 export async function validateHandler(
   ctx: QueryCtx,
-  { token }: { token: string | undefined }
+  { token }: { token: string | undefined },
 ) {
   if (!token) {
     return {

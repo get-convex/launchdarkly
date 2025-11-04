@@ -28,13 +28,13 @@ export class FeatureStore implements LDFeatureStore {
   constructor(
     private readonly ctx: RunQueryCtx,
     private readonly store: ComponentApi["store"],
-    private logger: LDLogger
+    private logger: LDLogger,
   ) {}
 
   async get(
     kind: DataKind,
     dataKey: string,
-    callback: (res: LDFeatureStoreItem | null) => void
+    callback: (res: LDFeatureStoreItem | null) => void,
   ): Promise<void> {
     const { namespace } = kind;
     const kindKey = namespace === "features" ? "flags" : namespace;
@@ -45,7 +45,7 @@ export class FeatureStore implements LDFeatureStore {
 
     if (!(await this.ctx.runQuery(this.store.initialized))) {
       this.logger.error(
-        "The LaunchDarkly data store has not been initialized. Is your integration configuration correct?"
+        "The LaunchDarkly data store has not been initialized. Is your integration configuration correct?",
       );
       callback(null);
       return;
@@ -77,7 +77,7 @@ export class FeatureStore implements LDFeatureStore {
 
   async all(
     kind: DataKind,
-    callback: (res: LDFeatureStoreKindData) => void = noop
+    callback: (res: LDFeatureStoreKindData) => void = noop,
   ): Promise<void> {
     const { namespace } = kind;
     const kindKey = namespace === "features" ? "flags" : namespace;
@@ -88,7 +88,7 @@ export class FeatureStore implements LDFeatureStore {
 
     if (!(await this.ctx.runQuery(this.store.initialized))) {
       this.logger.error(
-        "The LaunchDarkly data store has not been initialized. Is your integration configuration correct?"
+        "The LaunchDarkly data store has not been initialized. Is your integration configuration correct?",
       );
       callback({});
     }
@@ -129,7 +129,7 @@ export class FeatureStore implements LDFeatureStore {
   }
 
   async initialized(
-    callback: (isInitialized: boolean) => void = noop
+    callback: (isInitialized: boolean) => void = noop,
   ): Promise<void> {
     const initialized = await this.ctx.runQuery(this.store.initialized);
     callback(initialized);
@@ -153,7 +153,7 @@ export class FeatureStore implements LDFeatureStore {
 
 const deserialize = (
   kindKey: "flags" | "segments",
-  item: string | null
+  item: string | null,
 ): LDFeatureStoreItem => {
   if (kindKey !== "flags" && kindKey !== "segments") {
     throw new Error(`Unsupported DataKind: ${kindKey}`);

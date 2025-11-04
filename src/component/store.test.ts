@@ -63,7 +63,7 @@ describe("store", () => {
           payload: JSON.stringify(sampleData),
         });
         expect(await get(ctx, { kind: "flags", key: "flag1" })).toBe(
-          JSON.stringify(sampleData.flags.flag1)
+          JSON.stringify(sampleData.flags.flag1),
         );
       });
     });
@@ -78,7 +78,7 @@ describe("store", () => {
           payload: JSON.stringify(sampleData),
         });
         expect(await getAll(ctx, { kind: "flags" })).toEqual(
-          Object.values(sampleData.flags).map((flag) => JSON.stringify(flag))
+          Object.values(sampleData.flags).map((flag) => JSON.stringify(flag)),
         );
       });
     });
@@ -92,7 +92,7 @@ describe("store", () => {
           payload: JSON.stringify(sampleData),
         });
         expect(await getAll(ctx, { kind: "flags" })).toEqual(
-          Object.values(sampleData.flags).map((flag) => JSON.stringify(flag))
+          Object.values(sampleData.flags).map((flag) => JSON.stringify(flag)),
         );
       });
     });
@@ -145,7 +145,7 @@ describe("store", () => {
         payload: JSON.stringify(updatedSampleData),
       });
       expect(await get(ctx, { kind: "flags", key: "flag1" })).toEqual(
-        JSON.stringify(updatedSampleData.flags.flag1)
+        JSON.stringify(updatedSampleData.flags.flag1),
       );
     });
   });
@@ -174,7 +174,7 @@ describe("store", () => {
         payload: JSON.stringify(updatedSampleData),
       });
       expect(await get(ctx, { kind: "flags", key: "flag1" })).toEqual(
-        JSON.stringify(sampleData.flags.flag1)
+        JSON.stringify(sampleData.flags.flag1),
       );
     });
   });
