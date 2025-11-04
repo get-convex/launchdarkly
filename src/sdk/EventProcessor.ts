@@ -8,7 +8,7 @@ import { RunMutationCtx } from "../component/types";
 import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";
 import { createCallbacks, createOptions } from "./LaunchDarkly";
-import { ComponentApi } from "./useApi";
+import type { ComponentApi } from "../component/_generated/component.js";
 
 // This is a replacement for the built-in event processor that
 // stores events in the convex component instead of sending them to LaunchDarkly.

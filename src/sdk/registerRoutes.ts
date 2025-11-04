@@ -1,6 +1,6 @@
 import { AnyDataModel, GenericActionCtx, HttpRouter } from "convex/server";
 import { httpAction } from "../component/_generated/server";
-import { ComponentApi } from "./useApi";
+import type { ComponentApi } from "../component/_generated/component.js";
 
 export const registerRoutes = (
   component: ComponentApi,

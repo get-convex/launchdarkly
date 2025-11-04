@@ -9,7 +9,7 @@ import type {
 import { noop } from "@launchdarkly/js-server-sdk-common";
 import serialization from "@launchdarkly/js-server-sdk-common/dist/store/serialization";
 import { RunQueryCtx } from "../component/types";
-import { ComponentApi } from "./useApi";
+import type { ComponentApi } from "../component/_generated/component.js";
 
 export class FeatureStore implements LDFeatureStore {
   // If you've ever call getAll on flags or segments, the cache should have all the data.

@@ -15,7 +15,7 @@ import {
   validateEventProcessorOptions,
 } from "./EventProcessor";
 import { RunMutationCtx, RunQueryCtx } from "../component/types";
-import { ComponentApi } from "./useApi";
+import type { ComponentApi } from "../component/_generated/component.js";
 
 export class LaunchDarkly {
   constructor(
