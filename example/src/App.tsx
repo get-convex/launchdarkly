@@ -56,10 +56,8 @@ function App() {
             }
 
             setResult(
-              `You bought a ${fruits?.find((fruit) => fruit._id === selectedFruit)?.name || "fruit"}!`
+              `You bought a ${fruits?.find((fruit) => fruit._id === selectedFruit)?.name || "fruit"}!`,
             );
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } catch (e: any) {
             setError(e.message);
           }
