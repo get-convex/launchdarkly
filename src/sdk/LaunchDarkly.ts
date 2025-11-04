@@ -11,10 +11,10 @@ import ConvexCrypto from "./crypto";
 import { FeatureStore } from "./FeatureStore";
 import {
   EventProcessor,
-  EventProcessorOptions,
+  type EventProcessorOptions,
   validateEventProcessorOptions,
 } from "./EventProcessor";
-import { RunMutationCtx, RunQueryCtx } from "../component/types";
+import { type RunMutationCtx, type RunQueryCtx } from "../component/types";
 import type { ComponentApi } from "../component/_generated/component.js";
 
 export class LaunchDarkly {

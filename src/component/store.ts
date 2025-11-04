@@ -1,7 +1,7 @@
-import { Infer, v } from "convex/values";
-import { GenericMutationCtx } from "convex/server";
-import { mutation, query, QueryCtx } from "./_generated/server";
-import { DataModel } from "./_generated/dataModel";
+import { type Infer, v } from "convex/values";
+import { type GenericMutationCtx } from "convex/server";
+import { mutation, query, type QueryCtx } from "./_generated/server";
+import { type DataModel } from "./_generated/dataModel";
 import type { LDFeatureStoreKindData } from "@launchdarkly/js-server-sdk-common";
 
 export const initialized = query({

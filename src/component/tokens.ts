@@ -2,9 +2,9 @@ import { v } from "convex/values";
 import {
   internalAction,
   internalMutation,
-  MutationCtx,
+  type MutationCtx,
   query,
-  QueryCtx,
+  type QueryCtx,
 } from "./_generated/server";
 import { internal } from "./_generated/api";
 

@@ -1,4 +1,4 @@
-import { AnyDataModel, GenericActionCtx, HttpRouter } from "convex/server";
+import { type AnyDataModel, type GenericActionCtx, HttpRouter } from "convex/server";
 import { httpAction } from "../component/_generated/server";
 import type { ComponentApi } from "../component/_generated/component.js";
 

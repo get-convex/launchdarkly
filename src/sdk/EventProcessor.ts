@@ -4,7 +4,7 @@ import {
   Context,
   BasicLogger,
 } from "@launchdarkly/js-server-sdk-common";
-import { RunMutationCtx } from "../component/types";
+import { type RunMutationCtx } from "../component/types";
 import { createPlatformInfo } from "./createPlatformInfo";
 import ConvexCrypto from "./crypto";
 import { createCallbacks, createOptions } from "./LaunchDarkly";
