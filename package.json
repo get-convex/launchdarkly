@@ -23,7 +23,7 @@
     "dev:build": "npx chokidar 'tsconfig*.json' 'src/**/*.ts' -i '**/*.test.ts' -c 'npx convex codegen --component ./src/component && npm run build' --initial",
     "predev": "npm run dev:backend -- --until-success",
     "clean": "rm -rf dist *.tsbuildinfo",
-    "build": "tsc --project ./tsconfig.build.json",
+    "build": "tsc --project ./tsconfig.build.json && ./scripts/replace-version.sh .",
     "typecheck": "tsc --noEmit && tsc -p example && tsc -p example/convex",
     "lint": "eslint src && eslint example",
     "all": "run-p -r 'dev:*' 'test:watch'",
@@ -81,8 +81,8 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./dist/client/index.d.ts",
-      "default": "./dist/client/index.js"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./test": "./src/test.ts",
     "./_generated/component.js": {
@@ -93,6 +93,6 @@
       "default": "./dist/component/convex.config.js"
     }
   },
-  "types": "./dist/client/index.d.ts",
-  "module": "./dist/client/index.js"
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.js"
 }
