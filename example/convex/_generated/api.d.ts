@@ -49,54 +49,5 @@ export declare const internal: FilterApi<
 >;
 
 export declare const components: {
-  launchdarkly: {
-    events: {
-      storeEvents: FunctionReference<
-        "mutation",
-        "internal",
-        {
-          options?: {
-            allAttributesPrivate?: boolean;
-            eventBatchSize?: number;
-            eventCapacity?: number;
-            eventProcessingIntervalSeconds?: number;
-            eventsUri?: string;
-            privateAttributes?: Array<string>;
-          };
-          payloads: Array<string>;
-          sdkKey: string;
-        },
-        null
-      >;
-    };
-    store: {
-      get: FunctionReference<
-        "query",
-        "internal",
-        { key: string; kind: "flags" | "segments" },
-        string | null
-      >;
-      getAll: FunctionReference<
-        "query",
-        "internal",
-        { kind: "flags" | "segments" },
-        Array<string>
-      >;
-      initialized: FunctionReference<"query", "internal", {}, boolean>;
-      write: FunctionReference<
-        "mutation",
-        "internal",
-        { payload: string },
-        null
-      >;
-    };
-    tokens: {
-      validate: FunctionReference<
-        "query",
-        "internal",
-        { token?: string },
-        { error?: string; success: boolean }
-      >;
-    };
-  };
+  launchdarkly: import("@convex-dev/launchdarkly/_generated/component.js").ComponentApi<"launchdarkly">;
 };
