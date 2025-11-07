@@ -5,13 +5,13 @@ import {
   internalQuery,
   mutation,
   type MutationCtx,
-} from "./_generated/server";
-import { internal } from "./_generated/api";
+} from "./_generated/server.js";
+import { internal } from "./_generated/api.js";
 import {
   type EventProcessorOptions,
   sendEvents,
   validateEventProcessorOptions,
-} from "../sdk/EventProcessor";
+} from "../sdk/EventProcessor.js";
 import { isEqual, pick } from "lodash-es";
 
 export const EVENT_CAPACITY = 1000;

@@ -12,8 +12,8 @@
     "noErrorTruncation": true,
     // We enforce stricter module resolution for Node16 compatibility
     // But when building we use Bundler & ESNext for ESM
-    "module": "es2022",
-    "moduleResolution": "bundler",
+    "module": "Node16",
+    "moduleResolution": "NodeNext",
 
     "composite": true,
     "isolatedModules": true,

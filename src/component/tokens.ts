@@ -5,8 +5,8 @@ import {
   type MutationCtx,
   query,
   type QueryCtx,
-} from "./_generated/server";
-import { internal } from "./_generated/api";
+} from "./_generated/server.js";
+import { internal } from "./_generated/api.js";
 
 export const generate = internalAction({
   args: {},

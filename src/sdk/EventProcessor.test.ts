@@ -2,17 +2,17 @@ import { describe, expect, test, vi } from "vitest";
 import {
   EventProcessor,
   validateEventProcessorOptions,
-} from "./EventProcessor";
+} from "./EventProcessor.js";
 import { convexTest } from "convex-test";
-import schema from "../component/schema";
-import { modules } from "../component/setup.test";
-import { api } from "../component/_generated/api";
-import { sendEvents } from "../sdk/EventProcessor";
+import schema from "../component/schema.js";
+import { modules } from "../component/setup.test.js";
+import { api } from "../component/_generated/api.js";
+import { sendEvents } from "../sdk/EventProcessor.js";
 
 describe("EventProcessor", () => {
-  vi.mock("../sdk/EventProcessor", async (importOriginal) => {
+  vi.mock("../sdk/EventProcessor.js", async (importOriginal) => {
     const original =
-      await importOriginal<typeof import("../sdk/EventProcessor")>();
+      await importOriginal<typeof import("../sdk/EventProcessor.js")>();
     return {
       ...original,
       sendEvents: vi.fn(),

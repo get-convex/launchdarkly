@@ -6,15 +6,15 @@ import {
   BasicLogger,
 } from "@launchdarkly/js-server-sdk-common";
 
-import { createPlatformInfo } from "./createPlatformInfo";
-import ConvexCrypto from "./crypto";
-import { FeatureStore } from "./FeatureStore";
+import { createPlatformInfo } from "./createPlatformInfo.js";
+import ConvexCrypto from "./crypto.js";
+import { FeatureStore } from "./FeatureStore.js";
 import {
   EventProcessor,
   type EventProcessorOptions,
   validateEventProcessorOptions,
-} from "./EventProcessor";
-import { type RunMutationCtx, type RunQueryCtx } from "../component/types";
+} from "./EventProcessor.js";
+import { type RunMutationCtx, type RunQueryCtx } from "../component/types.js";
 import type { ComponentApi } from "../component/_generated/component.js";
 
 export class LaunchDarkly {

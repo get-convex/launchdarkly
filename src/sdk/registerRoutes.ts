@@ -3,7 +3,7 @@ import {
   type GenericActionCtx,
   HttpRouter,
 } from "convex/server";
-import { httpAction } from "../component/_generated/server";
+import { httpAction } from "../component/_generated/server.js";
 import type { ComponentApi } from "../component/_generated/component.js";
 
 export const registerRoutes = (

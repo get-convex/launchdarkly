@@ -8,7 +8,7 @@ import type {
 } from "@launchdarkly/js-server-sdk-common";
 import { noop } from "@launchdarkly/js-server-sdk-common";
 import serialization from "@launchdarkly/js-server-sdk-common/dist/store/serialization";
-import { type RunQueryCtx } from "../component/types";
+import { type RunQueryCtx } from "../component/types.js";
 import type { ComponentApi } from "../component/_generated/component.js";
 
 export class FeatureStore implements LDFeatureStore {

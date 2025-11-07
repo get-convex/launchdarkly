@@ -1,2 +1,2 @@
-export { registerRoutes } from "./sdk/registerRoutes";
-export { LaunchDarkly } from "./sdk/LaunchDarkly";
+export { registerRoutes } from "./sdk/registerRoutes.js";
+export { LaunchDarkly } from "./sdk/LaunchDarkly.js";

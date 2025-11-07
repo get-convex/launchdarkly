@@ -1,12 +1,12 @@
 import { describe, expect, test, vi } from "vitest";
-import { registerRoutes } from "./registerRoutes";
-import { api } from "../component/_generated/api";
+import { registerRoutes } from "./registerRoutes.js";
+import { api } from "../component/_generated/api.js";
 import { httpRouter } from "convex/server";
 import { convexTest } from "convex-test";
-import schema from "../component/schema";
-import { modules } from "../component/setup.test";
-import { storeHandler } from "../component/tokens";
-import * as store from "../component/store";
+import schema from "../component/schema.js";
+import { modules } from "../component/setup.test.js";
+import { storeHandler } from "../component/tokens.js";
+import * as store from "../component/store.js";
 
 describe("registerRoutes", () => {
   test.each(["PUT", "GET"])(

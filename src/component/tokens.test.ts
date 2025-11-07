@@ -1,8 +1,8 @@
 import { convexTest } from "convex-test";
 import { describe, expect, test } from "vitest";
-import schema from "./schema";
-import { modules } from "./setup.test";
-import { storeHandler as store, validateHandler as validate } from "./tokens";
+import schema from "./schema.js";
+import { modules } from "./setup.test.js";
+import { storeHandler as store, validateHandler as validate } from "./tokens.js";
 
 describe("tokens", () => {
   describe("generate", () => {

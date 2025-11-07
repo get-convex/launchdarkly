@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
-import { LaunchDarkly } from "./LaunchDarkly";
-import { api } from "../component/_generated/api";
-import { EventProcessor } from "./EventProcessor";
+import { LaunchDarkly } from "./LaunchDarkly.js";
+import { api } from "../component/_generated/api.js";
+import { EventProcessor } from "./EventProcessor.js";
 
 describe("LaunchDarkly", () => {
   // The LaunchDarkly internals sometimes call functions that use setTimeout and setInterval.

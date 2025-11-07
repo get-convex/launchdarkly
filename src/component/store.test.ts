@@ -1,13 +1,13 @@
 import { describe, expect, test } from "vitest";
 import { convexTest } from "convex-test";
 import { modules } from "./setup.test.js";
-import schema from "./schema";
+import schema from "./schema.js";
 import {
   getHandler as get,
   getAllHandler as getAll,
   initializedHandler as initialized,
   writeHandler as write,
-} from "./store";
+} from "./store.js";
 
 const sampleFlagData = {
   key: "flag1",

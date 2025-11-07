@@ -1,18 +1,18 @@
 import { convexTest } from "convex-test";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import schema from "./schema";
-import { modules } from "./setup.test";
+import schema from "./schema.js";
+import { modules } from "./setup.test.js";
 import {
   EVENT_BATCH_SIZE,
   EVENT_CAPACITY,
   EVENT_PROCESSING_INTERVAL_SECONDS,
   storeEventsHandler as storeEvents,
-} from "./events";
-import { sendEvents } from "../sdk/EventProcessor";
+} from "./events.js";
+import { sendEvents } from "../sdk/EventProcessor.js";
 
-vi.mock("../sdk/EventProcessor", async (importOriginal) => {
+vi.mock("../sdk/EventProcessor.js", async (importOriginal) => {
   const original =
-    await importOriginal<typeof import("../sdk/EventProcessor")>();
+    await importOriginal<typeof import("../sdk/EventProcessor.js")>();
   return {
     ...original,
     sendEvents: vi.fn(),
@@ -76,7 +76,7 @@ describe("events", () => {
     await t.run(async (ctx) => {
       const loadsOfPayloads = Array.from(
         { length: EVENT_CAPACITY + 1 },
-        (_, i) => JSON.stringify({ event: `test-event-${i}` })
+        (_, i) => JSON.stringify({ event: `test-event-${i}` }),
       );
 
       await storeEvents(ctx, {
@@ -93,7 +93,7 @@ describe("events", () => {
     const t = convexTest(schema, modules);
     await t.run(async (ctx) => {
       const loadsOfPayloads = Array.from({ length: EVENT_CAPACITY }, (_, i) =>
-        JSON.stringify({ event: `test-event-${i}` })
+        JSON.stringify({ event: `test-event-${i}` }),
       );
 
       await storeEvents(ctx, {
@@ -115,7 +115,7 @@ describe("events", () => {
 
       expect(updatedStoredEvents.length).toEqual(EVENT_CAPACITY);
       expect(
-        updatedStoredEvents.find((event) => event.payload === newPayloads[0])
+        updatedStoredEvents.find((event) => event.payload === newPayloads[0]),
       ).toBeUndefined();
     });
   });
@@ -135,7 +135,7 @@ describe("events", () => {
         { sdkKey: "test-sdk-key" },
       ]);
       expect(scheduledSystemJob!.scheduledTime).toBe(
-        Date.now() + EVENT_PROCESSING_INTERVAL_SECONDS * 1000
+        Date.now() + EVENT_PROCESSING_INTERVAL_SECONDS * 1000,
       );
     });
   });
@@ -169,20 +169,20 @@ describe("events", () => {
       expect(updatedScheduledJob).not.toBeNull();
       expect(updatedScheduledJob).not.toEqual(scheduledJob);
       const oldScheduledSystemJob = await ctx.db.system.get(
-        scheduledJob!.jobId
+        scheduledJob!.jobId,
       );
       expect(oldScheduledSystemJob).not.toBeNull();
       expect(oldScheduledSystemJob!.state.kind).toBe("canceled");
 
       const newScheduledSystemJob = await ctx.db.system.get(
-        updatedScheduledJob!.jobId
+        updatedScheduledJob!.jobId,
       );
       expect(newScheduledSystemJob).not.toBeNull();
       expect(newScheduledSystemJob!.args).toStrictEqual([
         { sdkKey: "test-sdk-key-2" },
       ]);
       expect(newScheduledSystemJob!.scheduledTime).toBe(
-        Date.now() + EVENT_PROCESSING_INTERVAL_SECONDS * 1000
+        Date.now() + EVENT_PROCESSING_INTERVAL_SECONDS * 1000,
       );
     });
   });
@@ -225,7 +225,7 @@ describe("events", () => {
     let events: any;
     await t.run(async (ctx) => {
       const payloads = Array.from({ length: EVENT_CAPACITY }, (_, i) =>
-        JSON.stringify({ event: `test-event-${i}` })
+        JSON.stringify({ event: `test-event-${i}` }),
       );
       await storeEvents(ctx, { sdkKey: "test-sdk-key", payloads });
       events = await ctx.db.query("events").collect();
@@ -239,7 +239,7 @@ describe("events", () => {
         i + 1,
         events!.slice(i * EVENT_BATCH_SIZE, (i + 1) * EVENT_BATCH_SIZE),
         "test-sdk-key",
-        {}
+        {},
       );
     }
 
@@ -316,7 +316,7 @@ describe("events", () => {
       const updatedScheduledJob = await ctx.db.query("eventSchedule").first();
       expect(updatedScheduledJob).not.toBeNull();
       const updatedScheduledSystemJob = await ctx.db.system.get(
-        updatedScheduledJob!.jobId
+        updatedScheduledJob!.jobId,
       );
       expect(updatedScheduledSystemJob).not.toBeNull();
       expect(updatedScheduledSystemJob!.state.kind).toBe("pending");

@@ -1,10 +1,10 @@
 import { describe, expect, test, vi } from "vitest";
-import { FeatureStore } from "./FeatureStore";
+import { FeatureStore } from "./FeatureStore.js";
 import { convexTest } from "convex-test";
-import schema from "../component/schema";
-import { modules } from "../component/setup.test";
-import { api } from "../component/_generated/api";
-import * as store from "../component/store";
+import schema from "../component/schema.js";
+import { modules } from "../component/setup.test.js";
+import { api } from "../component/_generated/api.js";
+import * as store from "../component/store.js";
 
 describe("FeatureStore", () => {
   describe("get", () => {

@@ -4,10 +4,10 @@ import {
   Context,
   BasicLogger,
 } from "@launchdarkly/js-server-sdk-common";
-import { type RunMutationCtx } from "../component/types";
-import { createPlatformInfo } from "./createPlatformInfo";
-import ConvexCrypto from "./crypto";
-import { createCallbacks, createOptions } from "./LaunchDarkly";
+import { type RunMutationCtx } from "../component/types.js";
+import { createPlatformInfo } from "./createPlatformInfo.js";
+import ConvexCrypto from "./crypto.js";
+import { createCallbacks, createOptions } from "./LaunchDarkly.js";
 import type { ComponentApi } from "../component/_generated/component.js";
 
 // This is a replacement for the built-in event processor that

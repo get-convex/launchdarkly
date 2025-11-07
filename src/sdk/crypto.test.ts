@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
-import ConvexCrypto from "./crypto";
+import ConvexCrypto from "./crypto.js";
 
 describe("ConvexCrypto", () => {
   let convexCrypto: ConvexCrypto;
