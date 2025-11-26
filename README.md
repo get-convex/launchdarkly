@@ -93,9 +93,7 @@ deployment:
 
 Now, you'll need to copy your LaunchDarkly environment's SDK Key and store it in
 the component. You can copy your LaunchDarkly SDK by loading the
-[LaunchDarkly dashboard](https://app.launchdarkly.com), selecting your
-environment, and pressing Cmd + K (or Ctrl + K) to open the command palette.
-Select the "Copy SDK Key for the current environment" option.
+[LaunchDarkly dashboard](https://app.launchdarkly.com). From there visit your project's settings and copy the SDK key for your environment.
 
 ![Copy SDK Key](./images/copy-sdk-key.png)
 
