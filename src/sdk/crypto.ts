@@ -1,8 +1,5 @@
 import type { Crypto, Hasher, Hmac } from "@launchdarkly/js-server-sdk-common";
-import { algo as CryptoAlgo } from "crypto-js";
 import CryptoJS from "crypto-js";
-import Base64 from "crypto-js/enc-base64";
-import Hex from "crypto-js/enc-hex";
 
 type SupportedHashAlgorithm = "sha1" | "sha256";
 type SupportedOutputEncoding = "base64" | "hex";
@@ -75,10 +72,10 @@ class CryptoJSHasher implements Hasher {
 
     switch (algorithm) {
       case "sha1":
-        algo = CryptoAlgo.SHA1;
+        algo = CryptoJS.algo.SHA1;
         break;
       case "sha256":
-        algo = CryptoAlgo.SHA256;
+        algo = CryptoJS.algo.SHA256;
         break;
       default:
         throw new Error(
@@ -95,10 +92,10 @@ class CryptoJSHasher implements Hasher {
     let enc;
     switch (encoding) {
       case "base64":
-        enc = Base64;
+        enc = CryptoJS.enc.Base64;
         break;
       case "hex":
-        enc = Hex;
+        enc = CryptoJS.enc.Hex;
         break;
       default:
         throw new Error(

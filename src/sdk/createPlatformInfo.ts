@@ -1,8 +1,4 @@
-import type {
-  Info,
-  PlatformData,
-  SdkData,
-} from "@launchdarkly/js-server-sdk-common";
+import type { Info, PlatformData, SdkData } from "@launchdarkly/js-server-sdk-common";
 
 class ConvexPlatformInfo implements Info {
   platformData(): PlatformData {
