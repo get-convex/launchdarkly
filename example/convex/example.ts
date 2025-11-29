@@ -51,6 +51,9 @@ export const initialized = query({
 
 export const seedData = mutation({
   handler: async (ctx) => {
+    if (await ctx.db.query("fruits").first()) {
+      return;
+    }
     await ctx.db.insert("fruits", { name: "Apple", emoji: "🍎" });
     await ctx.db.insert("fruits", { name: "Banana", emoji: "🍌" });
     await ctx.db.insert("fruits", { name: "Cherry", emoji: "🍒" });
