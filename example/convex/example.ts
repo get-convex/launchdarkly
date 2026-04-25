@@ -5,6 +5,7 @@ import { components } from "./_generated/api";
 const launchdarkly = new LaunchDarkly(components.launchdarkly);
 
 export const listFruits = query({
+  args: {},
   handler: async (ctx) => {
     const ld = launchdarkly.sdk(ctx);
     const user = { key: "myUserId" };
@@ -18,6 +19,7 @@ export const listFruits = query({
 });
 
 export const buyFruit = mutation({
+  args: {},
   handler: async (ctx) => {
     const ld = launchdarkly.sdk(ctx);
 
@@ -50,6 +52,7 @@ export const initialized = query({
 });
 
 export const seedData = mutation({
+  args: {},
   handler: async (ctx) => {
     if (await ctx.db.query("fruits").first()) {
       return;

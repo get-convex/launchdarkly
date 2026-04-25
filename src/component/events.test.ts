@@ -128,7 +128,7 @@ describe("events", () => {
       await storeEvents(ctx, { sdkKey: "test-sdk-key", payloads: [payload] });
       const scheduledJob = await ctx.db.query("eventSchedule").first();
       expect(scheduledJob).not.toBeNull();
-      const scheduledSystemJob = await ctx.db.system.get(scheduledJob!.jobId);
+      const scheduledSystemJob = await ctx.db.system.get("_scheduled_functions", scheduledJob!.jobId);
       expect(scheduledSystemJob).not.toBeNull();
       expect(scheduledSystemJob!.name).toBe("events:processEvents");
       expect(scheduledSystemJob!.args).toStrictEqual([
@@ -169,13 +169,13 @@ describe("events", () => {
       expect(updatedScheduledJob).not.toBeNull();
       expect(updatedScheduledJob).not.toEqual(scheduledJob);
       const oldScheduledSystemJob = await ctx.db.system.get(
-        scheduledJob!.jobId,
+        "_scheduled_functions", scheduledJob!.jobId,
       );
       expect(oldScheduledSystemJob).not.toBeNull();
       expect(oldScheduledSystemJob!.state.kind).toBe("canceled");
 
       const newScheduledSystemJob = await ctx.db.system.get(
-        updatedScheduledJob!.jobId,
+        "_scheduled_functions", updatedScheduledJob!.jobId,
       );
       expect(newScheduledSystemJob).not.toBeNull();
       expect(newScheduledSystemJob!.args).toStrictEqual([
@@ -213,7 +213,7 @@ describe("events", () => {
 
       const scheduledJob = await ctx.db.query("eventSchedule").first();
       expect(scheduledJob).not.toBeNull();
-      const scheduledSystemJob = await ctx.db.system.get(scheduledJob!.jobId);
+      const scheduledSystemJob = await ctx.db.system.get("_scheduled_functions", scheduledJob!.jobId);
       expect(scheduledSystemJob).not.toBeNull();
       expect(scheduledSystemJob!.state.kind).toBe("success");
       expect(scheduledSystemJob?.scheduledTime).toBe(Date.now());
@@ -249,7 +249,7 @@ describe("events", () => {
 
       const scheduledJob = await ctx.db.query("eventSchedule").first();
       expect(scheduledJob).not.toBeNull();
-      const scheduledSystemJob = await ctx.db.system.get(scheduledJob!.jobId);
+      const scheduledSystemJob = await ctx.db.system.get("_scheduled_functions", scheduledJob!.jobId);
       expect(scheduledSystemJob).not.toBeNull();
       expect(scheduledSystemJob!.state.kind).toBe("success");
       expect(scheduledSystemJob?.scheduledTime).toBe(Date.now());
@@ -273,7 +273,7 @@ describe("events", () => {
 
     await t.run(async (ctx) => {
       const scheduledJob = await ctx.db.query("eventSchedule").first();
-      const scheduledSystemJob = await ctx.db.system.get(scheduledJob!.jobId);
+      const scheduledSystemJob = await ctx.db.system.get("_scheduled_functions", scheduledJob!.jobId);
       expect(scheduledSystemJob).not.toBeNull();
       expect(scheduledSystemJob!.state.kind).toBe("success");
     });
@@ -300,7 +300,7 @@ describe("events", () => {
       expect(storedEvents.length).toEqual(2);
 
       const scheduledJob = await ctx.db.query("eventSchedule").first();
-      const scheduledSystemJob = await ctx.db.system.get(scheduledJob!.jobId);
+      const scheduledSystemJob = await ctx.db.system.get("_scheduled_functions", scheduledJob!.jobId);
       expect(scheduledSystemJob).not.toBeNull();
       expect(scheduledSystemJob!.state.kind).toBe("failed");
 
@@ -316,7 +316,7 @@ describe("events", () => {
       const updatedScheduledJob = await ctx.db.query("eventSchedule").first();
       expect(updatedScheduledJob).not.toBeNull();
       const updatedScheduledSystemJob = await ctx.db.system.get(
-        updatedScheduledJob!.jobId,
+        "_scheduled_functions", updatedScheduledJob!.jobId,
       );
       expect(updatedScheduledSystemJob).not.toBeNull();
       expect(updatedScheduledSystemJob!.state.kind).toBe("pending");

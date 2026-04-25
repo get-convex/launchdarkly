@@ -97,7 +97,7 @@ async function upsertItems(
     if (existingItem) {
       if ((existingItem.version || 0) < item.version) {
         console.debug(`Replacing item: ${kind} ${newItem.key}`);
-        await ctx.db.replace(existingItem._id, newItem);
+        await ctx.db.replace("payloads", existingItem._id, newItem);
       }
       continue;
     }
@@ -112,6 +112,6 @@ async function upsertItems(
       continue;
     }
     console.debug(`Deleting item: ${kind} ${key}`);
-    await ctx.db.delete(existingItem._id);
+    await ctx.db.delete("payloads", existingItem._id);
   }
 }

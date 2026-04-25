@@ -48,6 +48,7 @@
     "lodash-es": "^4.17.21"
   },
   "devDependencies": {
+    "@convex-dev/eslint-plugin": "^2.0.0",
     "@edge-runtime/vm": "5.0.0",
     "@eslint/js": "^9.9.1",
     "@fast-check/vitest": "^0.1.3",
