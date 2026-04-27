@@ -90,7 +90,7 @@ const handleScheduleProcessing = async (
   const existingScheduledJob = await ctx.db.query("eventSchedule").first();
   if (existingScheduledJob !== null) {
     const existingSystemJob = await ctx.db.system.get(
-      existingScheduledJob.jobId,
+      "_scheduled_functions", existingScheduledJob.jobId,
     );
 
     const didScheduledJobsArgsChange = existingSystemJob
@@ -120,7 +120,7 @@ const handleScheduleProcessing = async (
     }
 
     // We want to scheduled a new job immediately, so delete the old one.
-    await ctx.db.delete(existingScheduledJob._id);
+    await ctx.db.delete("eventSchedule", existingScheduledJob._id);
     if (existingSystemJob?.state.kind !== "inProgress") {
       await ctx.scheduler.cancel(existingScheduledJob.jobId);
     }
@@ -209,7 +209,7 @@ export const deleteEvents = internalMutation({
   handler: async (ctx, { ids }) => {
     await Promise.all(
       ids.map(async (id) => {
-        await ctx.db.delete(id);
+        await ctx.db.delete("events", id);
       }),
     );
   },
