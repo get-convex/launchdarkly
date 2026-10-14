@@ -171,6 +171,8 @@ function spyOnQuery(api: any, method: string) {
   // @ts-expect-error It's a query ;)
   spy.isQuery = true;
   // @ts-expect-error Ignore validators
-  spy.exportArgs = () => "{}";
+  spy.exportArgs = () => JSON.stringify({ type: "any" });
+  // @ts-expect-error Ignore validators
+  spy.exportReturns = () => JSON.stringify({ type: "any" });
   return spy;
 }
